@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('master_physical_hazards', function (Blueprint $table) {
+        Schema::create('hazard_statement_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-            $table->string('description')->nullable();
-            $table->string('language')->default('en')->nullable();
+            $table->string('category_name')->nullable();
             $table->string('created_by');
-            $table->bigInteger('hazard_statement_id');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_physical_hazards');
+        Schema::dropIfExists('hazard_statement_categories');
     }
 };

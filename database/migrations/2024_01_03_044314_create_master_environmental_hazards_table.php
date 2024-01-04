@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('language')->default('en')->nullable();
             $table->string('created_by');
+            $table->bigInteger('hazard_statement_id');
             $table->timestamps();
         });
     }

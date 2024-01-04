@@ -10,5 +10,5 @@ class MasterEnvironmentalHazard extends Model
     use HasFactory;
     protected $table = 'master_environmental_hazards';
 
-    protected $fillable = ['code', 'description', 'language', 'created_by'];
+    protected $fillable = ['code', 'description', 'language', 'created_by', 'hazard_statement_id'];
 }
