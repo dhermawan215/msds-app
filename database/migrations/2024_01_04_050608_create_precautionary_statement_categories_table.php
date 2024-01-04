@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('master_environmental_hazards', function (Blueprint $table) {
+        Schema::create('precautionary_statement_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-            $table->text('description')->nullable();
-            $table->string('language')->default('en')->nullable();
+            $table->string('category_name')->nullable();
             $table->string('created_by');
-            $table->bigInteger('hscat_id');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_environmental_hazards');
+        Schema::dropIfExists('precautionary_statement_categories');
     }
 };

@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('master_environmental_hazards', function (Blueprint $table) {
+        Schema::create('master_skin_contacts', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
             $table->text('description')->nullable();
-            $table->string('language')->default('en')->nullable();
+            $table->string('language')->nullable();
+            $table->string('notes')->nullable();
             $table->string('created_by');
-            $table->bigInteger('hscat_id');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_environmental_hazards');
+        Schema::dropIfExists('master_skin_contacts');
     }
 };

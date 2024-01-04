@@ -11,5 +11,5 @@ class MasterPhysicalHazard extends Model
 
     protected $table = 'master_physical_hazards';
 
-    protected $fillable = ['code', 'description', 'language', 'created_by', 'hazard_statement_id'];
+    protected $fillable = ['code', 'description', 'language', 'created_by', 'hscat_id'];
 }

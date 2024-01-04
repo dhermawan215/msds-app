@@ -11,5 +11,5 @@ class MasterStoragePrecautionaryStatements extends Model
 
     protected $table = 'master_storage_precautionary_statements';
 
-    protected $fillable = ['code', 'description', 'language', 'created_by'];
+    protected $fillable = ['code', 'description', 'language', 'created_by', 'pscat_id'];
 }

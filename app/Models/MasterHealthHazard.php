@@ -11,5 +11,5 @@ class MasterHealthHazard extends Model
 
     protected $table = 'master_health_hazards';
 
-    protected $fillable = ['code', 'description', 'language', 'created_by', 'hazard_statement_id'];
+    protected $fillable = ['code', 'description', 'language', 'created_by', 'hscat_id'];
 }
