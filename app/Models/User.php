@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'sys_group_id',
+        'is_active'
     ];
 
     /**
@@ -41,4 +43,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function userGroup()
+    {
+        return $this->belongsTo(SysUserGroup::class, 'sys_group_id', 'id');
+    }
 }

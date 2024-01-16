@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthenticatedController;
+use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +15,15 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// auth route
+Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
+Route::post('/login', [AuthenticatedController::class, 'authenticated']);
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('auth')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+// master data physical hazard route
+Route::prefix('physical-hazard')->group(function () {
+    Route::get('/');
 });
