@@ -18,12 +18,20 @@ use Illuminate\Support\Facades\Route;
 // auth route
 Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
 Route::post('/login', [AuthenticatedController::class, 'authenticated']);
+Route::post('/logout', [AuthenticatedController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
+    // dashboard route
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-});
+    // user management route
 
-// master data physical hazard route
-Route::prefix('physical-hazard')->group(function () {
-    Route::get('/');
+
+
+    // master data physical hazard route
+    Route::prefix('physical-hazard')->group(function () {
+        Route::get('/');
+    });
+
+    // super admin route
+
 });

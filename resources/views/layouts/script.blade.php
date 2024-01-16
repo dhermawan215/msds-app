@@ -6,6 +6,9 @@
  <script src="{{ asset('frontend/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
  <!-- AdminLTE App -->
  <script src="{{ asset('frontend/js/adminlte.js') }}"></script>
+ <script>
+     var url = "{{ url('') }}"
+ </script>
 
  <!-- PAGE PLUGINS -->
  <!-- jQuery Mapael -->
@@ -17,3 +20,4 @@
  <script src="{{ asset('frontend/plugins/chart.js/Chart.min.js') }}"></script>
 
  <script src="{{ asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
+ <script src="{{ asset('dist/js/auth/view.min.js?q=') . time() }}"></script>

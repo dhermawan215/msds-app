@@ -69,8 +69,8 @@
     <script src="{{ asset('frontend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('frontend/js/adminlte.min.js') }}"></script>
-    <script src="{{ asset('dist/js/app/login.min.js') }}"></script>
     <script src="{{ asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
+    <script src="{{ asset('dist/js/app/login.min.js?q=') . time() }}"></script>
 </body>
 
 </html>
