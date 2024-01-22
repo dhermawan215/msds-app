@@ -20,4 +20,31 @@
  <script src="{{ asset('frontend/plugins/chart.js/Chart.min.js') }}"></script>
 
  <script src="{{ asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
- <script src="{{ asset('dist/js/auth/view.min.js?q=') . time() }}"></script>
+ <!-- <script src="{{ asset('dist/js/auth/view.js?q=') . time() }}"></script> -->
+ <script>
+     $(document).ready(function() {
+         $("#formLogout").submit(function(e) {
+             e.preventDefault();
+
+             var form = $(this);
+             var formData = new FormData(form[0]);
+
+             if (confirm("Are you sure to logout?")) {
+                 $.ajax({
+                     url: url + "/logout",
+                     type: "POST",
+                     data: formData,
+                     processData: false,
+                     contentType: false,
+                     success: function(responses) {
+                         toastr.success("success!");
+                         setTimeout(() => {
+                             window.location = responses.data;
+                         }, 2500);
+                     },
+                     error: function(response) {},
+                 });
+             }
+         });
+     });
+ </script>

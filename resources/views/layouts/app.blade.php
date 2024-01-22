@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf_token" content="{{ csrf_token() }}">
     <title>MSDS APP</title>
     @include('layouts.style')
 </head>
@@ -43,7 +44,8 @@
 
     <!-- REQUIRED SCRIPTS -->
     @include('layouts.script')
-    @stack('custom_script')
+    @yield('custom_js')
+
 </body>
 
 </html>

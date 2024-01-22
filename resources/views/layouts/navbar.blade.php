@@ -15,17 +15,18 @@
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
+                <a href="{{ route('user_setting') }}" class="dropdown-item">
                     <i class="fas fa-user-circle"></i> Profile
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
+                <!-- <a href="#" class="dropdown-item">
                     <i class="fas fa-unlock-alt"></i> Change Password
-                </a>
+                </a> -->
                 <div class="dropdown-divider"></div>
                 <form id="formLogout" action="javascript:;" method="post">
                     @csrf
-                    <button type="submit" class="dropdown-item dropdown-footer"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button type="submit" class="dropdown-item dropdown-footer"><i class="fas fa-sign-out-alt"></i>
+                        Logout</button>
                 </form>
             </div>
         </li>
