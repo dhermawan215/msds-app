@@ -83,9 +83,10 @@ class UserSettingController extends Controller
     {
         $userId = Auth::user()->id;
 
-        $log = UserLog::where('user_id', $userId)->get();
-        $html = 'hello';
-        foreach ($log as $key => $value) {
-        }
+        $log = UserLog::select('user_id', 'name', 'user_logs.email', 'date_time', 'activity', 'status')
+            ->join('users', 'user_logs.user_id', '=', 'users.id')
+            ->where('user_logs.user_id', $userId)->limit(10)->orderBy('user_logs.date_time', 'DESC')->get();
+
+        return \response()->json(['success' => true, 'content' => $log], 200);
     }
 }

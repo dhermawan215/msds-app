@@ -73,16 +73,43 @@ var Index = (function () {
     };
 
     var handleUserLogActivity = function () {
-        $.ajax({
-            type: "POST",
-            url: url + "/user-setting/user-log",
-            data: {
-                _token: csrf_token,
-            },
-            dataType: "json",
-            success: function (response) {
-                console.log(response);
-            },
+        $(".logs-link").on("click", function () {
+            $.ajax({
+                type: "POST",
+                url: url + "/user-setting/user-log",
+                data: {
+                    _token: csrf_token,
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $("#loaderUserLog").show();
+                },
+                success: function (response) {
+                    const valueResponse = response.content;
+
+                    $.each(valueResponse, function (indexInArray, activity) {
+                        const activityItem = $("<div>", {
+                            class: "activity-item",
+                            html:
+                                " <i class='fas fa-user bg-info'></i><div class='timeline-item'><span class='time'><i class='far fa-clock'></i>" +
+                                activity.date_time +
+                                "</span><h3 class='timeline-header border-0'><a>" +
+                                activity.name +
+                                "-(" +
+                                activity.email +
+                                ")</a>" +
+                                activity.activity +
+                                "</h3></div>",
+                        });
+                        $("#timelineUserLog").append(activityItem);
+                    });
+                    // $("#timelineUserLog").html(response.content);
+                },
+                complete: function () {
+                    // Hide image container
+                    $("#loaderUserLog").hide();
+                },
+            });
         });
     };
     return {
@@ -90,6 +117,7 @@ var Index = (function () {
             handleUpdateUser();
             handleCbxUserUpdate();
             handleUpdatePwd();
+            handleUserLogActivity();
         },
     };
 })();
