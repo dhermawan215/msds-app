@@ -44,7 +44,7 @@
 
     <!-- REQUIRED SCRIPTS -->
     @include('layouts.script')
-    @yield('custom_js')
+    @stack('custom_js')
 
 </body>
 

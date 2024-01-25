@@ -2,6 +2,16 @@
  <script src="{{ asset('frontend/plugins/jquery/jquery.min.js') }}"></script>
  <!-- Bootstrap -->
  <script src="{{ asset('frontend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+ <!-- datatable -->
+ <script src="{{ asset('frontend/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/select2/js/select2.full.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
  <!-- overlayScrollbars -->
  <script src="{{ asset('frontend/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
  <!-- AdminLTE App -->

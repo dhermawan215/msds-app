@@ -12,14 +12,13 @@
                 <img src="{{ asset('frontend/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
+                <a href="{{route('user_setting')}}" class="d-block">{{ Auth::user()->name }}</a>
             </div>
         </div>
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
                 <li class="nav-item menu-open">
@@ -242,7 +241,7 @@
                 <!--  super admin menu -->
                 <li class="nav-header">Super Admin Panel</li>
                 <li class="nav-item">
-                    <a href="iframe.html" class="nav-link">
+                    <a href="{{route('admin.user_mg')}}" class="nav-link">
                         <i class="nav-icon fas fa-ellipsis-h"></i>
                         <p>User Management</p>
                     </a>
