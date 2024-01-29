@@ -91,13 +91,13 @@ var Index = (function () {
                         const activityItem = $("<div>", {
                             class: "activity-item",
                             html:
-                                " <i class='fas fa-user bg-info'></i><div class='timeline-item'><span class='time'><i class='far fa-clock'></i>" +
+                                " <i class='fas fa-user bg-info'></i><div class='timeline-item'><span class='time'><i class='far fa-clock'></i> " +
                                 activity.date_time +
                                 "</span><h3 class='timeline-header border-0'><a>" +
                                 activity.name +
                                 "-(" +
                                 activity.email +
-                                ")</a>" +
+                                ")</a>: " +
                                 activity.activity +
                                 "</h3></div>",
                         });

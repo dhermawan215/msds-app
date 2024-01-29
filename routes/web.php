@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminModul;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
@@ -50,4 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/users-management/edit-user/{id}', [AdminUserManagement::class, 'updateUserData']);
     Route::get('/users-management/change-password/{id}', [AdminUserManagement::class, 'changePassword'])->name('admin.change_password');
     Route::patch('/users-management/change-password/{id}', [AdminUserManagement::class, 'updatePassword']);
+
+    // module management
+    Route::get('/module-management', [AdminModul::class, 'index'])->name('admin_module.view');
+    Route::post('/module-management', [AdminModul::class, 'tableData']);
+    Route::post('/module-management/registration', [AdminModul::class, 'store']);
+    Route::get('/module-management/edit/{id}', [AdminModul::class, 'edit'])->name('admin_module.edit');
+    Route::patch('/module-management/edit/{id}', [AdminModul::class, 'update']);
 });
