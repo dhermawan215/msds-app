@@ -18,8 +18,7 @@
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
                 <li class="nav-item menu-open">
@@ -30,16 +29,21 @@
                         </p>
                     </a>
                 </li>
+                @php
+                $menu = SysMenu::menuActivePermission();
+                @endphp
+                @foreach ($menu as $value)
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                    <a href="{{ route($value->route_name) }}" class="nav-link">
+                        <i class="nav-icon {{ $value->icon }}"></i>
                         <p>
-                            Widgets
-                            <span class="right badge badge-danger">New</span>
+                            {{ $value->description }}
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
+                @endforeach
+
+                {{-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-copy"></i>
                         <p>
@@ -98,10 +102,10 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
                 <!-- admin panel menu -->
-                <li class="nav-header">Admin Panel</li>
+                <!-- <li class="nav-header">Admin Panel</li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon far fa-envelope"></i>
@@ -136,10 +140,10 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <!-- end of hazard statement -->
                 <!--  Master Data Precaution -->
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon far fa-envelope"></i>
                         <p>
@@ -179,10 +183,10 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <!-- end Master Data Precaution -->
                 <!-- master data composition -->
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon far fa-envelope"></i>
                         <p>
@@ -198,10 +202,10 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <!-- end of master data composition -->
                 <!-- first aid measures -->
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon far fa-envelope"></i>
                         <p>
@@ -235,28 +239,16 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <!-- end of first aid measures -->
                 <!-- end admin panel menu -->
 
                 <!--  super admin menu -->
                 <li class="nav-header">Super Admin Panel</li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.user_mg') }}" class="nav-link">
-                        <i class="nav-icon fas fa-ellipsis-h"></i>
-                        <p>User Management</p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="https://adminlte.io/docs/3.1/" class="nav-link">
                         <i class="nav-icon fas fa-file"></i>
                         <p>Permission Management</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('admin_module.view') }}" class="nav-link">
-                        <i class="nav-icon fas fa-file"></i>
-                        <p>Modul Management</p>
                     </a>
                 </li>
                 <!-- end super admin menu -->

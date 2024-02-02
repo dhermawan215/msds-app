@@ -2,21 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SysUserGroup;
 use App\Models\User;
+use App\Helper\SysMenu;
+use App\Models\SysUserGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AdminUserManagement extends Controller
 {
+    protected $sysModuleName = 'user_management';
+
+    private function modulePermission()
+    {
+        return SysMenu::menuSetingPermission($this->sysModuleName);
+    }
+
     public function index()
     {
-        return \view('admin.users-management.index');
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+
+        if (!$modulePermission->is_akses) {
+            return \view('forbiden-403');
+        }
+
+        return \view('admin.users-management.index', ['moduleFn' => $moduleFn]);
     }
 
     public function tableData(Request $request)
     {
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+
         $draw = $request['draw'];
         $offset = $request['start'] ? $request['start'] : 0;
         $limit = $request['length'] ? $request['length'] : 15;
@@ -39,38 +57,35 @@ class AdminUserManagement extends Controller
 
         $data = [];
         $i = $offset + 1;
+        $arr = [];
 
-        if ($resData->isEmpty()) {
-            $data['rnum'] = '#';
-            $data['name'] = 'empty';
-            $data['email'] = 'empty';
-            $data['roles'] = 'empty';
-            $data['status'] = 'empty';
-            $data['action'] = '#';
-            $arr[] = $data;
-        } else {
-            foreach ($resData as $key => $value) {
-                $data['rnum'] = $i;
-                $data['name'] = $value->name;
-                $data['email'] = $value->email;
-                $data['roles'] = $value->userGroup->name;
-                // checkbox status active
-                if ('1' == $value->is_active) {
-                    $check = 'checked';
-                } else {
-                    $check = '';
-                }
-
-                $status = '<div class=""><input class="activeuser" type="checkbox" data-toggle="' . \base64_encode($value->id) . '" id="customSwitch1" ' . $check . '></div>';
-
-                $data['status'] = $status;
-                $data['action'] = '  <div class="d-flex">
-                <a href="' . \route('admin.edit_user', \base64_encode($value->id)) . '" class="text-primary text-decoration-none mr-1" title="edit-user-data"> <i class="fas fa-user-edit"></i></a>
-                <a href="' . route('admin.change_password', \base64_encode($value->id)) . '" class="text-danger text-decoration-none mr-1" title="change-password"> <i class="fa fa-unlock-alt text-danger" aria-hidden="true"></i></a>
-                </div>';
-                $arr[] = $data;
-                $i++;
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['name'] = $value->name;
+            $data['email'] = $value->email;
+            $data['roles'] = $value->userGroup->name;
+            // checkbox status active
+            if ('1' == $value->is_active) {
+                $check = 'checked';
+            } else {
+                $check = '';
             }
+
+            $status = '<div class=""><input class="activeuser" type="checkbox" data-toggle="' . \base64_encode($value->id) . '" id="customSwitch1" ' . $check . '></div>';
+
+            $data['status'] = $status;
+
+            if (in_array('edit', $moduleFn) && \in_array('change_password', $moduleFn)) {
+                $data['action'] = '  <div class="d-flex">
+                <a href="' . \route('admin_user_management.edit', \base64_encode($value->id)) . '" class="text-primary text-decoration-none mr-1" title="edit-user-data"> <i class="fas fa-user-edit"></i></a>
+                <a href="' . route('admin_user_management.change_password', \base64_encode($value->id)) . '" class="text-danger text-decoration-none mr-1" title="change-password"> <i class="fa fa-unlock-alt text-danger" aria-hidden="true"></i></a>
+                </div>';
+            } else {
+                $data['action'] = '';
+            }
+
+            $arr[] = $data;
+            $i++;
         }
 
         return \response()->json([
@@ -121,6 +136,12 @@ class AdminUserManagement extends Controller
     // function view edit user data
     public function editUserData($id)
     {
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses && !\in_array('edit', $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
         $user = User::with('userGroup')->find(\base64_decode($id));
         $roles = SysUserGroup::where('id', '>', '1')->get();
 
@@ -163,6 +184,12 @@ class AdminUserManagement extends Controller
 
     public function changePassword($id)
     {
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses && !\in_array('change_password', $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
         $user = User::select('id', 'name')->find(\base64_decode($id));
         return \view('admin.users-management.change-password', ['user' => $user]);
     }

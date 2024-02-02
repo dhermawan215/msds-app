@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\SysMenu;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -191,7 +192,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // ...
+        'SysMenu' => SysMenu::class,
     ])->toArray(),
 
 ];

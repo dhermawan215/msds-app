@@ -41,6 +41,16 @@ var Index = (function () {
                 { data: "action", orderable: false },
             ],
         });
+        // btn refresh on click
+        $("#btnRefresh").click(function (e) {
+            e.preventDefault();
+            table.ajax.reload();
+        });
+        if ($.inArray("add", ModuleFn) !== -1) {
+            $("#btnAddModule").removeAttr("disabled");
+        } else {
+            $("#btnAddModule").attr("disabled", "disabled");
+        }
     };
 
     var handleAddModule = function () {

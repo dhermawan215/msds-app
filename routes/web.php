@@ -43,17 +43,17 @@ Route::middleware('auth')->group(function () {
 
     // super admin route
     // user management
-    Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin.user_mg');
+    Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
     Route::post('/users-management', [AdminUserManagement::class, 'tableData']);
     Route::post('/users-management/user-registration', [AdminUserManagement::class, 'registerUser']);
     Route::post('/users-management/user-active', [AdminUserManagement::class, 'changeActiveUser']);
-    Route::get('/users-management/edit-user/{id}', [AdminUserManagement::class, 'editUserData'])->name('admin.edit_user');
+    Route::get('/users-management/edit-user/{id}', [AdminUserManagement::class, 'editUserData'])->name('admin_user_management.edit');
     Route::patch('/users-management/edit-user/{id}', [AdminUserManagement::class, 'updateUserData']);
-    Route::get('/users-management/change-password/{id}', [AdminUserManagement::class, 'changePassword'])->name('admin.change_password');
+    Route::get('/users-management/change-password/{id}', [AdminUserManagement::class, 'changePassword'])->name('admin_user_management.change_password');
     Route::patch('/users-management/change-password/{id}', [AdminUserManagement::class, 'updatePassword']);
 
     // module management
-    Route::get('/module-management', [AdminModul::class, 'index'])->name('admin_module.view');
+    Route::get('/module-management', [AdminModul::class, 'index'])->name('admin_module');
     Route::post('/module-management', [AdminModul::class, 'tableData']);
     Route::post('/module-management/registration', [AdminModul::class, 'store']);
     Route::get('/module-management/edit/{id}', [AdminModul::class, 'edit'])->name('admin_module.edit');
