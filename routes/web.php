@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminModul;
+use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
@@ -19,11 +20,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // auth route
-Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
-Route::post('/login', [AuthenticatedController::class, 'authenticated']);
-Route::post('/logout', [AuthenticatedController::class, 'logout']);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
+    Route::post('/login', [AuthenticatedController::class, 'authenticated']);
+});
 
 Route::middleware('auth')->group(function () {
+    Route::get('/home', function () {
+        return redirect('/');
+    });
+    Route::post('/logout', [AuthenticatedController::class, 'logout']);
     // dashboard route
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // user setting route
@@ -31,10 +37,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/user-setting/update', [UserSettingController::class, 'update'])->name('user_setting.update');
     Route::post('/user-setting/password-update', [UserSettingController::class, 'passwordUpdate'])->name('user_setting.password_update');
     Route::post('/user-setting/user-log', [UserSettingController::class, 'userLog'])->name('user_setting.password_update');
-
-    // user management route
-
-
 
     // master data physical hazard route
     Route::prefix('physical-hazard')->group(function () {
@@ -58,4 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/module-management/registration', [AdminModul::class, 'store']);
     Route::get('/module-management/edit/{id}', [AdminModul::class, 'edit'])->name('admin_module.edit');
     Route::patch('/module-management/edit/{id}', [AdminModul::class, 'update']);
+
+    // admin permission management
+    Route::get('/permission-management', [AdminPermissionControlller::class, 'index'])->name('admin_permission');
+    Route::post('/permission-management', [AdminPermissionControlller::class, 'tableData']);
+    Route::get('/permission-management/add/{id}', [AdminPermissionControlller::class, 'add'])->name('admin_permission.add');
+    Route::post('/permission-management/save', [AdminPermissionControlller::class, 'store']);
+    Route::get('/permission-management/edit/{id}', [AdminPermissionControlller::class, 'edit'])->name('admin_permission.edit');
+    Route::post('/permission-management/permission', [AdminPermissionControlller::class, 'dataEdit']);
+    Route::post('/permission-management/permission/update', [AdminPermissionControlller::class, 'update']);
 });

@@ -30,6 +30,7 @@
  <script src="{{ asset('frontend/plugins/chart.js/Chart.min.js') }}"></script>
 
  <script src="{{ asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
  <!-- <script src="{{ asset('dist/js/auth/view.js?q=') . time() }}"></script> -->
  <script>
      $(document).ready(function() {
