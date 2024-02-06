@@ -36,7 +36,7 @@
                                 <i class="fa fa-plus" aria-hidden="true"></i> Register User
                             </button>
                         </div>
-                        <table class="table table-bordered" id="tblAdminUserMg">
+                        <table class="table table-bordered" id="tblAdminUserMg" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>
