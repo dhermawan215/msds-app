@@ -93,6 +93,10 @@
                         <label for="icon">Icon</label>
                         <input type="text" name="icon" id="icon" class="form-control" placeholder="icon">
                     </div>
+                    <div class="form-group row">
+                        <label for="order_menu">Order Menu Position</label>
+                        <input type="text" name="order_menu" id="order_menu" class="form-control" placeholder="order menu">
+                    </div>
 
                     <div class="form-group row mt-1">
                         <button type="submit" class="btn btn-primary">Add Module</button>

@@ -55,6 +55,10 @@
                                 <input type="text" name="icon" id="icon" class="form-control" placeholder="icon" value="{{ $moduleData->icon }}">
                             </div>
                             <div class="form-group row">
+                                <label for="icon">Order Menu Position</label>
+                                <input type="text" name="order_menu" id="order_menu" class="form-control" placeholder="icon" value="{{ $moduleData->order_menu }}">
+                            </div>
+                            <div class="form-group row">
                                 <div class="col-sm-10">
                                     <button type="submit" id="btnModuleUpdate" class="btn btn-success mr-1">Update</button>
                                     <a href="{{ route('admin_module') }}" class="btn btn-outline-secondary">Back</a>

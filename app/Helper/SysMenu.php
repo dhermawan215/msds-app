@@ -41,6 +41,7 @@ class SysMenu extends Facade
             ->join('sys_modul_menus AS b', 'a.sys_modul_id', '=', 'b.id')
             ->where('a.sys_user_group_id', $auth->sys_group_id)
             ->where('is_akses', '1')
+            ->orderBy('order_menu', 'ASC')
             ->get();
 
         return $menu;

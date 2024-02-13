@@ -206,7 +206,8 @@ var Index = (function () {
                     success: function (responses) {
                         toastr.success(responses.message);
                         setTimeout(() => {
-                            reload();
+                            window.location.href =
+                                url + "/permission-management";
                         }, 4500);
                     },
                     error: function (response) {
@@ -235,7 +236,8 @@ var Index = (function () {
                     success: function (responses) {
                         toastr.success(responses.message);
                         setTimeout(() => {
-                            reload();
+                            window.location.href =
+                                url + "/permission-management";
                         }, 4500);
                     },
                     error: function (response) {
@@ -264,7 +266,8 @@ var Index = (function () {
                     success: function (responses) {
                         toastr.success(responses.message);
                         setTimeout(() => {
-                            reload();
+                            window.location.href =
+                                url + "/permission-management";
                         }, 4500);
                     },
                     error: function (response) {
@@ -284,6 +287,8 @@ var Index = (function () {
             handleSaTab();
 
             handleUpdateSa();
+            handleUpdateLab();
+            handleUpdateReg();
         },
     };
 })();

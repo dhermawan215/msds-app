@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/user-setting/user-log', [UserSettingController::class, 'userLog'])->name('user_setting.password_update');
 
     // master data physical hazard route
-    Route::prefix('physical-hazard')->group(function () {
-        Route::get('/');
-    });
+    Route::get('/physical-hazard', [PhysicalHazardController::class, 'index'])->name('physical_hazard');
+    Route::post('/physical-hazard', [PhysicalHazardController::class, 'tableData']);
+    Route::get('/physical-hazard/add', [PhysicalHazardController::class, 'add'])->name('physical_hazard.add');
+    Route::post('/physical-hazard/save', [PhysicalHazardController::class, 'store']);
+    Route::get('/physical-hazard/detail/{id}', [PhysicalHazardController::class, 'detail'])->name('physical_hazard.detail');
+    Route::get('/physical-hazard/edit/{id}', [PhysicalHazardController::class, 'edit'])->name('physical_hazard.edit');
+    Route::patch('/physical-hazard/update/{id}', [PhysicalHazardController::class, 'update']);
+    Route::delete('/physical-hazard/delete/{id}', [PhysicalHazardController::class, 'delete']);
 
     // super admin route
     // user management

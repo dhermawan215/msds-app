@@ -86,7 +86,6 @@ var Index = (function () {
                     processData: false,
                     contentType: false,
                     success: function (responses) {
-                        toastr.success("success!");
                         toastr.success(responses.message);
                         setTimeout(() => {
                             window.location.href = responses.url;

@@ -37,6 +37,7 @@ class AdminModul extends Controller
             'route_name' => 'required',
             'link_path' => 'required',
             'description' => 'required',
+            'order_menu' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -52,6 +53,7 @@ class AdminModul extends Controller
             'link_path' => $request->link_path,
             'description' => $request->description,
             'icon' => $request->icon,
+            'order_menu' => $request->order_menu,
             'created_by' => $created_by
         ]);
 
@@ -123,6 +125,7 @@ class AdminModul extends Controller
             'route_name' => 'required',
             'link_path' => 'required',
             'description' => 'required',
+            'order_menu' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -136,6 +139,7 @@ class AdminModul extends Controller
             'link_path' => $request->link_path,
             'description' => $request->description,
             'icon' => $request->icon,
+            'order_menu' => $request->order_menu,
         ]);
 
         $redirect = \route('admin_module');
