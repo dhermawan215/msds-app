@@ -2,7 +2,7 @@ var Index = (function () {
     var csrf_token = $('meta[name="csrf_token"]').attr("content");
     var table;
     var handleDataTabelUser = function () {
-        table = $("#tblPhysicalHazard").DataTable({
+        table = $("#tbl-health-hazard").DataTable({
             responsive: true,
             autoWidth: true,
             pageLength: 15,
@@ -27,7 +27,7 @@ var Index = (function () {
             processing: true,
             serverSide: true,
             ajax: {
-                url: url + "/physical-hazard",
+                url: url + "/health-hazard/list",
                 type: "POST",
                 data: {
                     _token: csrf_token,
@@ -58,7 +58,7 @@ var Index = (function () {
             const dataButton = $(this).data("button");
             if (confirm("Are you sure delete this data?")) {
                 $.ajax({
-                    url: url + "/physical-hazard/delete/" + dataButton,
+                    url: url + "/health-hazard/delete/" + dataButton,
                     type: "DELETE",
                     data: {
                         _token: csrf_token,

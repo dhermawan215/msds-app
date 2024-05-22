@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +49,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/physical-hazard/edit/{id}', [PhysicalHazardController::class, 'edit'])->name('physical_hazard.edit');
     Route::patch('/physical-hazard/update/{id}', [PhysicalHazardController::class, 'update']);
     Route::delete('/physical-hazard/delete/{id}', [PhysicalHazardController::class, 'delete']);
+
+    // master data health hazard route
+    Route::get('/health-hazard', [HealthHazardController::class, 'index'])->name('health_hazard');
+    Route::post('/health-hazard/list', [HealthHazardController::class, 'listData']);
+    Route::get('/health-hazard/add', [HealthHazardController::class, 'add'])->name('health_hazard.add');
+    Route::post('/health-hazard/save', [HealthHazardController::class, 'store']);
+    Route::get('/health-hazard/detail/{id}', [HealthHazardController::class, 'detail'])->name('health_hazard.detail');
+    Route::get('/health-hazard/edit/{id}', [HealthHazardController::class, 'edit'])->name('health_hazard.edit');
+    Route::patch('/health-hazard/update/{id}', [HealthHazardController::class, 'update']);
+    Route::delete('/health-hazard/delete/{id}', [HealthHazardController::class, 'delete']);
 
     // super admin route
     // user management
