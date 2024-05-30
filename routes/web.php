@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalHazardController;
+use App\Http\Controllers\GeneralPresController;
 use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\UserSettingController;
@@ -70,6 +71,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/environmental-hazard/edit/{id}', [EnvironmentalHazardController::class, 'edit'])->name('environmental_hazard.edit');
     Route::patch('/environmental-hazard/update/{id}', [EnvironmentalHazardController::class, 'update']);
     Route::get('/environmental-hazard/detail/{id}', [EnvironmentalHazardController::class, 'detail'])->name('environmental_hazard.detail');
+    // master data general precautionary statemnet
+    Route::get('/general-precautionary', [GeneralPresController::class, 'index'])->name('general_precautionary');
     // super admin route
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
