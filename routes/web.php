@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnvironmentalHazardController;
 use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\UserSettingController;
@@ -60,6 +61,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/health-hazard/update/{id}', [HealthHazardController::class, 'update']);
     Route::delete('/health-hazard/delete/{id}', [HealthHazardController::class, 'delete']);
 
+    // master data health hazard route
+    Route::get('/environmental-hazard', [EnvironmentalHazardController::class, 'index'])->name('environmental_hazard');
+    Route::post('/environmental-hazard/list', [EnvironmentalHazardController::class, 'listData']);
+    Route::get('/environmental-hazard/add', [EnvironmentalHazardController::class, 'add'])->name('environmental_hazard.add');
+    Route::post('/environmental-hazard/save', [EnvironmentalHazardController::class, 'store']);
+    Route::post('/environmental-hazard/delete', [EnvironmentalHazardController::class, 'delete']);
+    Route::get('/environmental-hazard/edit/{id}', [EnvironmentalHazardController::class, 'edit'])->name('environmental_hazard.edit');
+    Route::patch('/environmental-hazard/update/{id}', [EnvironmentalHazardController::class, 'update']);
+    Route::get('/environmental-hazard/detail/{id}', [EnvironmentalHazardController::class, 'detail'])->name('environmental_hazard.detail');
     // super admin route
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
