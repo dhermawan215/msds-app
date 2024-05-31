@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('link_path');
             $table->text('description');
             $table->string('icon');
+            $table->integer('order_meu');
             $table->string('created_by');
             $table->timestamps();
         });

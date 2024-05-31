@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\SysMenu;
 use App\Models\SysModulMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,9 +10,24 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminModul extends Controller
 {
+    protected $sysModuleName = 'module_management';
+
+    private function modulePermission()
+    {
+        return SysMenu::menuSetingPermission($this->sysModuleName);
+    }
+
     public function index()
     {
-        return \view('admin.modul.index');
+        /**
+         * check permission this module(security update)
+         */
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode(isset($modulePermission->fungsi), true);
+        if (!isset($modulePermission->is_akses)) {
+            return \view('forbiden-403');
+        }
+        return \view('admin.modul.index', ['moduleFn' => $moduleFn]);
     }
 
     public function store(Request $request)
@@ -21,6 +37,7 @@ class AdminModul extends Controller
             'route_name' => 'required',
             'link_path' => 'required',
             'description' => 'required',
+            'order_menu' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -36,6 +53,7 @@ class AdminModul extends Controller
             'link_path' => $request->link_path,
             'description' => $request->description,
             'icon' => $request->icon,
+            'order_menu' => $request->order_menu,
             'created_by' => $created_by
         ]);
 
@@ -66,27 +84,19 @@ class AdminModul extends Controller
 
         $data = [];
         $i = $offset + 1;
-
-        if ($resData->isEmpty()) {
-            $data['rnum'] = '#';
-            $data['name'] = '#';
-            $data['route'] = '#';
-            $data['path'] = '#';
-            $data['action'] = '#';
-            $arr[] = $data;
-        } else {
-            foreach ($resData as $key => $value) {
-                $data['rnum'] = $i;
-                $data['name'] = $value->name;
-                $data['route'] = $value->route_name;
-                $data['path'] = $value->link_path;
-                $data['action'] = '<div class="d-flex">
+        $arr = [];
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['name'] = $value->name;
+            $data['route'] = $value->route_name;
+            $data['path'] = $value->link_path;
+            $data['action'] = '<div class="d-flex">
                 <a href="' . \route('admin_module.edit', \base64_encode($value->id)) . '" class="text-primary text-decoration-none mr-1" title="edit-module"> <i class="fas fa-edit"></i></a>
                 </div>';
-                $arr[] = $data;
-                $i++;
-            }
+            $arr[] = $data;
+            $i++;
         }
+
         return \response()->json([
             'draw' => $draw,
             'recordsTotal' => $recordsTotal,
@@ -97,6 +107,12 @@ class AdminModul extends Controller
 
     public function edit($id)
     {
+        $modulePermission = $this->modulePermission();
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses && !\in_array('edit', $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
         $moduleData = SysModulMenu::find(\base64_decode($id));
 
         return \view('admin.modul.edit', ['moduleData' => $moduleData]);
@@ -109,6 +125,7 @@ class AdminModul extends Controller
             'route_name' => 'required',
             'link_path' => 'required',
             'description' => 'required',
+            'order_menu' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -122,9 +139,10 @@ class AdminModul extends Controller
             'link_path' => $request->link_path,
             'description' => $request->description,
             'icon' => $request->icon,
+            'order_menu' => $request->order_menu,
         ]);
 
-        $redirect = \route('admin_module.view');
+        $redirect = \route('admin_module');
 
         return \response()->json(['success' => true, 'data' => 'update success', 'redirect' => $redirect], 200);
     }

@@ -29,11 +29,14 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-2">
-                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-userReg">
+                            <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
+                                <i class="fa fa-retweet" aria-hidden="true"></i> Refresh Data
+                            </button>
+                            <button type="button" id="btnRegUser" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-userReg">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Register User
                             </button>
                         </div>
-                        <table class="table table-bordered" id="tblAdminUserMg">
+                        <table class="table table-bordered" id="tblAdminUserMg" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -121,5 +124,8 @@
 <!-- /.content -->
 @endsection
 @push('custom_js')
+<script>
+    ModuleFn = @json($moduleFn)
+</script>
 <script src="{{ asset('dist/js/users-mg/view.min.js?q=') . time() }}"></script>
 @endpush

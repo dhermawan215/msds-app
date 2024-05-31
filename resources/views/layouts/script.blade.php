@@ -8,8 +8,6 @@
  <script src="{{ asset('frontend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
  <script src="{{ asset('frontend/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
  <script src="{{ asset('frontend/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
- <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
- <script src="{{ asset('frontend/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
  <script src="{{ asset('frontend/plugins/select2/js/select2.full.min.js') }}"></script>
  <script src="{{ asset('frontend/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
  <!-- overlayScrollbars -->
@@ -30,6 +28,7 @@
  <script src="{{ asset('frontend/plugins/chart.js/Chart.min.js') }}"></script>
 
  <script src="{{ asset('frontend/plugins/toastr/toastr.min.js') }}"></script>
+ <script src="{{ asset('frontend/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
  <!-- <script src="{{ asset('dist/js/auth/view.js?q=') . time() }}"></script> -->
  <script>
      $(document).ready(function() {

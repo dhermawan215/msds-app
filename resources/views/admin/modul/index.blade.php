@@ -29,11 +29,14 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-2">
-                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-addModule">
+                            <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
+                                <i class="fa fa-retweet" aria-hidden="true"></i> Refresh Data
+                            </button>
+                            <button type="button" id="btnAddModule" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal-addModule">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Add Module
                             </button>
                         </div>
-                        <table class="table table-bordered" id="tblModule">
+                        <table class="table table-bordered" id="tblModule" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -90,6 +93,10 @@
                         <label for="icon">Icon</label>
                         <input type="text" name="icon" id="icon" class="form-control" placeholder="icon">
                     </div>
+                    <div class="form-group row">
+                        <label for="order_menu">Order Menu Position</label>
+                        <input type="text" name="order_menu" id="order_menu" class="form-control" placeholder="order menu">
+                    </div>
 
                     <div class="form-group row mt-1">
                         <button type="submit" class="btn btn-primary">Add Module</button>
@@ -107,5 +114,8 @@
 <!-- /.content -->
 @endsection
 @push('custom_js')
+<script>
+    ModuleFn = @json($moduleFn)
+</script>
 <script src="{{ asset('dist/js/module-mg/view.min.js?q=') . time() }}"></script>
 @endpush

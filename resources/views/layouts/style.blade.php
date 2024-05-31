@@ -13,3 +13,4 @@
 <link rel="stylesheet" href="{{ asset('frontend/css/adminlte.min.css') }}">
 
 <link rel="stylesheet" href="{{ asset('frontend/plugins/toastr/toastr.css') }}">
+<link rel="stylesheet" href="{{ asset('frontend/plugins/sweetalert2/sweetalert2.min.css') }}">

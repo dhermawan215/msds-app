@@ -7,6 +7,7 @@
     <meta name="csrf_token" content="{{ csrf_token() }}">
     <title>MSDS APP</title>
     @include('layouts.style')
+    @yield('custom_css')
 </head>
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">

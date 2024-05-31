@@ -11,5 +11,5 @@ class SysModulMenu extends Model
 
     protected $table = 'sys_modul_menus';
 
-    protected $fillable = ['name', 'route_name', 'link_path', 'description', 'icon', 'created_by'];
+    protected $fillable = ['name', 'route_name', 'link_path', 'description', 'icon', 'order_menu', 'created_by'];
 }
