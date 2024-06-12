@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/environmental-hazard/detail/{id}', [EnvironmentalHazardController::class, 'detail'])->name('environmental_hazard.detail');
     // master data general precautionary statemnet
     Route::get('/general-precautionary', [GeneralPresController::class, 'index'])->name('general_precautionary');
+    Route::post('/general-precautionary/list', [GeneralPresController::class, 'listData']);
     // super admin route
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
