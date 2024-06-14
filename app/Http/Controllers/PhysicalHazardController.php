@@ -30,10 +30,10 @@ class PhysicalHazardController extends Controller
          * check permission this module(security update)
          */
         $modulePermission = $this->modulePermission();
-        $moduleFn = \json_decode(isset($modulePermission->fungsi), true);
         if (!isset($modulePermission->is_akses)) {
             return \view('forbiden-403');
         }
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
         return \view('pages.physical-hazard.index', ['moduleFn' => $moduleFn]);
     }
 

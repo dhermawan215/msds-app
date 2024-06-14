@@ -33,8 +33,9 @@
                                     <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
                                         <i class="fa fa-retweet" aria-hidden="true"></i> Refresh
                                     </button>
-                                    <a href="#" id="add-data" class="btn btn-primary btn-sm disabled"><i
-                                            class="fa fa-plus" aria-hidden="true"></i>
+                                    <a href="{{ route('general_precautionary.add') }}" id="add-data"
+                                        class="btn btn-primary btn-sm disabled"><i class="fa fa-plus"
+                                            aria-hidden="true"></i>
                                         Add</a>
                                     <button class="btn btn-sm btn-danger btn-delete" id="btn-delete" disabled><i
                                             class="fa fa-trash" aria-hidden="true"></i> Delete</button>

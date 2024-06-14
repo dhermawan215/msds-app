@@ -74,6 +74,12 @@ Route::middleware('auth')->group(function () {
     // master data general precautionary statemnet
     Route::get('/general-precautionary', [GeneralPresController::class, 'index'])->name('general_precautionary');
     Route::post('/general-precautionary/list', [GeneralPresController::class, 'listData']);
+    Route::get('/general-precautionary/add', [GeneralPresController::class, 'add'])->name('general_precautionary.add');
+    Route::post('/general-precautionary/save', [GeneralPresController::class, 'store']);
+    Route::get('/general-precautionary/detail/{id}', [GeneralPresController::class, 'detail'])->name('general_precautionary.detail');
+    Route::get('/general-precautionary/edit/{id}', [GeneralPresController::class, 'edit'])->name('general_precautionary.edit');
+    Route::patch('/general-precautionary/update/{id}', [GeneralPresController::class, 'update']);
+    Route::post('/general-precautionary/delete', [GeneralPresController::class, 'delete']);
     // super admin route
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');

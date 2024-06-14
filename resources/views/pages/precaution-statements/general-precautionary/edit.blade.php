@@ -9,7 +9,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item">Environmental Hazard</li>
+                        <li class="breadcrumb-item">General Precautionary Statement</li>
                         <li class="breadcrumb-item active">Edit Data</li>
                     </ol>
                 </div><!-- /.col -->
@@ -26,10 +26,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-titile">Edit Environmental Hazard</h3>
+                            <h3 class="card-titile">Edit General Precautionary Statement</h3>
                         </div>
                         <div class="card-body">
-                            <form action="javascript:;" method="post" id="form-edit-environmental-hazard">
+                            <form action="javascript:;" method="post" id="form-edit-genpres">
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="formValue" id="form-value"
@@ -79,5 +79,5 @@
     </section>
 @endsection
 @push('custom_js')
-    <script src="{{ asset('dist/js/environmental/edit.min.js?q=') . time() }}"></script>
+    <script src="{{ asset('dist/js/precautionary/general-precautionary/edit.min.js?q=') . time() }}"></script>
 @endpush

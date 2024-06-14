@@ -9,7 +9,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item">Environmental Hazard</li>
+                        <li class="breadcrumb-item">General Precautionary Statement</li>
                         <li class="breadcrumb-item active">Detail Data</li>
                     </ol>
                 </div><!-- /.col -->
@@ -26,7 +26,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-titile">Detail Environmental Hazard: {{ $value->code }}</h3>
+                            <h3 class="card-titile">General Precautionary Statement: {{ $value->code }}</h3>
                         </div>
                         <div class="card-body">
 
