@@ -6,20 +6,20 @@ use App\Helper\SysMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Models\MasterGeneralPrecautionaryStatements;
+use App\Models\MasterPreventionPrecautionaryStatements;
 
-class GeneralPresController extends Controller
+class PreventionPresController extends Controller
 {
     /**
-     * controller for module general precautionary statement
+     * controller for module prevention precautionary statement
      */
-    protected $sysModuleName = 'general_precautionary';
+    protected $sysModuleName = 'prevention_precautionary';
 
     private static $url;
 
     public function __construct()
     {
-        static::$url = \route('general_precautionary');
+        static::$url = \route('prevention_precautionary');
     }
 
     private function modulePermission()
@@ -39,7 +39,7 @@ class GeneralPresController extends Controller
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
-        return \view('pages.precaution-statements.general-precautionary.index', ['moduleFn' => $moduleFn]);
+        return \view('pages.precaution-statements.prevention.index', ['moduleFn' => $moduleFn]);
     }
     /**
      * @method for datatable environmental hazard
@@ -55,7 +55,7 @@ class GeneralPresController extends Controller
         $limit = $request['length'] ? $request['length'] : 15;
         $globalSearch = $request['search']['value'];
 
-        $query = MasterGeneralPrecautionaryStatements::select('*');
+        $query = MasterPreventionPrecautionaryStatements::select('*');
 
         if ($globalSearch) {
             $query->where('code', 'like', '%' . $globalSearch . '%')
@@ -86,13 +86,13 @@ class GeneralPresController extends Controller
             $data['action'] = '';
             if (in_array('edit', $moduleFn) && in_array('detail', $moduleFn)) {
                 $data['action'] = '<div class="d-flex">
-                <a href="' . \route('general_precautionary.edit', \base64_encode($value->id)) . '" class="btn btn-primary btn-sm mr-2"><i class="fas fa-edit " aria-hidden="true"></i>Edit</a>
-                <a href="' . \route('general_precautionary.detail', \base64_encode($value->id)) . '" class="btn btn-success btn-sm mr-2"><i class="fa fa-eye" aria-hidden="true"></i>Detail</a>
+                <a href="' . \route('prevention_precautionary.edit', \base64_encode($value->id)) . '" class="btn btn-primary btn-sm mr-2"><i class="fas fa-edit " aria-hidden="true"></i>Edit</a>
+                <a href="' . \route('prevention_precautionary.detail', \base64_encode($value->id)) . '" class="btn btn-success btn-sm mr-2"><i class="fa fa-eye" aria-hidden="true"></i>Detail</a>
                 </div>';
             } else if (in_array('detail', $moduleFn)) {
-                $data['action'] = '<a href="' . \route('general_precautionary.detail', \base64_encode($value->id)) . '" class="btn btn-success btn-sm"><i class="fa fa-eye" aria-hidden="true"></i>Detail</a>';
+                $data['action'] = '<a href="' . \route('prevention_precautionary.detail', \base64_encode($value->id)) . '" class="btn btn-success btn-sm"><i class="fa fa-eye" aria-hidden="true"></i>Detail</a>';
             } else if (in_array('edit', $moduleFn)) {
-                $data['action'] = '<a href="' . \route('general_precautionary.edit', \base64_encode($value->id)) . '" class="btn btn-primary btn-sm"><i class="fas fa-edit " aria-hidden="true"></i>Edit</a>';
+                $data['action'] = '<a href="' . \route('prevention_precautionary.edit', \base64_encode($value->id)) . '" class="btn btn-primary btn-sm"><i class="fas fa-edit " aria-hidden="true"></i>Edit</a>';
             }
 
             $arr[] = $data;
@@ -117,7 +117,7 @@ class GeneralPresController extends Controller
         if (!$modulePermission->is_akses || !in_array('add', $moduleFn)) {
             return \view('forbiden-403');
         }
-        return \view('pages.precaution-statements.general-precautionary.add', ['url' => static::$url]);
+        return \view('pages.precaution-statements.prevention.add', ['url' => static::$url]);
     }
     /**
      * handling for request save data from view 
@@ -136,7 +136,7 @@ class GeneralPresController extends Controller
         }
         $user = Auth::user();
 
-        $created = MasterGeneralPrecautionaryStatements::create([
+        $created = MasterPreventionPrecautionaryStatements::create([
             'code' => $request->code,
             'description' => $request->description,
             'language' => $request->language,
@@ -158,8 +158,8 @@ class GeneralPresController extends Controller
             return \view('forbiden-403');
         }
 
-        $data = MasterGeneralPrecautionaryStatements::select('code', 'description', 'language')->find(\base64_decode($id));
-        return \view('pages.precaution-statements.general-precautionary.detail', ['url' => static::$url, 'value' => $data]);
+        $data = MasterPreventionPrecautionaryStatements::select('code', 'description', 'language')->find(\base64_decode($id));
+        return \view('pages.precaution-statements.prevention.detail', ['url' => static::$url, 'value' => $data]);
     }
     /**
      * this method handle request edit data
@@ -173,8 +173,8 @@ class GeneralPresController extends Controller
         if (!$modulePermission->is_akses || !in_array('edit', $moduleFn)) {
             return \view('forbiden-403');
         }
-        $data = MasterGeneralPrecautionaryStatements::find(\base64_decode($id));
-        return \view('pages.precaution-statements.general-precautionary.edit', ['url' => static::$url, 'value' => $data]);
+        $data = MasterPreventionPrecautionaryStatements::find(\base64_decode($id));
+        return \view('pages.precaution-statements.prevention.edit', ['url' => static::$url, 'value' => $data]);
     }
     /**
      * this method handle request update data
@@ -183,7 +183,7 @@ class GeneralPresController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $dataDb = MasterGeneralPrecautionaryStatements::find(\base64_decode($id));
+        $dataDb = MasterPreventionPrecautionaryStatements::find(\base64_decode($id));
 
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:50',
@@ -210,7 +210,7 @@ class GeneralPresController extends Controller
     public function delete(Request $request)
     {
         $ids = $request->dValue;
-        $environmentalData = MasterGeneralPrecautionaryStatements::whereIn('id', $ids);
+        $environmentalData = MasterPreventionPrecautionaryStatements::whereIn('id', $ids);
         $environmentalData->delete();
 
         return \response()->json(['success' => true, 'message' => 'Data Deleted'], 200);

@@ -72,7 +72,10 @@ class EnvironmentalHazardController extends Controller
         $arr = [];
 
         foreach ($resData as $key => $value) {
-            $data['cbox'] = '<input type="checkbox" class="data-menu-cbox" value="' . $value->id . '">';
+            $data['cbox'] = '';
+            if (in_array('delete', $moduleFn)) {
+                $data['cbox'] = '<input type="checkbox" class="data-menu-cbox" value="' . $value->id . '">';
+            }
             $data['rnum'] = $i;
             $data['code'] = $value->code;
             $data['desc'] = $value->description;
