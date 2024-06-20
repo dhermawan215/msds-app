@@ -9,7 +9,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Prevention Precautionary Statement</li>
+                        <li class="breadcrumb-item active">Response Precautionary Statement</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-titile">Prevention Precautionary Statement</h3>
+                            <h3 class="card-titile">Response Precautionary Statement</h3>
                         </div>
                         <div class="card-body">
                             <div class="m-1">
@@ -33,7 +33,7 @@
                                     <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
                                         <i class="fa fa-retweet" aria-hidden="true"></i> Refresh
                                     </button>
-                                    <a href="{{ route('prevention_precautionary.add') }}" id="add-data"
+                                    <a href="{{ route('response_precautionary.add') }}" id="add-data"
                                         class="btn btn-primary btn-sm disabled"><i class="fa fa-plus"
                                             aria-hidden="true"></i>
                                         Add</a>
@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="m-1">
-                                <table class="table table-bordered" id="tbl-prevention-precautionary" style="width: 100%;">
+                                <table class="table table-bordered" id="tbl-response-precautionary" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th style="width: 20px;">#</th>
@@ -78,5 +78,5 @@
     <script>
         ModuleFn = @json($moduleFn)
     </script>
-    <script src="{{ asset('dist/js/precautionary/prevention/view.min.js?q=') . time() }}"></script>
+    <script src="{{ asset('dist/js/precautionary/response/view.min.js?q=') . time() }}"></script>
 @endpush

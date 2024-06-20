@@ -10,6 +10,7 @@ use App\Http\Controllers\GeneralPresController;
 use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\PreventionPresController;
+use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/prevention-precautionary/edit/{id}', [PreventionPresController::class, 'edit'])->name('prevention_precautionary.edit');
     Route::patch('/prevention-precautionary/update/{id}', [PreventionPresController::class, 'update']);
     Route::post('/prevention-precautionary/delete', [PreventionPresController::class, 'delete']);
+    // master data response precautionary statemnet
+    Route::get('/response-precautionary', [ResponsePresController::class, 'index'])->name('response_precautionary');
+    Route::post('/response-precautionary/list', [ResponsePresController::class, 'listData']);
+    Route::get('/response-precautionary/add', [ResponsePresController::class, 'add'])->name('response_precautionary.add');
+    Route::post('/response-precautionary/save', [ResponsePresController::class, 'store']);
+    Route::get('/response-precautionary/detail/{id}', [ResponsePresController::class, 'detail'])->name('response_precautionary.detail');
+    Route::get('/response-precautionary/edit/{id}', [ResponsePresController::class, 'edit'])->name('response_precautionary.edit');
+    Route::patch('/response-precautionary/update/{id}', [ResponsePresController::class, 'update']);
+    Route::post('/response-precautionary/delete', [ResponsePresController::class, 'delete']);
     // super admin route
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
