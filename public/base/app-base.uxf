@@ -1,0 +1,130 @@
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><element><id>UMLClass</id><coordinates><x>207</x><y>0</y><w>189</w><h>99</h></coordinates><panel_attributes>Products
+--
+- id: int
+- product_name: varchar
+- product_code: varchar
+- product_application: varchar
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>0</y><w>189</w><h>99</h></coordinates><panel_attributes>Raw Materials
+--
+- id: int
+- part_number: varchar
+- name: varchar
+- description: varchar
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>405</x><y>0</y><w>189</w><h>81</h></coordinates><panel_attributes>Sample Sources
+--
+- id: int
+- name: varchar
+- address: text
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>0</y><w>189</w><h>117</h></coordinates><panel_attributes>Companys
+--
+- id: int
+- name: varchar
+- telephone: varchar
+- address: text
+- logo: text
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>135</y><w>189</w><h>108</h></coordinates><panel_attributes>Customers
+--
+- id: int
+- customer_name: varchar
+- customer_code: varchar
+- customer_register_at: date
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>261</y><w>189</w><h>108</h></coordinates><panel_attributes>Customer Details
+--
+- id: int
+- customer_id: int
+- customer_pic: varchar
+- customer_phone: varchar
+- customer_address: text
+- timestamp: timestamp
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>117</y><w>252</w><h>414</h></coordinates><panel_attributes>Sampel Requests
+--
+- id: int
+- sample_ID: varchar
+- subject: varchar
+- required_date: date
+- delivery_date: date
+- delivery_by: int
+- sample_source_id: int
+- requestor: int
+- sample_status: enum
+- sales_manager: int
+- is_sales_manager: bool (true, false)
+- sales_manager_status: tinyint
+- sales_manager_note: text
+- sales_manager_approve_at: timestamp
+- rnd: int
+- rnd_status: tinyint
+- rnd_note: text
+- rnd_approve_at: timestamp
+- wh: int
+- wh_status: tinyint
+- wh_note: text
+- wh_approve_at: timestamp
+- cs: int
+- cs_status: tinyint
+- cs_note: text
+- cs_approve_at: timestamp
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>387</y><w>252</w><h>144</h></coordinates><panel_attributes>Sampel Request Customers
+--
+- id: int
+- sample_id: int
+- customer_id: int
+- customer_pic: varchar
+- delivery_address: text
+- customer_note: text
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>549</y><w>252</w><h>135</h></coordinates><panel_attributes>Sampel Request Products
+--
+- id: int
+- sample_id: int
+- product_id: int
+- qty: varchar
+- label_name: varchar
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>558</y><w>252</w><h>144</h></coordinates><panel_attributes>Sampel Request Materials
+--
+- id: int
+- material_id: int
+- inventory_code: varchar
+- batch_number: varchar
+- qty: int
+- unit: int 
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>9</x><y>126</y><w>162</w><h>90</h></coordinates><panel_attributes>Units
+--
+- id: int
+- unit_name: varchar
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>9</x><y>234</y><w>252</w><h>144</h></coordinates><panel_attributes>Sampel Request Details
+--
+- id: int
+- sample_id: int
+- batch_number: varchar
+- netto: varchar
+- ghs: text [array]
+- timestamp: timestamp
+--
+** all field is nullable
+</panel_attributes><additional_attributes></additional_attributes></element></diagram>

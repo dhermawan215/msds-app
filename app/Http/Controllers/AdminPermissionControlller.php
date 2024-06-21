@@ -24,7 +24,7 @@ class AdminPermissionControlller extends Controller
          * check permission this module(security update)
          */
         $modulePermission = $this->modulePermission();
-        if (!isset($modulePermission->is_akses)) {
+        if (!isset($modulePermission->is_akses) || $modulePermission->is_akses == 0) {
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);

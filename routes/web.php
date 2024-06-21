@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminModul;
 use App\Http\Controllers\AdminPermissionControlller;
+use App\Http\Controllers\AdminUserGroupController;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\DashboardController;
@@ -100,7 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/response-precautionary/edit/{id}', [ResponsePresController::class, 'edit'])->name('response_precautionary.edit');
     Route::patch('/response-precautionary/update/{id}', [ResponsePresController::class, 'update']);
     Route::post('/response-precautionary/delete', [ResponsePresController::class, 'delete']);
-    // super admin route
+    // super admin route start
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');
     Route::post('/users-management', [AdminUserManagement::class, 'tableData']);
@@ -126,4 +127,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/permission-management/edit/{id}', [AdminPermissionControlller::class, 'edit'])->name('admin_permission.edit');
     Route::post('/permission-management/permission', [AdminPermissionControlller::class, 'dataEdit']);
     Route::post('/permission-management/permission/update', [AdminPermissionControlller::class, 'update']);
+    // super admin route end
 });
+
+// Route RND START
+Route::prefix('rnd')->middleware('auth')->group(function () {
+});
+// Route RND END
+// Route super admin START
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/user-group', [AdminUserGroupController::class, 'index'])->name('user_group');
+    Route::post('/user-group/list', [AdminUserGroupController::class, 'listData']);
+    Route::post('/user-group/save', [AdminUserGroupController::class, 'store']);
+    Route::get('/user-group/edit/{id}', [AdminUserGroupController::class, 'edit'])->name('user_group.edit');
+    Route::patch('/user-group/update/{id}', [AdminUserGroupController::class, 'update']);
+    Route::post('/user-group/delete', [AdminUserGroupController::class, 'delete']);
+});
+// Route super admin END
