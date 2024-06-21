@@ -7,9 +7,9 @@ var Index = (function () {
         table = $("#tbl-prevention-precautionary").DataTable({
             responsive: true,
             autoWidth: true,
-            pageLength: 15,
+            // pageLength: 15,
             dom: "Bfrtip",
-            buttons: ["copy", "csv", "excel", "pdf", "print"],
+            buttons: ["pageLength", "csv", "excel", "pdf", "print"],
             searching: true,
             paging: true,
             lengthMenu: [
