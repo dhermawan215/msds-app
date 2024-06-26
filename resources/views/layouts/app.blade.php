@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf_token" content="{{ csrf_token() }}">
-    <title>MSDS APP</title>
+    <title>R&D Apps</title>
     @include('layouts.style')
     @yield('custom_css')
 </head>

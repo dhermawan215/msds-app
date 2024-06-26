@@ -106,10 +106,13 @@ class AdminPermissionControlller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'groupValue' => 'required',
             'is_akses' => 'required',
             'fungsi' => 'required',
         ], [
-            'fungsi.required' => 'field function is required'
+            'fungsi.required' => 'field function is required',
+            'groupValue.required' => 'field user group is required',
+            'is_akses.required' => 'field access permission is required'
         ]);
 
         if ($validator->fails()) {
