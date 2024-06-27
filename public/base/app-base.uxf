@@ -33,6 +33,7 @@
 </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>612</x><y>135</y><w>189</w><h>108</h></coordinates><panel_attributes>Customers
 --
 - id: int
+-user_id: int
 - customer_name: varchar
 - customer_code: varchar
 - customer_register_at: date
@@ -47,7 +48,7 @@
 - customer_address: text
 - timestamp: timestamp
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>117</y><w>252</w><h>414</h></coordinates><panel_attributes>Sampel Requests
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>117</y><w>252</w><h>360</h></coordinates><panel_attributes>Sampel Requests
 --
 - id: int
 - sample_ID: varchar
@@ -67,10 +68,6 @@
 - rnd_status: tinyint
 - rnd_note: text
 - rnd_approve_at: timestamp
-- wh: int
-- wh_status: tinyint
-- wh_note: text
-- wh_approve_at: timestamp
 - cs: int
 - cs_status: tinyint
 - cs_note: text
@@ -99,7 +96,7 @@
 - timestamp: timestamp
 --
 ** all field is nullable
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>558</y><w>252</w><h>144</h></coordinates><panel_attributes>Sampel Request Materials
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>315</x><y>504</y><w>252</w><h>153</h></coordinates><panel_attributes>Sampel Request Materials
 --
 - id: int
 - material_id: int

@@ -24,7 +24,7 @@
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <h4><b>Login Panel-MSDS APP</b></h4>
+                <h4><b>Login Panel-R&D APP</b></h4>
             </div>
             <div class="card-body">
                 <form action="javascript:;" method="post" id="loginForm">
