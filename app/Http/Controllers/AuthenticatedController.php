@@ -34,10 +34,14 @@ class AuthenticatedController extends Controller
             return \response()->json($validator->errors(), 403);
         }
 
+        $userData = User::select('id', 'email', 'is_active')->where('email', $request->email)->first();
+        if ($userData->is_active == 0) {
+            $data['status'] = 'false';
+            $userLogIfFails = self::logUserAuth($data);
+            return \response()->json(['data' => 'Please check your email, password or contact administrator!'], 401);
+        }
+
         if (Auth::attempt($request->only(['email', 'password']))) {
-            if (Auth::user()->is_active == '0') {
-                return \response()->json(['data' => 'Please check your email, password or contact administrator!'], 401);
-            }
 
             $request->session()->regenerate();
             $url = \url('/');

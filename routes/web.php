@@ -12,6 +12,7 @@ use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
@@ -142,5 +143,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/user-group/edit/{id}', [AdminUserGroupController::class, 'edit'])->name('user_group.edit');
     Route::patch('/user-group/update/{id}', [AdminUserGroupController::class, 'update']);
     Route::post('/user-group/delete', [AdminUserGroupController::class, 'delete']);
+    // Route Admin Unit
+    Route::get('/unit', [UnitController::class, 'index'])->name('unit');
+    Route::post('/unit/list', [UnitController::class, 'listData']);
+    Route::post('/unit/save', [UnitController::class, 'store']);
+    Route::post('/unit/update', [UnitController::class, 'update']);
+    Route::post('/unit/delete', [UnitController::class, 'destroy']);
 });
 // Route super admin END

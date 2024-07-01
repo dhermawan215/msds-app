@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('unit_name')->nullable();
             $table->string('created_by')->nullable();
-            $table->timestamp('created_at')->nullable();
+            $table->timestamps();
         });
     }
 

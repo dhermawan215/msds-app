@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->nullable()->unsigned();
-            $table->string('customer_name')->nullable();
             $table->string('customer_code')->nullable();
-            $table->date('customer_registred_at')->nullable();
+            $table->string('customer_name')->nullable();
+            $table->bigInteger('user_id')->nullable()->unsigned();
+            $table->date('customer_registered_at')->nullable();
             $table->timestamps();
         });
     }

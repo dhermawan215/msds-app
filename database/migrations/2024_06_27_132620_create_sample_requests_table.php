@@ -17,11 +17,12 @@ return new class extends Migration
             $table->id();
             $table->string('sample_ID')->unique();
             $table->string('subject')->nullable();
+            $table->bigInteger('requestor')->nullable();
             $table->date('required_date')->nullable();
             $table->date('delivery_date')->nullable();
-            $table->integer('delivery_by');
+            $table->string('delivery_by');
+            $table->text('requestor_note')->nullable();
             $table->bigInteger('sample_source_id')->nullable();
-            $table->bigInteger('requestor')->nullable();
             $table->integer('sample_status')->nullable();
             $table->bigInteger('sales_manager')->nullable();
             $table->boolean('is_sales_manager')->default(false);

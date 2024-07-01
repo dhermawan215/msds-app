@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->text('logo')->nullable();
             $table->string('created_by')->nullable();
-            $table->timestamp('created_at')->nullable();
+            $table->timestamps();
         });
     }
 
