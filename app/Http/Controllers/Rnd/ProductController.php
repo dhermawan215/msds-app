@@ -1,24 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Rnd;
 
-use App\Models\Unit;
 use App\Helper\SysMenu;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class UnitController extends Controller
+class ProductController extends Controller
 {
-    //controller admin unit
-    protected $sysModuleName = 'unit';
+    //controller product management
+    protected $sysModuleName = 'product';
     private static $url;
 
     public function __construct()
     {
-        static::$url = \route('unit');
+        static::$url = \route('product');
     }
-
+    /**
+     * initialize permission
+     */
     private function modulePermission()
     {
         return SysMenu::menuSetingPermission($this->sysModuleName);
@@ -33,10 +36,10 @@ class UnitController extends Controller
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
-        return \view('admin.unit.index', ['moduleFn' => $moduleFn]);
+        return \view('rnd.product.index', ['moduleFn' => $moduleFn]);
     }
     /**
-     * @method for datatable environmental hazard
+     * @method for datatable product
      * @return json
      */
     public function listData(Request $request)
@@ -49,10 +52,13 @@ class UnitController extends Controller
         $limit = $request['length'] ? $request['length'] : 15;
         $globalSearch = $request['search']['value'];
 
-        $query = Unit::select('*');
+        $query = Product::select('*');
 
         if ($globalSearch) {
-            $query->where('unit_name', 'like', '%' . $globalSearch . '%');
+            $query->where('product_code', 'like', '%' . $globalSearch . '%')
+                ->orWhere('product_name', 'like', '%' . $globalSearch . '%')
+                ->orWhere('product_function', 'like', '%' . $globalSearch . '%')
+                ->orWhere('product_application', 'like', '%' . $globalSearch . '%');
         }
 
         $recordsFiltered = $query->count();
@@ -73,11 +79,15 @@ class UnitController extends Controller
                 $data['cbox'] = '<input type="checkbox" class="data-menu-cbox" value="' . $value->id . '">';
             }
             $data['rnum'] = $i;
-            $data['name'] = $value->unit_name;
+            $data['code'] = $value->product_code;
+            $data['name'] = $value->product_name;
+            $data['function'] = $value->product_function;
+            $data['application'] = $value->product_application;
             $data['action'] = '';
             if (in_array('edit', $moduleFn)) {
-                $data['action'] = '<button id="#btn-edit" class="btn btn-sm btn-primary btn-edit" data-edit="' . base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-unit"><i class="fas fa-edit " aria-hidden="true"></i>Edit</button>';
+                $data['action'] = '<button id="#btn-edit" class="btn btn-sm btn-primary btn-edit" data-edit="' . base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-product" titlr="edit"><i class="fas fa-edit " aria-hidden="true"></i></button>';
             }
+
             $arr[] = $data;
             $i++;
         }
@@ -90,43 +100,57 @@ class UnitController extends Controller
         ]);
     }
     /**
-     * handle for request save data
+     * handle request save data product
      * @return json
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'unit_name' => 'required|string|max:50',
+            'product_code' => 'required|max:100',
+            'product_function' => 'required|max:255',
+            'product_application' => 'required|max:255'
         ]);
 
         if ($validator->fails()) {
-            return \response()->json($validator->errors(), 403);
+            return response()->json($validator->errors(), 403);
         }
         $user = Auth::user();
-        $createdUnit = Unit::create([
-            'unit_name' => $request->unit_name,
+        $createdProduct = Product::create([
+            'product_code' => $request->product_code,
+            'product_name' => $request->product_name,
+            'product_function' => $request->product_function,
+            'product_application' => $request->product_application,
             'created_by' => $user->name,
         ]);
 
-        return \response()->json(['success' => true, 'message' => 'Data saved!'], 200);
+        return response()->json(['success' => true, 'message' => 'Data saved!'], 200);
     }
-
+    /**
+     * handle request update data product
+     * @return json
+     */
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'unit_name' => 'required|string|max:50',
+            'product_code' => 'required|max:100',
+            'product_function' => 'required|max:255',
+            'product_application' => 'required|max:255'
         ]);
 
         if ($validator->fails()) {
-            return \response()->json($validator->errors(), 403);
+            return response()->json($validator->errors(), 403);
         }
-
-        $unit = Unit::find(base64_decode($request->formValue));
-        $unit->update([
-            'unit_name' => $request->unit_name,
+        $user = Auth::user();
+        $updateProduct = Product::find(base64_decode($request->formValue));
+        $updateProduct->update([
+            'product_code' => $request->product_code,
+            'product_name' => $request->product_name,
+            'product_function' => $request->product_function,
+            'product_application' => $request->product_application,
+            'created_by' => $user->name,
         ]);
 
-        return \response()->json(['success' => true, 'message' => 'Update success!'], 200);
+        return response()->json(['success' => true, 'message' => 'Update success!'], 200);
     }
     /**
      * handle for request delete data
@@ -136,7 +160,7 @@ class UnitController extends Controller
     public function destroy(Request $request)
     {
         $ids = $request->dValue;
-        $environmentalData = Unit::whereIn('id', $ids);
+        $environmentalData = Product::whereIn('id', $ids);
         $environmentalData->delete();
         return \response()->json(['success' => true, 'message' => 'Data Deleted'], 200);
     }

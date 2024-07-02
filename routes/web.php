@@ -12,6 +12,7 @@ use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
@@ -133,6 +134,11 @@ Route::middleware('auth')->group(function () {
 
 // Route RND START
 Route::prefix('rnd')->middleware('auth')->group(function () {
+    Route::get('/product', [ProductController::class, 'index'])->name('product');
+    Route::post('/product/list', [ProductController::class, 'listData']);
+    Route::post('/product/save', [ProductController::class, 'store']);
+    Route::post('/product/update', [ProductController::class, 'update']);
+    Route::post('/product/delete', [ProductController::class, 'destroy']);
 });
 // Route RND END
 // Route super admin START

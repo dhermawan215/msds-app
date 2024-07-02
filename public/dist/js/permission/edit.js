@@ -31,6 +31,7 @@ var Index = (function () {
                     $(".fungsi-permission").val(responseData.fungsi);
                     $(".fungsi-permission").tagsinput();
                     $("#btn-update").removeAttr("disabled");
+                    handleIsAccess();
                 },
                 error: function (response) {
                     Swal.fire({
@@ -98,7 +99,7 @@ var Index = (function () {
         init: function () {
             handleUpdateSa();
             handlePermissionData();
-            handleIsAccess();
+            // handleIsAccess();
         },
     };
 })();
