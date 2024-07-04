@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserGroupController;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalHazardController;
 use App\Http\Controllers\GeneralPresController;
@@ -155,5 +156,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::post('/unit/save', [UnitController::class, 'store']);
     Route::post('/unit/update', [UnitController::class, 'update']);
     Route::post('/unit/delete', [UnitController::class, 'destroy']);
+    // Route admin companies
+    Route::controller(CompanyController::class)->group(function () {
+        Route::get('/company', 'index')->name('company');
+        Route::post('/company/save', 'store');
+        Route::post('/company/list', 'listData');
+        Route::post('/company/show', 'show');
+        Route::post('/company/change-logo', 'changeLogo');
+        Route::post('/company/update', 'update');
+        Route::post('/company/update-logo', 'updateLogo');
+        Route::post('/company/delete', 'destroy');
+    });
 });
 // Route super admin END
