@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\AdminModul;
 use App\Http\Controllers\AdminPermissionControlller;
 use App\Http\Controllers\AdminUserGroupController;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalHazardController;
 use App\Http\Controllers\GeneralPresController;
@@ -131,6 +133,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/permission-management/permission', [AdminPermissionControlller::class, 'dataEdit']);
     Route::post('/permission-management/permission/update', [AdminPermissionControlller::class, 'update']);
     // super admin route end
+    // sample request route start
+    //# sales customer route start
+    Route::controller(CustomerController::class)->group(function () {
+        Route::get('/customer', 'index')->name('customer');
+        Route::post('/customer/list', 'listData');
+        Route::post('/customer/save', 'store');
+        Route::post('/customer/update', 'update');
+        Route::post('/customer/delete', 'destroy');
+        Route::get('/customer/customer-detail/{id}', 'customerDetail')->name('customer.detail');
+        Route::post('/customer/customer-detail/list', 'listDataCustomerDetail');
+        Route::post('/customer/customer-detail/save', 'storeCustomerDetail');
+        Route::post('/customer/customer-detail/update', 'updateCustomerDetail');
+        Route::post('/customer/customer-detail/delete', 'destroyCustomerDetail');
+    });
+    //# sales customer route end
+    //sample request end
 });
 
 // Route RND START
@@ -166,6 +184,21 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('/company/update', 'update');
         Route::post('/company/update-logo', 'updateLogo');
         Route::post('/company/delete', 'destroy');
+    });
+    // Route admin customer
+    Route::controller(AdminCustomerController::class)->group(function () {
+        Route::get('/customer', 'index')->name('admin_customer');
+        Route::post('/customer/list', 'listData');
+        Route::post('/customer/save', 'store');
+        Route::get('/customer/edit/{id}', 'edit')->name('admin_customer.edit');
+        Route::post('/customer/update', 'update');
+        Route::post('/customer/delete', 'destroy');
+        Route::post('/customer/user', 'userCustomer');
+        Route::get('/customer/customer-detail/{id}', 'customerDetail')->name('admin_customer.detail');
+        Route::post('/customer/customer-detail/list', 'listDataCustomerDetail');
+        Route::post('/customer/customer-detail/save', 'storeCustomerDetail');
+        Route::post('/customer/customer-detail/update', 'updateCustomerDetail');
+        Route::post('/customer/customer-detail/delete', 'destroyCustomerDetail');
     });
 });
 // Route super admin END
