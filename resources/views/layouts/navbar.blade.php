@@ -11,11 +11,7 @@
         <!-- Notifications Dropdown Menu -->
         <li class="nav-item">
             <a class="nav-link" href="#" role="button">
-                <input type="checkbox" id="theme-change">Theme
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
+                <input type="checkbox" id="theme-change">
                 <p id="name-theme"> </p>
             </a>
         </li>

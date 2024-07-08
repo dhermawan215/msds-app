@@ -55,6 +55,33 @@
                  });
              }
          });
+         // Check the theme from localStorage
+         if (localStorage.getItem('theme') === 'light') {
+             $('#nav-theme').removeClass('navbar-dark');
+             $('#sidebar-theme').removeClass('sidebar-dark-primary');
+             $('#body-theme').removeClass('dark-mode');
+             //change to light
+             $('#nav-theme').addClass('navbar-light');
+             $('#sidebar-theme').addClass('sidebar-light-primary');
+             $('#body-theme').addClass('bg-light');
+             $('#name-theme').removeClass('fa fa-star text-secondary');
+             $('#name-theme').addClass('fa fa-star text-primary');
+             $('#name-theme').html('light');
+             $('#theme-change').prop('checked', true);
+         } else {
+             //add dark
+             $('#nav-theme').addClass('navbar-dark');
+             $('#sidebar-theme').addClass('sidebar-dark-primary');
+             $('#body-theme').addClass('dark-mode');
+             //remove to light
+             $('#nav-theme').removeClass('navbar-light');
+             $('#sidebar-theme').removeClass('sidebar-light-primary');
+             $('#body-theme').removeClass('bg-light');
+             $('#name-theme').removeClass('fa fa-star text-primary');
+             $('#name-theme').addClass('fa fa-star text-secondary');
+             $('#name-theme').html('dark');
+             $('#theme-change').prop('checked', false);
+         }
          //  $('#name-theme').addClass('fa fa-star text-primary');
          $("#theme-change").on('click', function() {
              if ($("#theme-change").is(":checked")) {
@@ -68,6 +95,8 @@
                  $('#body-theme').addClass('bg-light');
                  $('#name-theme').removeClass('fa fa-star text-secondary');
                  $('#name-theme').addClass('fa fa-star text-primary');
+                 $('#name-theme').html('light');
+                 localStorage.setItem('theme', 'light');
              } else {
                  //add dark
                  $('#nav-theme').addClass('navbar-dark');
@@ -79,6 +108,8 @@
                  $('#body-theme').removeClass('bg-light');
                  $('#name-theme').removeClass('fa fa-star text-primary');
                  $('#name-theme').addClass('fa fa-star text-secondary');
+                 $('#name-theme').html('dark');
+                 localStorage.setItem('theme', 'dark');
              }
          });
      });
