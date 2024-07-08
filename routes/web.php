@@ -16,6 +16,7 @@ use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\ProductController;
+use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
@@ -158,6 +159,14 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
     Route::post('/product/save', [ProductController::class, 'store']);
     Route::post('/product/update', [ProductController::class, 'update']);
     Route::post('/product/delete', [ProductController::class, 'destroy']);
+    //Route sample source
+    Route::controller(SampleSourceController::class)->group(function () {
+        Route::get('/sample-source', 'index')->name('sample_source');
+        Route::post('/sample-source/list', 'listData');
+        Route::post('/sample-source/save', 'store');
+        Route::post('/sample-source/update', 'update');
+        Route::post('/sample-source/delete', 'destroy');
+    });
 });
 // Route RND END
 // Route super admin START

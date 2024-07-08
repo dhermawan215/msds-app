@@ -55,5 +55,31 @@
                  });
              }
          });
+         //  $('#name-theme').addClass('fa fa-star text-primary');
+         $("#theme-change").on('click', function() {
+             if ($("#theme-change").is(":checked")) {
+                 //remove dark
+                 $('#nav-theme').removeClass('navbar-dark');
+                 $('#sidebar-theme').removeClass('sidebar-dark-primary');
+                 $('#body-theme').removeClass('dark-mode');
+                 //change to light
+                 $('#nav-theme').addClass('navbar-light');
+                 $('#sidebar-theme').addClass('sidebar-light-primary');
+                 $('#body-theme').addClass('bg-light');
+                 $('#name-theme').removeClass('fa fa-star text-secondary');
+                 $('#name-theme').addClass('fa fa-star text-primary');
+             } else {
+                 //add dark
+                 $('#nav-theme').addClass('navbar-dark');
+                 $('#sidebar-theme').addClass('sidebar-dark-primary');
+                 $('#body-theme').addClass('dark-mode');
+                 //remove to light
+                 $('#nav-theme').removeClass('navbar-light');
+                 $('#sidebar-theme').removeClass('sidebar-light-primary');
+                 $('#body-theme').removeClass('bg-light');
+                 $('#name-theme').removeClass('fa fa-star text-primary');
+                 $('#name-theme').addClass('fa fa-star text-secondary');
+             }
+         });
      });
  </script>
