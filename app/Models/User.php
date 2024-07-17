@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Customer::class, 'user_id', 'id');
     }
+    //relation to sample (resuestor)
+    public function requestors(): HasMany
+    {
+        return $this->hasMany(SampleRequest::class, 'requestor', 'id');
+    }
 }

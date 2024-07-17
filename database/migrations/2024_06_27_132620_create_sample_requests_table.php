@@ -24,11 +24,10 @@ return new class extends Migration
             $table->text('requestor_note')->nullable();
             $table->bigInteger('sample_source_id')->nullable();
             $table->integer('sample_status')->nullable();
-            $table->bigInteger('sales_manager')->nullable();
-            $table->boolean('is_sales_manager')->default(false);
-            $table->tinyInteger('sales_manager_status')->nullable();
-            $table->text('sales_manager_note')->nullable();
-            $table->timestamp('sales_manager_approve_at')->nullable();
+            $table->bigInteger('sample_pic')->nullable();
+            $table->tinyInteger('sample_pic_status')->nullable();
+            $table->text('sample_pic_note')->nullable();
+            $table->timestamp('sample_pic_approve_at')->nullable();
             $table->bigInteger('rnd')->nullable();
             $table->tinyInteger('rnd_status')->nullable();
             $table->text('rnd_note')->nullable();

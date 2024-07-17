@@ -17,6 +17,7 @@ use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
+use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserSettingController;
 use Illuminate\Support\Facades\Hash;
@@ -149,6 +150,25 @@ Route::middleware('auth')->group(function () {
         Route::post('/customer/customer-detail/delete', 'destroyCustomerDetail');
     });
     //# sales customer route end
+    //# sales sample request route start
+    Route::controller(SampleRequestController::class)->group(function () {
+        Route::get('/sample-request', 'index')->name('sample_request');
+        Route::post('/sample-request/list', 'listOfSample');
+        Route::post('/sample-request/customer', 'customerDropdown');
+        Route::get('/sample-request/create-sample', 'createSample')->name('sample_request.add');
+        Route::post('/sample-request/create-sample/save', 'storeSampleRequest');
+        Route::get('/sample-request/{id}/customer-detail', 'createDetailCustomer')->name('sample_request.customer_detail_add');
+        Route::post('/sample-request/customer-detail', 'customerDetailDropdown');
+        Route::post('/sample-request/customer-detail/save', 'storeCustomerDetail');
+        Route::get('/sample-request/{id}/product-detail', 'createDetailProduct')->name('sample_request.product_add');
+        Route::post('/sample-request/product-detail/list', 'listOfproductDetail');
+        Route::post('/sample-request/product-detail', 'productDropdown');
+        Route::post('/sample-request/product-detail/save', 'storeProductDetail');
+        Route::post('/sample-request/product-detail/delete', 'destroyProductDetail');
+        Route::post('/sample-request/product-detail/edit', 'editProductDetail');
+        Route::post('/sample-request/product-detail/update', 'updateProductDetail');
+    });
+    //# sales sample request route end
     //sample request end
 });
 

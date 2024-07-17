@@ -2,10 +2,10 @@ var Index = (function () {
     var csrf_token = $('meta[name="csrf_token"]').attr("content");
     var table;
     var aSelected = [];
-    const moduleName = "customer";
+    const nameOfModule = "sample-request";
 
     var handleDataTable = function () {
-        table = $("#tbl-" + moduleName).DataTable({
+        table = $("#tbl-" + nameOfModule).DataTable({
             responsive: true,
             autoWidth: true,
             // pageLength: 15,
@@ -32,7 +32,7 @@ var Index = (function () {
             processing: true,
             serverSide: true,
             ajax: {
-                url: url + "/admin/customer/list",
+                url: url + "/sample-request/list",
                 type: "POST",
                 data: {
                     _token: csrf_token,
@@ -41,10 +41,14 @@ var Index = (function () {
             columns: [
                 { data: "cbox", orderable: false },
                 { data: "rnum", orderable: false },
-                { data: "name", orderable: false },
-                { data: "code", orderable: false },
-                { data: "sales", orderable: false },
-                { data: "register", orderable: false },
+                { data: "id", orderable: false },
+                { data: "subject", orderable: false },
+                { data: "required", orderable: false },
+                { data: "delivery", orderable: false },
+                { data: "pic", orderable: false },
+                { data: "creator", orderable: false },
+                { data: "cs", orderable: false },
+                { data: "status", orderable: false },
                 { data: "action", orderable: false },
             ],
             drawCallback: function (settings) {
@@ -57,6 +61,10 @@ var Index = (function () {
                 $("#btn-delete").attr("disabled", "");
                 aSelected.splice(0, aSelected.length);
             },
+        });
+        //when click edit
+        $("#tbl-" + nameOfModule + " tbody").on("click", "tr", function () {
+            handleEdit(table.row(this).data());
         });
         // btn refresh on click
         $("#btnRefresh").click(function (e) {
@@ -90,6 +98,18 @@ var Index = (function () {
             $("#btn-delete").attr("disabled", "");
         }
     };
+    //handle edit data
+    var handleEdit = function (param) {
+        $(document).on("click", ".btn-edit", function () {
+            //   insert data to field in modal
+            var dataEdit = $(this).data("edit");
+
+            $("#source-name-edit").val(param.name);
+            $("#address-edit").val(param.address);
+
+            handleUpdate(dataEdit);
+        });
+    };
     //delete method
     var handleDelete = function () {
         $("#btn-delete").click(function (e) {
@@ -106,7 +126,7 @@ var Index = (function () {
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: url + "/admin/customer/delete",
+                        url: url + "/rnd/sample-source/delete",
                         data: {
                             _token: csrf_token,
                             dValue: aSelected,
@@ -133,95 +153,11 @@ var Index = (function () {
             });
         });
     };
-    // add data
-    var handleAdd = function () {
-        handleUserCustomer();
-        $("#form-add-" + moduleName).submit(function (e) {
-            e.preventDefault();
-            const form = $(this);
-            let formData = new FormData(form[0]);
-            if (confirm("Are you sure?")) {
-                $.ajax({
-                    url: `${url}/admin/customer/save`,
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (responses) {
-                        toastr.success(responses.message);
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2500);
-                    },
-                    error: function (response) {
-                        $.each(response.responseJSON, function (key, value) {
-                            toastr.error(value);
-                        });
-                    },
-                });
-            }
-        });
-    };
-    // get user data for select 2
-    var handleUserCustomer = function () {
-        $("#user").select2({
-            // minimumInputLength: 1,
-            allowClear: true,
-            placeholder: "Select user",
-            dataType: "json",
-            ajax: {
-                method: "POST",
-
-                url: url + "/admin/customer/user",
-
-                data: function (params) {
-                    return {
-                        _token: csrf_token,
-                        search: params.term,
-                        page: params.page || 1, // search term
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    // var datas = JSON.parse(data);
-                    return {
-                        results: data.items,
-                        pagination: {
-                            more: true,
-                        },
-                    };
-                },
-            },
-            templateResult: format,
-            templateSelection: formatSelection,
-        });
-    };
-
-    //select 2 main function
-    function format(repo) {
-        if (repo.loading) {
-            return repo.text;
-        }
-
-        var $container = $(
-            "<div class='select2-result-repository clearfix'>" +
-                "<div class='select2-result-repository__title'></div>" +
-                "</div>"
-        );
-
-        $container.find(".select2-result-repository__title").text(repo.text);
-        return $container;
-    }
-
-    function formatSelection(repo) {
-        return repo.text;
-    }
 
     return {
         init: function () {
             handleDataTable();
             handleDelete();
-            handleAdd();
         },
     };
 })();

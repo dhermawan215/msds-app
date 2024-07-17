@@ -2,15 +2,15 @@ var Index = (function () {
     var csrf_token = $('meta[name="csrf_token"]').attr("content");
     var table;
     var aSelected = [];
-    const moduleName = "customer";
+    const nameOfModule = "sample-product";
 
     var handleDataTable = function () {
-        table = $("#tbl-" + moduleName).DataTable({
+        table = $("#tbl-" + nameOfModule).DataTable({
             responsive: true,
             autoWidth: true,
             // pageLength: 15,
             dom: "Bfrtip",
-            buttons: ["pageLength", "csv", "excel", "pdf", "print"],
+            buttons: ["pageLength", "csv", "excel", "pdf"],
             searching: true,
             paging: true,
             lengthMenu: [
@@ -32,19 +32,19 @@ var Index = (function () {
             processing: true,
             serverSide: true,
             ajax: {
-                url: url + "/admin/customer/list",
+                url: url + "/sample-request/product-detail/list",
                 type: "POST",
                 data: {
                     _token: csrf_token,
+                    sampleID: sampleID,
                 },
             },
             columns: [
                 { data: "cbox", orderable: false },
                 { data: "rnum", orderable: false },
-                { data: "name", orderable: false },
-                { data: "code", orderable: false },
-                { data: "sales", orderable: false },
-                { data: "register", orderable: false },
+                { data: "product", orderable: false },
+                { data: "qty", orderable: false },
+                { data: "label", orderable: false },
                 { data: "action", orderable: false },
             ],
             drawCallback: function (settings) {
@@ -57,6 +57,10 @@ var Index = (function () {
                 $("#btn-delete").attr("disabled", "");
                 aSelected.splice(0, aSelected.length);
             },
+        });
+        //when click edit
+        $("#tbl-" + nameOfModule + " tbody").on("click", "tr", function () {
+            handleEdit(table.row(this).data());
         });
         // btn refresh on click
         $("#btnRefresh").click(function (e) {
@@ -90,6 +94,41 @@ var Index = (function () {
             $("#btn-delete").attr("disabled", "");
         }
     };
+    //handle edit data
+    var handleEdit = function (param) {
+        $(document).on("click", ".btn-edit", function () {
+            //   insert data to field in modal
+            var dataEdit = $(this).data("edit");
+            $.ajax({
+                type: "post",
+                url: `${url}/sample-request/product-detail/edit`,
+                data: {
+                    _token: csrf_token,
+                    sampleProduct: dataEdit,
+                },
+                dataType: "json",
+                success: function (response) {
+                    var responseData = response.data;
+                    var sampleProduct = responseData.sample_product;
+                    $("#qty-edit").val(responseData.qty);
+                    $("#label-name-edit").val(responseData.label_name);
+                    $("#product-edit").append(
+                        $("<option>", {
+                            value: responseData.product_id,
+                            text:
+                                sampleProduct.product_code +
+                                "-" +
+                                sampleProduct.product_function,
+                            attr: "selected",
+                        })
+                    );
+                    handleproductDropdownEdit();
+                },
+            });
+
+            handleUpdate(dataEdit);
+        });
+    };
     //delete method
     var handleDelete = function () {
         $("#btn-delete").click(function (e) {
@@ -106,7 +145,7 @@ var Index = (function () {
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: url + "/admin/customer/delete",
+                        url: url + "/sample-request/product-detail/delete",
                         data: {
                             _token: csrf_token,
                             dValue: aSelected,
@@ -133,16 +172,16 @@ var Index = (function () {
             });
         });
     };
+
     // add data
     var handleAdd = function () {
-        handleUserCustomer();
-        $("#form-add-" + moduleName).submit(function (e) {
+        $("#form-add-" + nameOfModule).submit(function (e) {
             e.preventDefault();
             const form = $(this);
             let formData = new FormData(form[0]);
             if (confirm("Are you sure?")) {
                 $.ajax({
-                    url: `${url}/admin/customer/save`,
+                    url: `${url}/sample-request/product-detail/save`,
                     type: "POST",
                     data: formData,
                     processData: false,
@@ -150,8 +189,10 @@ var Index = (function () {
                     success: function (responses) {
                         toastr.success(responses.message);
                         setTimeout(() => {
-                            window.location.reload();
-                        }, 2500);
+                            table.ajax.reload();
+                            $("#form-add-" + nameOfModule).trigger("reset");
+                            $("#product").val(null).empty().trigger("change");
+                        }, 2000);
                     },
                     error: function (response) {
                         $.each(response.responseJSON, function (key, value) {
@@ -162,17 +203,46 @@ var Index = (function () {
             }
         });
     };
-    // get user data for select 2
-    var handleUserCustomer = function () {
-        $("#user").select2({
+    // add data
+    var handleUpdate = function (dataEdit) {
+        $("#form-edit-" + nameOfModule).submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            let formData = new FormData(form[0]);
+            formData.append("formValue", dataEdit);
+            if (confirm("Are you sure?")) {
+                $.ajax({
+                    url: `${url}/sample-request/product-detail/update`,
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (responses) {
+                        toastr.success(responses.message);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (response) {
+                        $.each(response.responseJSON, function (key, value) {
+                            toastr.error(value);
+                        });
+                    },
+                });
+            }
+        });
+    };
+    // get customer dropdown
+    var handleproductDropdownEdit = function () {
+        $("#product-edit").select2({
             // minimumInputLength: 1,
             allowClear: true,
-            placeholder: "Select user",
+            placeholder: "Select product/type product code or product function",
             dataType: "json",
             ajax: {
                 method: "POST",
 
-                url: url + "/admin/customer/user",
+                url: url + "/sample-request/product-detail",
 
                 data: function (params) {
                     return {
@@ -183,7 +253,41 @@ var Index = (function () {
                 },
                 processResults: function (data, params) {
                     params.page = params.page || 1;
-                    // var datas = JSON.parse(data);
+
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: true,
+                        },
+                    };
+                },
+            },
+            templateResult: format,
+            templateSelection: formatSelection,
+        });
+    };
+    // get customer dropdown
+    var handleproductDropdown = function () {
+        $("#product").select2({
+            // minimumInputLength: 1,
+            allowClear: true,
+            placeholder: "Select product/type product code or product function",
+            dataType: "json",
+            ajax: {
+                method: "POST",
+
+                url: url + "/sample-request/product-detail",
+
+                data: function (params) {
+                    return {
+                        _token: csrf_token,
+                        search: params.term,
+                        page: params.page || 1, // search term
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
                     return {
                         results: data.items,
                         pagination: {
@@ -219,9 +323,10 @@ var Index = (function () {
 
     return {
         init: function () {
+            handleAdd();
+            handleproductDropdown();
             handleDataTable();
             handleDelete();
-            handleAdd();
         },
     };
 })();

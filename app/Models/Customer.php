@@ -23,4 +23,9 @@ class Customer extends Model
     {
         return $this->hasMany(CustomerDetail::class, 'customer_id', 'id');
     }
+    //relation to sample customer
+    public function customerSamples(): HasMany
+    {
+        return $this->hasMany(SampleRequestCustomer::class, 'customer_id', 'id');
+    }
 }
