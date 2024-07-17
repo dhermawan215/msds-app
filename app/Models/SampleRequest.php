@@ -52,4 +52,9 @@ class SampleRequest extends Model
     {
         return $this->hasMany(SampleRequestProduct::class, 'sample_id', 'id');
     }
+    //relation to sample source
+    public function sampleSource(): BelongsTo
+    {
+        return $this->belongsTo(SampleSource::class, 'sample_source_id', 'id');
+    }
 }

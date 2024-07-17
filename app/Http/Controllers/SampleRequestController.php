@@ -6,7 +6,6 @@ use App\Models\SampleSource;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
 use App\Models\SampleRequestCustomer;
-use App\Models\SampleRequestDetails;
 use App\Models\SampleRequestProduct;
 use App\Services\CustomerService;
 use App\Services\ProductService;
@@ -36,6 +35,7 @@ class SampleRequestController extends Controller
     const approvalValue = ['0', '1', '2'];
     const iconApproveValue = ['fa fa-clock', 'fa fa-paper-plane', 'fa fa-check'];
     const sampleStatusCode = ['0', '1', '2', '3', '4', '5', '6'];
+    //if sample status in db null, the data will be display pending 
     const sampleStatusDesc = ['Requested', 'Confirm', 'Ready', 'Pick up', 'Accepted by customer', 'Reviewed', 'Cancel'];
     private static $url;
     protected $customerService;
@@ -92,11 +92,9 @@ class SampleRequestController extends Controller
         }
 
         $recordsFiltered = $query->count();
-
         $resData = $query->skip($offset)
             ->take($limit)->orderBy('created_at', 'desc')
             ->get();
-
         $recordsTotal = $resData->count();
 
         $data = [];
@@ -106,7 +104,7 @@ class SampleRequestController extends Controller
         foreach ($resData as $key => $value) {
             $data['cbox'] = '';
             if (in_array(static::valuePermission[2], $moduleFn)) {
-                if (static::approvalValue[0] == $value->sample_pic && static::approvalValue[0] == $value->rnd && static::approvalValue[0] == $value->cs) {
+                if (static::approvalValue[0] == $value->sample_pic_status && static::approvalValue[0] == $value->rnd_status && static::approvalValue[0] == $value->cs_status) {
                     $data['cbox'] = '<input type="checkbox" class="data-menu-cbox" value="' . $value->id . '">';
                 }
             }
@@ -185,7 +183,7 @@ class SampleRequestController extends Controller
                     $sampleStatus = static::sampleStatusDesc[6];
                     break;
                 default:
-                    $sampleStatus = 'not found';
+                    $sampleStatus = 'Pending';
                     break;
             }
 
@@ -194,18 +192,45 @@ class SampleRequestController extends Controller
             $data['cs'] = '<i class="' . $sampleCs . '"></i>';
             $data['status'] = $sampleStatus;
             $data['action'] = '';
-            //ini menunggu create sample selesai
-            if (static::approvalValue[0] == $value->sample_pic && static::approvalValue[0] == $value->rnd && static::approvalValue[0] == $value->cs) {
-                if (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[3], $moduleFn)) {
-                    $data['action'] = '<a href="' . route('customer.detail', base64_encode($value->id)) . '" class="btn btn-sm btn-success" title="Add customer detail"><i class="fa fa-pencil" aria-hidden="true"></i>Edit</a>
-                    <a href="' . route('customer.detail', base64_encode($value->id)) . '" class="btn btn-sm btn-success" title="Add customer detail"><i class="fa fa-plus" aria-hidden="true"></i> Customer Detail</a>';
-                } elseif (in_array(static::valuePermission[1], $moduleFn)) {
-                    $data['action'] = '<button id="#btn-edit" class="btn btn-sm btn-primary btn-edit" data-edit="' . base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-customer" title="edit"><i class="fas fa-edit " aria-hidden="true"></i></button>';
-                } elseif (in_array(static::valuePermission[3], $moduleFn)) {
-                    $data['action'] = '<a href="' . route('customer.detail', base64_encode($value->id)) . '" class="btn btn-sm btn-success" title="Add customer detail"><i class="fa fa-plus" aria-hidden="true"></i> Customer Detail</a>';
+            // jika status sample pic, rnd dan cs masih pending dan status sample requested(null)
+            if (static::approvalValue[0] == $value->sample_pic_status && static::approvalValue[0] == $value->rnd_status && static::approvalValue[0] == $value->cs_status && is_null($value->sample_status)) {
+                //jika edit, detail, product true
+                if (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[3], $moduleFn) && in_array(static::valuePermission[7], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.edit', $value->sample_ID) . '" class="btn btn-sm btn-primary" title="Edit sample"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                    <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    <a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>';
                 }
+                //jika edit, detail true
+                elseif (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[3], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.edit', $value->sample_ID) . '" class="btn btn-sm btn-primary" title="Edit sample"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                    <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+                }
+                //jika edit, product true
+                elseif (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[7], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.edit', $value->sample_ID) . '" class="btn btn-sm btn-primary" title="Edit sample"><i class="fas fa-edit" aria-hidden="true"></i></a>
+                     <a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>';
+                }
+                //jika  detail, product true
+                elseif (in_array(static::valuePermission[3], $moduleFn) && in_array(static::valuePermission[7], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>
+                    <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+                }
+                //jika edit true
+                elseif (in_array(static::valuePermission[1], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.edit', $value->sample_ID) . '" class="btn btn-sm btn-primary" title="Edit sample"><i class="fas fa-edit" aria-hidden="true"></i></a>';
+                }
+                //jika detail true
+                elseif (in_array(static::valuePermission[3], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+                }
+                //jika product true
+                elseif (in_array(static::valuePermission[3], $moduleFn)) {
+                    $data['action'] = '<a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>';
+                }
+            } elseif (static::sampleStatusCode[4] == $value->sample_status) {
+                $data['action'] = '<a href="#" class="btn btn-sm btn-outline-success mt-1" title="Change status"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
-
             $arr[] = $data;
             $i++;
         }
@@ -282,6 +307,9 @@ class SampleRequestController extends Controller
                 'delivery_by' => $request->delivery_by,
                 'requestor_note' => $request->requestor_note,
                 'sample_source_id' => $request->sample_source,
+                'sample_pic_status' => 0,
+                'rnd_status' => 0,
+                'cs_status' => 0
             ]);
             DB::commit();
             return response()->json(['success' => true, 'message' => 'success create sample', 'url' => route('sample_request.customer_detail_add', $createdSampleRequest->sample_ID)], 200);
@@ -289,6 +317,88 @@ class SampleRequestController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'somtehing went wrong, please try again!', 'url'], 200);
         }
+    }
+    /**
+     * view 
+     * @return view
+     */
+    public function editSample($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+        $sample = SampleRequest::select('sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
+            ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
+            ->where('sample_ID', $id)->first();
+        $sampleSource = SampleSource::select('id', 'name')->get();
+        return \view('pages.sample-request.edit-sample', [
+            'url' => static::$url,
+            'sample' => $sample,
+            'sampleSource' => $sampleSource
+        ]);
+    }
+    /**
+     * update sample request
+     * @return json
+     */
+    public function updateSample(Request $request)
+    {
+        $sampleRequest = SampleRequest::where('sample_ID', $request->sample_id);
+        $validator = Validator::make($request->all(), [
+            'subject' => 'required|max:200',
+            'required_date' => 'required',
+            'delivery_date' => 'required',
+            'sample_source' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 403);
+        }
+        $sampleRequest->update([
+            'subject' => $request->subject,
+            'required_date' => $request->required_date,
+            'delivery_date' => $request->delivery_date,
+            'delivery_by' => $request->delivery_by,
+            'requestor_note' => $request->requestor_note,
+            'sample_source_id' => $request->sample_source,
+        ]);
+        return response()->json(['success' => true, 'message' => 'Update success', 'url' => static::$url], 200);
+    }
+    /**
+     * delete sample, sample customer and sample product
+     * @return json
+     */
+    public function destroySample(Request $request)
+    {
+        $ids = $request->dValue;
+        $deleteSampleReq = SampleRequest::whereIn('id', $ids)->delete();
+        $deleteSampleReqCustomer = SampleRequestCustomer::whereIn('sample_id', $ids)->delete();
+        $deleteSampleReqProduct = SampleRequestProduct::whereIn('sample_id', $ids)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Delete success'], 200);
+    }
+    /**
+     * detail sample request
+     */
+    public function detailSample($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[3], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
+            ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
+            ->where('sample_ID', $id)->first();
+        $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();
+
+        return view('pages.sample-request.detail-sample', [
+            'sample' => $sampleRequestData,
+            'sampleCustomer' => $sampleRequestCustomer
+        ]);
     }
     /**
      * local method get sample request data
@@ -371,11 +481,13 @@ class SampleRequestController extends Controller
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[7], $moduleFn)) {
             return \view('forbiden-403');
         }
+        $sampleData = SampleRequest::select('sample_ID', 'sample_status')->where('sample_ID', $id)->first();
         return view('pages.sample-request.create-sample-product', [
-            'sampleID' => $id,
+            'sampleID' => $sampleData->sample_ID,
             'urlBack' => route('sample_request'),
             'javascriptID' => 'sample-product',
-            'moduleFn' => $moduleFn
+            'moduleFn' => $moduleFn,
+            'sampleStatus' => $sampleData->sample_status,
         ]);
     }
     /**

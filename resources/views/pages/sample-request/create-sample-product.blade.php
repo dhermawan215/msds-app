@@ -41,8 +41,10 @@
                                     <a href="{{ $urlBack }}" class="btn btn-sm btn-outline-secondary"><i
                                             class="fa fa-arrow-left" aria-hidden="true"></i>
                                         Back</a>
-                                    <button class="btn btn-outline-success btn-sm" id="btn-send">Send Request
-                                        Sample</button>
+                                    @if (is_null($sampleStatus))
+                                        <button class="btn btn-outline-success btn-sm" id="btn-send">Send Request
+                                            Sample</button>
+                                    @endif
                                 </div>
                             </div>
                             <div class="m-1">
@@ -74,7 +76,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group row justify-content-center">
-                                        <button type="submit" class="btn btn-primary mr-2">Save</button>
+                                        @if (is_null($sampleStatus))
+                                            <button type="submit" class="btn btn-primary mr-2">Save</button>
+                                        @endif
                                         <button type="reset" class="btn btn-outline-danger mr-2">Discard</button>
                                     </div>
                                 </form>

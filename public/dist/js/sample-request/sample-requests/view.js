@@ -126,7 +126,7 @@ var Index = (function () {
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: url + "/rnd/sample-source/delete",
+                        url: url + "/sample-request/delete",
                         data: {
                             _token: csrf_token,
                             dValue: aSelected,

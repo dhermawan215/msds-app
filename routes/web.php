@@ -157,6 +157,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/sample-request/customer', 'customerDropdown');
         Route::get('/sample-request/create-sample', 'createSample')->name('sample_request.add');
         Route::post('/sample-request/create-sample/save', 'storeSampleRequest');
+        Route::get('/sample-request/edit-sample/{id}', 'editSample')->name('sample_request.edit');
+        Route::get('/sample-request/detail/{id}', 'detailSample')->name('sample_request.detail');
+        Route::post('/sample-request/edit-sample/update', 'updateSample');
+        Route::post('/sample-request/delete', 'destroySample');
         Route::get('/sample-request/{id}/customer-detail', 'createDetailCustomer')->name('sample_request.customer_detail_add');
         Route::post('/sample-request/customer-detail', 'customerDetailDropdown');
         Route::post('/sample-request/customer-detail/save', 'storeCustomerDetail');

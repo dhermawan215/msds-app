@@ -16,10 +16,10 @@ class CustomerService
         $resultCount = 20;
         $perPage = $request->page;
         $offset = ($perPage - 1) * $resultCount;
-        $customer = Customer::select('id', 'product_code');
+        $customer = Customer::select('id', 'customer_name');
 
         if ($request->search) {
-            $customer->where('product_code', 'like', '%' . $request->search . '%');
+            $customer->where('customer_name', 'like', '%' . $request->search . '%');
         }
 
         $resData = $customer->skip($offset)
