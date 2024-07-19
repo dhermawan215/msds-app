@@ -343,7 +343,7 @@ var Index = (function () {
                     $(".loading-spinner").show();
                 },
                 success: function (response) {
-                    toastr.success(responses.message);
+                    toastr.success(response.message);
                     setTimeout(() => {
                         window.location.href = response.url;
                     }, 2500);

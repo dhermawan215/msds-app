@@ -43,6 +43,8 @@ class SalesSendRequestOfSample extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->from($address = 'noreply@zekindo.co.id', $name = $this->content['sample_requestor'])
+            ->subject('Sales send request of sample-(' . $this->content['sample_subject'] . ' ' . $this->content['sample_id'] . ')')
             ->greeting('Hello,' . $this->content['sample_pic_name'])
             ->line($this->content['sample_requestor'] . ' has submited the sample, with detail as:')
             ->line('Sample ID: ' . $this->content['sample_id'])
@@ -51,6 +53,7 @@ class SalesSendRequestOfSample extends Notification
             ->line('Delivery date: ' . $this->content['delivery_date'])
             ->line('For information this sample please login to system.')
             ->action('Show detail', route('sample_request.preview', $this->content['sample_token']))
+            ->line('Show detail feature available only 30 minutes after you receive the email.')
             ->line('Have a nice day');
     }
 
