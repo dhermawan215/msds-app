@@ -36,7 +36,8 @@ return new class extends Migration
             $table->tinyInteger('cs_status')->nullable();
             $table->text('cs_note')->nullable();
             $table->timestamp('cs_approve_at')->nullable();
-            $table->text('sample_token');
+            $table->text('token')->nullable();
+            $table->timestamp('token_expired_at')->nullable();
             $table->timestamps();
         });
     }

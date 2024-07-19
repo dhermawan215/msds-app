@@ -171,6 +171,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/sample-request/product-detail/delete', 'destroyProductDetail');
         Route::post('/sample-request/product-detail/edit', 'editProductDetail');
         Route::post('/sample-request/product-detail/update', 'updateProductDetail');
+        Route::post('/sample-request/send-request', 'sendRequest');
+        Route::get('/sample-request/preview/{token}', 'preview')->name('sample_request.preview');
     });
     //# sales sample request route end
     //sample request end

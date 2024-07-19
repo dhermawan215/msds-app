@@ -4,6 +4,15 @@
         .select2 {
             width: 100% !important;
         }
+
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
     </style>
 @endsection
 @section('content')
@@ -84,12 +93,18 @@
                                 </form>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 <!-- /.col -->
             </div>
+            <!-- spinner -->
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only text-primary">Loading...</span>
+                </div>
+            </div>
+            <!-- spinner -->
+
             <div class="row">
                 <div class="col-12">
                     <div class="card">

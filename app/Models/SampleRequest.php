@@ -36,6 +36,7 @@ class SampleRequest extends Model
         'cs_note',
         'cs_approve_at',
         'token',
+        'token_expired_at',
     ];
     //relation to user table
     public function sampleRequestor(): BelongsTo

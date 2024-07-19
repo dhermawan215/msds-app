@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Support\Str;
 use App\Models\SampleSource;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
-use App\Models\SampleRequestCustomer;
-use App\Models\SampleRequestProduct;
-use App\Services\CustomerService;
 use App\Services\ProductService;
+use App\Services\CustomerService;
 use App\Traits\ModulePermissions;
 use Illuminate\Support\Facades\DB;
+use App\Models\SampleRequestProduct;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SampleRequestCustomer;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SalesSendRequestOfSample;
+use Carbon\Carbon;
 
 class SampleRequestController extends Controller
 {
@@ -298,6 +303,7 @@ class SampleRequestController extends Controller
             //store the data
             DB::beginTransaction();
             $requestor = Auth::user();
+            $token = date('Ym') . Str::random(32) . date('ds');
             $createdSampleRequest = SampleRequest::create([
                 'sample_ID' => $request->sample_id,
                 'subject' => $request->subject,
@@ -309,7 +315,8 @@ class SampleRequestController extends Controller
                 'sample_source_id' => $request->sample_source,
                 'sample_pic_status' => 0,
                 'rnd_status' => 0,
-                'cs_status' => 0
+                'cs_status' => 0,
+                'token' => $token
             ]);
             DB::commit();
             return response()->json(['success' => true, 'message' => 'success create sample', 'url' => route('sample_request.customer_detail_add', $createdSampleRequest->sample_ID)], 200);
@@ -556,6 +563,7 @@ class SampleRequestController extends Controller
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data' => $arr,
+            'recordOfDataProduct' => $recordsTotal
         ]);
     }
     /**
@@ -625,5 +633,54 @@ class SampleRequestController extends Controller
             'label_name' => $request->label_name,
         ]);
         return response()->json(['success' => true, 'message' => 'Update success!'], 200);
+    }
+    /**
+     * handle mail send notification to sample pic
+     */
+    public function sendRequest(Request $request)
+    {
+        $sampleRequest = SampleRequest::where('sample_ID', $request->sampleID);
+        //get sample data
+        $sampleData = $sampleRequest->with('sampleRequestor')->first();
+        //get sample pic data
+        $samplePic = User::whereHas('userGroup', function ($query) {
+            $query->where('name', 'SAMPLE_PIC');
+        })->first();
+        //content email
+        $content = [
+            'sample_pic_name' => $samplePic['name'],
+            'sample_pic_email' => $samplePic['email'],
+            'sample_id' => $sampleData->sample_ID,
+            'sample_subject' => $sampleData->subject,
+            'required_date' => $sampleData->required_date,
+            'delivery_date' => $sampleData->delivery_date,
+            'sample_requestor' => $sampleData->sampleRequestor->name,
+            'sample_token' => $sampleData->token,
+        ];
+        //create token expired
+        $tokenExpiredAt = Carbon::now()->addMinutes(30);
+
+        $updateSample = $sampleRequest->update([
+            'sample_status' => 0,
+            'sample_pic' => $samplePic['id'],
+            'sample_pic_status' => 1,
+            'token_expired_at' => $tokenExpiredAt
+        ]);
+
+        $recipents = [
+            $samplePic['name'] = $samplePic['email'],
+        ];
+
+        $sendNotif = Notification::route('mail', $recipents)->notify(new SalesSendRequestOfSample($content));
+
+        return response()->json(['success' => true, 'message' => 'Sample has been requested', 'url' => static::$url], 200);
+    }
+    /**
+     * handle preview of sample
+     * @return view
+     */
+    public function preview($token)
+    {
+        dd($token);
     }
 }

@@ -56,6 +56,12 @@ var Index = (function () {
                 });
                 $("#btn-delete").attr("disabled", "");
                 aSelected.splice(0, aSelected.length);
+                const recordsOfProduct = settings.json.recordOfDataProduct;
+                if (recordsOfProduct === 0) {
+                    $("#btn-send").attr("disabled", "disabled");
+                } else {
+                    $("#btn-send").removeAttr("disabled");
+                }
             },
         });
         //when click edit
@@ -321,12 +327,42 @@ var Index = (function () {
         return repo.text;
     }
 
+    //send request of sample
+    var handleSendRequest = function () {
+        $("#btn-send").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "post",
+                url: url + "/sample-request/send-request",
+                data: {
+                    _token: csrf_token,
+                    sampleID: sampleID,
+                },
+                dataType: "json",
+                beforeSend: function () {
+                    $(".loading-spinner").show();
+                },
+                success: function (response) {
+                    toastr.success(responses.message);
+                    setTimeout(() => {
+                        window.location.href = response.url;
+                    }, 2500);
+                },
+                complete: function () {
+                    $(".loading-spinner").hide();
+                },
+                error: function (response) {},
+            });
+        });
+    };
+
     return {
         init: function () {
             handleAdd();
             handleproductDropdown();
             handleDataTable();
             handleDelete();
+            handleSendRequest();
         },
     };
 })();
