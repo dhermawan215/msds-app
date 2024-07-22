@@ -127,7 +127,7 @@
                                             <th>Product</th>
                                             <th>Qty</th>
                                             <th>Label</th>
-                                            <th style="">Action</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>

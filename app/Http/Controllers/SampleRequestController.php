@@ -681,6 +681,20 @@ class SampleRequestController extends Controller
      */
     public function preview($token)
     {
-        dd($token);
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'token', 'token_expired_at')
+            ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
+            ->where('token', $token)->first();
+        $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();
+        $sampleRequestProduct = SampleRequestProduct::with('sampleProduct')->where('sample_id', $sampleRequestData->id)->get();
+        //jika token ada dan waktu token kuran
+        if ($sampleRequestData->token && Carbon::parse($sampleRequestData->token_expired_at) < Carbon::now()) {
+            return \abort('403', 'token expired');
+        }
+
+        return view('pages.sample-request.preview-sample', [
+            'sample' => $sampleRequestData,
+            'sampleCustomer' => $sampleRequestCustomer,
+            'sampleProducts' => $sampleRequestProduct
+        ]);
     }
 }
