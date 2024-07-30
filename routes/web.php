@@ -13,6 +13,7 @@ use App\Http\Controllers\EnvironmentalHazardController;
 use App\Http\Controllers\GeneralPresController;
 use App\Http\Controllers\HealthHazardController;
 use App\Http\Controllers\PhysicalHazardController;
+use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\ProductController;
@@ -237,3 +238,15 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
 });
 // Route super admin END
+
+//Route sample pic start
+Route::prefix('pic')->middleware('auth')->group(function () {
+    Route::controller(SampleRequestPicController::class)->group(function () {
+        Route::get('/sample-request', 'index')->name('pic_sample_request');
+        Route::post('/sample-request/list', 'list');
+        Route::get('/sample-request/detail/{sampleId}', 'detail')->name('pic_sample_request.detail');
+        Route::post('/sample-request/assign', 'listUserForAssign');
+        Route::post('/sample-request/send-assign', 'assignSample');
+    });
+});
+//Route sample pic end

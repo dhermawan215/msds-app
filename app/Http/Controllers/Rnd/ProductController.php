@@ -85,7 +85,7 @@ class ProductController extends Controller
             $data['application'] = $value->product_application;
             $data['action'] = '';
             if (in_array('edit', $moduleFn)) {
-                $data['action'] = '<button id="#btn-edit" class="btn btn-sm btn-primary btn-edit" data-edit="' . base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-product" titlr="edit"><i class="fas fa-edit " aria-hidden="true"></i></button>';
+                $data['action'] = '<button id="#btn-edit" class="btn btn-sm btn-primary btn-edit" data-edit="' . base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-product" title="edit"><i class="fas fa-edit " aria-hidden="true"></i></button>';
             }
 
             $arr[] = $data;
