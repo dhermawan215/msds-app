@@ -42,6 +42,7 @@ class SampleRequestController extends Controller
     const sampleStatusCode = ['0', '1', '2', '3', '4', '5', '6'];
     //if sample status in db null, the data will be display pending 
     const sampleStatusDesc = ['Requested', 'Confirm', 'Ready', 'Pick up', 'Accepted by customer', 'Reviewed', 'Cancel'];
+    const deliveryBy = ['Pick up by customer', 'Expedition', 'Pick up by sales'];
     private static $url;
     protected $customerService;
     protected $productService;

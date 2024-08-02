@@ -107,8 +107,21 @@
                                     <div class="col">
                                         <label for="requestor-note">Requestor note</label>
                                         <input type="text" name="requestor_note" id="requestor-note" class="form-control"
-                                            placeholder="requestor note"
                                             value="{{ $data['sampleRequestData']->requestor_note }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <label for="requestor-note">Sample PIC note</label>
+                                        <input type="text" name="requestor_note" id="requestor-note" class="form-control"
+                                            value="{{ $data['sampleRequestData']->sample_pic_note }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col">
+                                        <label for="requestor-note">Sample creator note(lab/wh)</label>
+                                        <input type="text" name="requestor_note" id="requestor-note" class="form-control"
+                                            value="{{ $data['sampleRequestData']->rnd_note }}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Pic;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
+use App\Traits\UserLogRecord;
 use App\Traits\ModulePermissions;
 use App\Repository\UserRepository;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Notifications\SamplePicAssign;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\SamplePicAssign;
 use App\Repository\SamplePicRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
@@ -18,6 +20,7 @@ class SampleRequestPicController extends Controller
 {
     //controller sample request for pic
     use ModulePermissions;
+    use UserLogRecord;
     protected $sysModuleName = 'pic_sample_request';
     const valuePermission = [
         'change_status', 'asign', 'detail'
@@ -28,6 +31,7 @@ class SampleRequestPicController extends Controller
     const sampleStatusCode = ['0', '1', '2', '3', '4', '5', '6'];
     //if sample status in db null, the data will be display pending 
     const sampleStatusDesc = ['Requested', 'Confirm', 'Ready', 'Pick up', 'Accepted by customer', 'Reviewed', 'Cancel'];
+    const deliveryBy = ['Pick up by customer', 'Expedition', 'Pick up by sales'];
     private static $url;
 
     protected $samplePicRepository;
@@ -69,6 +73,7 @@ class SampleRequestPicController extends Controller
             'subject',
             'required_date',
             'delivery_date',
+            'delivery_by',
             'sample_status',
             'delivery_date',
             'sample_pic_status',
@@ -106,7 +111,6 @@ class SampleRequestPicController extends Controller
             $data['subject'] = $value->subject;
             $data['required'] = $value->required_date;
             $data['delivery'] = $value->delivery_date;
-            $data['pic'] = $value->sample_pic;
             //check status pic
             switch ($value->sample_pic_status) {
                 case static::approvalValue[1]:
@@ -179,7 +183,14 @@ class SampleRequestPicController extends Controller
                     $sampleStatus = 'Pending';
                     break;
             }
-
+            if ($value->delivery_by == 0) {
+                $deliveryBy = static::deliveryBy[0];
+            } elseif ($value->delivery_by == 1) {
+                $deliveryBy = static::deliveryBy[1];
+            } else {
+                $deliveryBy = static::deliveryBy[2];
+            }
+            $data['delivery_by'] = $deliveryBy;
             $data['pic'] = '<i class="' . $samplePic . '"></i>';
             $data['creator'] = '<i class="' . $sampleRnd . '"></i>';
             $data['cs'] = '<i class="' . $sampleCs . '"></i>';
@@ -192,8 +203,9 @@ class SampleRequestPicController extends Controller
             }
             //jika status confirm atau ready dan izin change status ada
             elseif ((static::sampleStatusCode[1] == $value->sample_status || static::sampleStatusCode[2] == $value->sample_status) && in_array(static::valuePermission[1], $moduleFn)) {
-                $data['action'] = '<button class="btn btn-sm btn-info btn-change-status" title="change status sample" data-toggle="modal" data-target="#modal-change-status" data-cs="' . base64_encode($value->id) . '"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
-                <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                $data['action'] = '<a href="#" class="btn btn-sm btn-info"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                <button class="btn btn-sm btn-outline-danger btn-open-tr" data-tr="' . base64_encode($value->id) . '" title="open transaction"><i class="fa fa-envelope-open" aria-hidden="true"></i></button>';
             } else {
                 $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
             }
@@ -234,6 +246,8 @@ class SampleRequestPicController extends Controller
     }
     /**
      * method assiign sample
+     * send email
+     * @return json
      */
     public function assignSample(Request $request)
     {
@@ -286,5 +300,26 @@ class SampleRequestPicController extends Controller
             DB::rollBack();
             return \response()->json(['success' => \false, 'message' => 'Something went wrong!, please try again']);
         }
+    }
+    /**
+     * method open transaction of sample request
+     * @return json
+     */
+    public function openTransactionSampleRequest(Request $request)
+    {
+        $openTransaction = $this->samplePicRepository->openTransactionOfSampleRequest(\base64_decode($request->tr));
+        $user = Auth::user();
+        $data = [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'date_time' => Carbon::now()->toDateTimeString(),
+            'ip_address' => $request->ip(),
+            'log_user_agent' => $request->header('user-agent'),
+            'activity' => $user->name . ' open sample request, ID: ' . $openTransaction,
+            'status' => 'true',
+        ];
+        $recordUserLog = $this->logUserActivity($data);
+
+        return \response()->json(['success' => true, 'message' => 'Success open transaction'], 200);
     }
 }

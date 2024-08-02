@@ -247,6 +247,7 @@ Route::prefix('pic')->middleware('auth')->group(function () {
         Route::get('/sample-request/detail/{sampleId}', 'detail')->name('pic_sample_request.detail');
         Route::post('/sample-request/assign', 'listUserForAssign');
         Route::post('/sample-request/send-assign', 'assignSample');
+        Route::post('/sample-request/open-transaction', 'openTransactionSampleRequest');
     });
 });
 //Route sample pic end

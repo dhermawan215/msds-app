@@ -45,6 +45,7 @@ var Index = (function () {
                 { data: "subject", orderable: false },
                 { data: "required", orderable: false },
                 { data: "delivery", orderable: false },
+                { data: "delivery_by", orderable: false },
                 { data: "pic", orderable: false },
                 { data: "creator", orderable: false },
                 { data: "cs", orderable: false },
@@ -169,10 +170,41 @@ var Index = (function () {
         return repo.text;
     }
 
+    // button click open transaction
+    var handleOpenTransaction = function () {
+        $(document).on("click", ".btn-open-tr", function (e) {
+            e.preventDefault();
+            const transactionValue = $(this).data("tr");
+            if (confirm("Are you sure open this sample?")) {
+                $.ajax({
+                    url: `${url}/pic/sample-request/open-transaction`,
+                    type: "POST",
+                    data: {
+                        _token: csrf_token,
+                        tr: transactionValue,
+                    },
+                    // contentType: "json",
+                    success: function (responses) {
+                        toastr.success(responses.message);
+                        setTimeout(() => {
+                            table.ajax.reload();
+                        }, 2000);
+                    },
+                    error: function (response) {
+                        $.each(response.responseJSON, function (key, value) {
+                            toastr.error(value);
+                        });
+                    },
+                });
+            }
+        });
+    };
+
     return {
         init: function () {
             handleDataTable();
             handleAssignUser();
+            handleOpenTransaction();
         },
     };
 })();
