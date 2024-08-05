@@ -13,7 +13,6 @@
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-    {{-- @dd($data) --}}
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">

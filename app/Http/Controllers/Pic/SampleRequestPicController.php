@@ -202,12 +202,22 @@ class SampleRequestPicController extends Controller
                 <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
             }
             //jika status confirm atau ready dan izin change status ada
-            elseif ((static::sampleStatusCode[1] == $value->sample_status || static::sampleStatusCode[2] == $value->sample_status) && in_array(static::valuePermission[1], $moduleFn)) {
-                $data['action'] = '<a href="#" class="btn btn-sm btn-info"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
-                <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>
+            elseif (static::sampleStatusCode[1] == $value->sample_status && in_array(static::valuePermission[1], $moduleFn)) {
+                $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>
                 <button class="btn btn-sm btn-outline-danger btn-open-tr" data-tr="' . base64_encode($value->id) . '" title="open transaction"><i class="fa fa-envelope-open" aria-hidden="true"></i></button>';
+            }
+            //jika status ready
+            elseif (static::sampleStatusCode[2] == $value->sample_status && in_array(static::valuePermission[1], $moduleFn)) {
+                $data['action'] = '<a href="' . \route('pic_sample_request.change_status', $value->sample_ID) . '" class="btn btn-sm btn-info"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
             } else {
-                $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                if ($value->delivery_by == 1) {
+                    $deliveryMenu = '<button class="btn btn-sm btn-danger btn-delivery" title="detail sample delivery" data-toggle="modal" data-target="#modal-delivery-information" data-dl="' . base64_encode($value->id) . '"><i class="fa fa-truck" aria-hidden="true"></i></button>';
+                } else {
+                    $deliveryMenu = '';
+                }
+                $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>
+               ' . $deliveryMenu;
             }
 
             $arr[] = $data;
@@ -321,5 +331,46 @@ class SampleRequestPicController extends Controller
         $recordUserLog = $this->logUserActivity($data);
 
         return \response()->json(['success' => true, 'message' => 'Success open transaction'], 200);
+    }
+    /**
+     * method change status
+     */
+    public function changeStatus($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
+        $sampleData = $this->samplePicRepository->sampleForChangeStatus($id);
+        return \view('pic.sample-request.change-status', ['data' => $sampleData]);
+    }
+    /**
+     * method get delivery information
+     * @return json
+     */
+    public function deliveryInformation(Request $request)
+    {
+        $deliveryInformation = $this->samplePicRepository->getSampleDelivery(\base64_decode($request->dl));
+
+        return \response()->json(['success' => \true, 'data' => $deliveryInformation], 200);
+    }
+    /**
+     * nethod update chage status
+     */
+    public function updateChangeStatus(Request $request)
+    {
+        //get data sample data before check delivery mode
+        $sampleData = $this->samplePicRepository->sampleForChangeStatus($request->sample_ID);
+        //belum selesai
+        //jika sample delivery mode expedition
+        if ($sampleData->delivery_by == '1') {
+            # code...
+        } else {
+        }
+
+
+        return \response()->json(['success' => true, 'message' => 'Success!'], 200);
     }
 }

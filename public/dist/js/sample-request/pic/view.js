@@ -199,12 +199,36 @@ var Index = (function () {
             }
         });
     };
+    // button click delivery information
+    var handleDeliveryInformation = function () {
+        $(document).on("click", ".btn-delivery", function (e) {
+            e.preventDefault();
+            const deliveryValue = $(this).data("dl");
+
+            $.ajax({
+                url: `${url}/pic/sample-request/delivery-information`,
+                type: "POST",
+                data: {
+                    _token: csrf_token,
+                    dl: deliveryValue,
+                },
+                // contentType: "json",
+                success: function (responses) {
+                    var dataResponse = responses.data;
+                    $("#delivery-name").val(dataResponse.delivery_name);
+                    $("#receipt").val(dataResponse.receipt);
+                },
+                error: function (response) {},
+            });
+        });
+    };
 
     return {
         init: function () {
             handleDataTable();
             handleAssignUser();
             handleOpenTransaction();
+            handleDeliveryInformation();
         },
     };
 })();

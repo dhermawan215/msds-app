@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Models\SampleDelivery;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\SampleRequest;
@@ -72,5 +73,45 @@ class SamplePicRepository implements SamplePicInterface
         ]);
 
         return $openTransaction->sample_ID;
+    }
+    /**
+     * method get sample data for change request
+     */
+    public function sampleForChangeStatus($sampleId)
+    {
+        $sampleRequest = SampleRequest::select('sample_ID', 'subject', 'delivery_by', 'sample_status')
+            ->where('sample_ID', $sampleId)->first();
+
+        return $sampleRequest;
+    }
+    /**
+     * method get data sample deliveries
+     * @return data delivery or empty data
+     */
+    public function getSampleDelivery($idSampleRequest)
+    {
+        $sampleDelivery = SampleDelivery::where('sample_id', $idSampleRequest)->first();
+
+        $data = [
+            'delivery_name' => $sampleDelivery ? $sampleDelivery->delivery_name : 'empty data',
+            'receipt' => $sampleDelivery ? $sampleDelivery->receipt : 'empty data',
+        ];
+        return $data;
+    }
+    /**
+     * change status sample from ready to pickup
+     */
+    public function updateWhenChangeStatus($data, $sampleID)
+    {
+        $sampleRequestChangeStatus = SampleRequest::where('sample_ID', $sampleID);
+        $sampleRequestChangeStatus->update([
+            'sample_status' => $data['sample_status'],
+            'sample_pic_note' => $data['sample_pic_note'],
+            'cs_status' => $data['cs_status'],
+            'token' => $data['token'],
+            'token_expired_at' => $data['token_expired_at']
+        ]);
+
+        return $sampleRequestChangeStatus;
     }
 }

@@ -144,6 +144,36 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- modal asign sample end-->
+
+    <!-- modal delivery information start-->
+    <div class="modal fade" id="modal-delivery-information">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Delivery Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="">Delivery name</label>
+                        <input type="text" id="delivery-name" readonly class="form-control">
+                    </div>
+                    <div class="form-group row">
+                        <label for="name">Receipt</label>
+                        <input type="text" id="receipt" readonly class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal delivery information end-->
 @endsection
 @push('custom_js')
     <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
