@@ -16,6 +16,7 @@ use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\Rnd\GhsController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\SampleRequestController;
@@ -193,6 +194,14 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
         Route::post('/sample-source/save', 'store');
         Route::post('/sample-source/update', 'update');
         Route::post('/sample-source/delete', 'destroy');
+    });
+    //Route ghs
+    Route::controller(GhsController::class)->group(function () {
+        Route::get('/ghs', 'index')->name('ghs');
+        Route::post('/ghs/list', 'listData');
+        Route::post('/ghs/save', 'store');
+        Route::post('/ghs/update', 'update');
+        Route::post('/ghs/delete', 'destroy');
     });
 });
 // Route RND END
