@@ -199,6 +199,7 @@ class SampleRequestPicController extends Controller
             //jika status request dan izin asign ada maka
             if (static::sampleStatusCode[0] == $value->sample_status && in_array(static::valuePermission[1], $moduleFn)) {
                 $data['action'] = '<button class="btn btn-sm btn-primary btn-assign" title="assign sample" data-toggle="modal" data-target="#modal-assign-sample" data-as="' . base64_encode($value->id) . '"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
+                <a href="#" class="btn btn-sm btn-warning btn-product-assign" title="product assign"><i class="fa fa-toggle-off" aria-hidden="true"></i></a>
                 <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
             }
             //jika status confirm atau ready dan izin change status ada
@@ -286,10 +287,11 @@ class SampleRequestPicController extends Controller
 
             $sampleContent = $this->samplePicRepository->sampleForContentEmail($idSample);
             $userContent = $this->userRepository->getUserSampleAssign($userLab);
-
+            $userContentData = $userContent->pluck('email', 'name')->toArray();
+            $userNamePluck = $userContent->pluck('name')->toArray();
             $content = [
-                'rnd_name' => $userContent->name,
-                'rnd_email' => $userContent->email,
+                'rnd_name' => implode(',', \json_decode(json_encode($userNamePluck))),
+                // 'rnd_email' => $userContent->email,
                 'sample_id' => $sampleContent->sample_ID,
                 'sample_subject' => $sampleContent->subject,
                 'requestor' => $sampleContent->sampleRequestor->name,
@@ -300,9 +302,7 @@ class SampleRequestPicController extends Controller
                 'sample_token' => $sampleContent->token,
             ];
 
-            $recipents = [
-                $userContent->name = $userContent->email,
-            ];
+            $recipents = $userContentData;
             $sendNotif = Notification::route('mail', $recipents)->notify(new SamplePicAssign($content));
 
             return \response()->json(['success' => \true, 'message' => 'Assign success']);
@@ -372,5 +372,17 @@ class SampleRequestPicController extends Controller
 
 
         return \response()->json(['success' => true, 'message' => 'Success!'], 200);
+    }
+    /**
+     * method view detail sample product and use to assign
+     */
+    public function detailSampleProduct($sampleId)
+    {
+    }
+    /**
+     * datatable for list sample product
+     */
+    public function listSampleProduct(Request $request)
+    {
     }
 }

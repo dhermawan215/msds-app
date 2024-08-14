@@ -19,6 +19,7 @@ use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\GhsController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
+use App\Http\Controllers\Rnd\StoragePresController;
 use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserSettingController;
@@ -110,6 +111,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/response-precautionary/edit/{id}', [ResponsePresController::class, 'edit'])->name('response_precautionary.edit');
     Route::patch('/response-precautionary/update/{id}', [ResponsePresController::class, 'update']);
     Route::post('/response-precautionary/delete', [ResponsePresController::class, 'delete']);
+    //storage precautionary
+    Route::controller(StoragePresController::class)->group(function () {
+        Route::get('/storage-precautionary', 'index')->name('storage_precautionary');
+        Route::post('/storage-precautionary/list', 'listData');
+        Route::post('/storage-precautionary/save', 'store');
+        Route::post('/storage-precautionary/detail', 'detail');
+        Route::get('/storage-precautionary/edit/{id}', 'edit')->name('storage_precautionary.edit');
+        Route::post('/storage-precautionary/update', 'update');
+        Route::post('/storage-precautionary/delete', 'destroy');
+    });
     // super admin route start
     // user management
     Route::get('/users-management', [AdminUserManagement::class, 'index'])->name('admin_user_management');

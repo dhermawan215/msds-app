@@ -10,7 +10,7 @@ class SampleRequestProduct extends Model
 {
     use HasFactory;
     protected $table = 'sample_request_products';
-    protected $fillable = ['sample_id', 'product_id', 'qty', 'label_name'];
+    protected $fillable = ['sample_id', 'product_id', 'qty', 'label_name', 'assign_to'];
 
     //relation to product
     public function sampleProduct(): BelongsTo
@@ -21,5 +21,10 @@ class SampleRequestProduct extends Model
     public function sampleRequestProduct(): BelongsTo
     {
         return $this->belongsTo(SampleRequest::class, 'sample_id', 'id');
+    }
+    //relation to user
+    public function sampleProductUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assign_to', 'id');
     }
 }

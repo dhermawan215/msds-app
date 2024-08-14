@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('sample_request_details', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('sample_id')->nullable();
+            $table->bigInteger('product_id')->nullable();
             $table->string('batch_number')->nullable();
             $table->string('netto')->nullable();
             $table->text('ghs')->nullable();

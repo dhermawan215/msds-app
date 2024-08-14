@@ -46,7 +46,7 @@ class UserRepository
      */
     public function getUserSampleAssign($id)
     {
-        $user = User::select('id', 'name', 'email')->where('id', $id)->first();
+        $user = User::select('id', 'name', 'email')->whereIn('id', $id)->get();
         return $user;
     }
 }
