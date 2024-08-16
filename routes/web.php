@@ -17,6 +17,7 @@ use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\GhsController;
+use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\StoragePresController;
@@ -120,6 +121,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/storage-precautionary/edit/{id}', 'edit')->name('storage_precautionary.edit');
         Route::post('/storage-precautionary/update', 'update');
         Route::post('/storage-precautionary/delete', 'destroy');
+    });
+    //# First aid measure
+    //inhalation 
+    Route::controller(InhalationController::class)->group(function () {
+        Route::get('/inhalation', 'index')->name('inhalation');
+        Route::post('/inhalation/list', 'listData');
+        Route::post('/inhalation/save', 'store');
+        Route::post('/inhalation/delete', 'destroy');
+        Route::post('/inhalation/edit', 'edit');
+        Route::post('/inhalation/update', 'update');
     });
     // super admin route start
     // user management
