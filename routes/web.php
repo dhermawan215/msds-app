@@ -17,6 +17,7 @@ use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
 use App\Http\Controllers\Rnd\GhsController;
+use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
@@ -131,6 +132,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/inhalation/delete', 'destroy');
         Route::post('/inhalation/edit', 'edit');
         Route::post('/inhalation/update', 'update');
+    });
+    //ingestion 
+    Route::controller(IngestionController::class)->group(function () {
+        Route::get('/ingestion', 'index')->name('ingestion');
+        Route::post('/ingestion/list', 'listData');
+        Route::post('/ingestion/save', 'store');
+        Route::post('/ingestion/delete', 'destroy');
+        Route::post('/ingestion/edit', 'edit');
+        Route::post('/ingestion/update', 'update');
     });
     // super admin route start
     // user management

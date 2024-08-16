@@ -9,7 +9,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">First Aid Measures - Inhalation</li>
+                        <li class="breadcrumb-item active">First Aid Measures - Ingestion</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-titile">Inhalation</h3>
+                            <h3 class="card-titile">Ingestion</h3>
                         </div>
                         <div class="card-body">
                             <div class="m-1">
@@ -34,14 +34,14 @@
                                         <i class="fa fa-retweet" aria-hidden="true"></i> Refresh
                                     </button>
                                     <button id="btn-add" class="btn btn-primary btn-sm disabled" data-toggle="modal"
-                                        data-target="#modal-add-inhalation"><i class="fa fa-plus" aria-hidden="true"></i>
+                                        data-target="#modal-add-ingestion"><i class="fa fa-plus" aria-hidden="true"></i>
                                         Add</button>
                                     <button class="btn btn-sm btn-danger btn-delete" id="btn-delete" disabled><i
                                             class="fa fa-trash" aria-hidden="true"></i> Delete</button>
                                 </div>
                             </div>
                             <div class="m-1">
-                                <table class="table table-bordered" id="tbl-inhalation" style="width: 100%;">
+                                <table class="table table-bordered" id="tbl-ingestion" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th style="width: 20px;">#</th>
@@ -66,17 +66,17 @@
     </section>
 
     <!-- modal add storage precautionary start-->
-    <div class="modal fade" id="modal-add-inhalation">
+    <div class="modal fade" id="modal-add-ingestion">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Add inhalation</h4>
+                    <h4 class="modal-title">Add ingestion</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="javascript:;" method="post" id="form-add-inhalation">
+                    <form action="javascript:;" method="post" id="form-add-ingestion">
                         @csrf
                         <div class="form-group row">
                             <label for="code">Description</label>
@@ -109,17 +109,17 @@
     </div>
     <!-- modal add storage precautionary start-->
     <!-- modal detail storage precautionary start-->
-    <div class="modal fade" id="modal-edit-inhalation">
+    <div class="modal fade" id="modal-edit-ingestion">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Edit inhalation</h4>
+                    <h4 class="modal-title">Edit ingestion</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="javascript:;" method="post" id="form-edit-inhalation">
+                    <form action="javascript:;" method="post" id="form-edit-ingestion">
                         @csrf
                         <div class="form-group row">
                             <label for="code">Description</label>
@@ -165,5 +165,5 @@
     <script>
         ModuleFn = @json($moduleFn)
     </script>
-    <script src="{{ asset('dist/js/msds/inhalation/view.min.js?q=') . time() }}"></script>
+    <script src="{{ asset('dist/js/msds/ingestion/view.min.js?q=') . time() }}"></script>
 @endpush
