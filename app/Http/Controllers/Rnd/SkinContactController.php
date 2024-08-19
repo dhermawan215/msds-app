@@ -3,26 +3,26 @@
 namespace App\Http\Controllers\Rnd;
 
 use Illuminate\Http\Request;
-use App\Models\MasterIngestion;
+use App\Models\MasterSkinContact;
 use App\Traits\ModulePermissions;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Repository\IngestionRepository;
+use App\Repository\SkinContactRepository;
 use Illuminate\Support\Facades\Validator;
 
-class IngestionController extends Controller
+class SkinContactController extends Controller
 {
-    //controller for ingestion module
+    //controller skin contact - first aid measures
     use ModulePermissions;
-    protected $sysModuleName = 'ingestion';
+    protected $sysModuleName = 'skin_contact';
     const valuePermission = ['add', 'edit', 'delete'];
-    private static $url;
-    protected $ingestionRepo;
+    protected static $url;
+    protected $skinContactRepo;
 
-    public function __construct(IngestionRepository $ingestionRepository)
+    public function __construct(SkinContactRepository $skinContactRepository)
     {
+        $this->skinContactRepo = $skinContactRepository;
         static::$url = \route($this->sysModuleName);
-        $this->ingestionRepo = $ingestionRepository;
     }
 
     public function index()
@@ -32,10 +32,10 @@ class IngestionController extends Controller
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
-        return \view('pages.msds.ingestion.index', ['moduleFn' => $moduleFn]);
+        return \view('pages.msds.skin-contact.index', ['moduleFn' => $moduleFn]);
     }
     /**
-     * datatable for ingestion
+     * datatable for first aid measures skin contact
      * @return json
      */
     public function listData(Request $request)
@@ -47,7 +47,7 @@ class IngestionController extends Controller
         $limit = $request['length'] ? $request['length'] : 15;
         $globalSearch = $request['search']['value'];
 
-        $query = MasterIngestion::select('*');
+        $query = MasterSkinContact::select('*');
 
         if ($globalSearch) {
             $query->where('notes', 'like', '%' . $globalSearch . '%')
@@ -76,7 +76,7 @@ class IngestionController extends Controller
             $data['action'] = '';
             if (in_array(static::valuePermission[1], $moduleFn)) {
                 $data['action'] = '<div class="d-flex">
-                <button class="btn btn-sm btn-success btn-edit" title="edit" data-toggle="modal" data-target="#modal-edit-ingestion" data-ed="' . base64_encode($value->id) . '"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                <button class="btn btn-sm btn-success btn-edit" title="edit" data-toggle="modal" data-target="#modal-edit-skin-contact" data-ed="' . base64_encode($value->id) . '"><i class="fa fa-edit" aria-hidden="true"></i></button>
                 </div>';
             }
 
@@ -92,8 +92,7 @@ class IngestionController extends Controller
         ]);
     }
     /**
-     * method store data
-     * @return json
+     * method handle save data
      */
     public function store(Request $request)
     {
@@ -113,10 +112,10 @@ class IngestionController extends Controller
         ];
 
         try {
-            $this->ingestionRepo->saveIngestion($data);
-            return \response()->json(['success' => \true, 'message' => 'Data saved!'], 200);
+            $this->skinContactRepo->saveSkinContact($data);
+            return \response()->json(['success' => true, 'message' => 'Data saved!'], 200);
         } catch (\Throwable $th) {
-            return \response()->json(['success' => \true, 'message' => 'Something went wrong'], 500);
+            return \response()->json(['success' => true, 'message' => 'Something went wrong'], 500);
         }
     }
     /**
@@ -125,12 +124,12 @@ class IngestionController extends Controller
     public function edit(Request $request)
     {
         try {
-            $ingestionData = $this->ingestionRepo->detailIngestion(\base64_decode($request->de));
+            $skinContactData = $this->skinContactRepo->detailSkinContact(\base64_decode($request->de));
             $data = [
-                'description' => $ingestionData->description,
-                'notes' => $ingestionData->notes,
+                'description' => $skinContactData->description,
+                'notes' => $skinContactData->notes,
             ];
-            switch ($ingestionData->language) {
+            switch ($skinContactData->language) {
                 case 'EN':
                     $data['lang'] = 'Eglish';
                     $data['lang_value'] = 'EN';
@@ -141,7 +140,6 @@ class IngestionController extends Controller
                     $data['lang_value'] = 'ID';
                     break;
             }
-
             //convert data to array
             return \response()->json(['success' => \true, 'data' => $data], 200);
         } catch (\Throwable $th) {
@@ -149,7 +147,7 @@ class IngestionController extends Controller
         }
     }
     /**
-     * method update data ingestion
+     * method update data skin contact
      */
     public function update(Request $request)
     {
@@ -163,19 +161,19 @@ class IngestionController extends Controller
         }
 
         try {
-            $this->ingestionRepo->updateIngestion($request);
+            $this->skinContactRepo->updateSkinContact($request);
             return \response()->json(['success' => \true, 'message' => 'Update success'], 200);
         } catch (\Throwable $th) {
             return \response()->json(['success' => \true, 'message' => 'Something went wrong'], 500);
         }
     }
     /**
-     * method handle delete data
+     * method delete data
      */
     public function destroy(Request $request)
     {
         try {
-            $this->ingestionRepo->deleteIngestion($request->dValue);
+            $this->skinContactRepo->deleteSkinContact($request->dValue);
             return \response()->json(['success' => \true, 'message' => 'Delete success!'], 200);
         } catch (\Throwable $th) {
             return \response()->json(['success' => \true, 'message' => 'Something went wrong'], 500);

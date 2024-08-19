@@ -21,6 +21,7 @@ use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
+use App\Http\Controllers\Rnd\SkinContactController;
 use App\Http\Controllers\Rnd\StoragePresController;
 use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\UnitController;
@@ -141,6 +142,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/ingestion/delete', 'destroy');
         Route::post('/ingestion/edit', 'edit');
         Route::post('/ingestion/update', 'update');
+    });
+    //skin contact 
+    Route::controller(SkinContactController::class)->group(function () {
+        Route::get('/skin-contact', 'index')->name('skin_contact');
+        Route::post('/skin-contact/list', 'listData');
+        Route::post('/skin-contact/save', 'store');
+        Route::post('/skin-contact/delete', 'destroy');
+        Route::post('/skin-contact/edit', 'edit');
+        Route::post('/skin-contact/update', 'update');
     });
     // super admin route start
     // user management
