@@ -16,6 +16,7 @@ use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\Rnd\ExtinguishingMediaController;
 use App\Http\Controllers\Rnd\EyeContactController;
 use App\Http\Controllers\Rnd\GhsController;
 use App\Http\Controllers\Rnd\IngestionController;
@@ -161,6 +162,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/eye-contact/delete', 'destroy');
         Route::post('/eye-contact/edit', 'edit');
         Route::post('/eye-contact/update', 'update');
+    });
+    // #FIRE FIIGHTING MEASURES
+    // extinguishing media
+    Route::controller(ExtinguishingMediaController::class)->group(function () {
+        Route::get('/extinguishing-media', 'index')->name('extinguishing_media');
+        Route::post('/extinguishing-media/list', 'listData');
+        Route::post('/extinguishing-media/save', 'store');
+        Route::post('/extinguishing-media/delete', 'destroy');
+        Route::post('/extinguishing-media/edit', 'edit');
+        Route::post('/extinguishing-media/update', 'update');
     });
     // super admin route start
     // user management
