@@ -16,6 +16,7 @@ use App\Http\Controllers\PhysicalHazardController;
 use App\Http\Controllers\Pic\SampleRequestPicController;
 use App\Http\Controllers\PreventionPresController;
 use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\Rnd\EyeContactController;
 use App\Http\Controllers\Rnd\GhsController;
 use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
@@ -151,6 +152,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/skin-contact/delete', 'destroy');
         Route::post('/skin-contact/edit', 'edit');
         Route::post('/skin-contact/update', 'update');
+    });
+    //eye contact 
+    Route::controller(EyeContactController::class)->group(function () {
+        Route::get('/eye-contact', 'index')->name('eye_contact');
+        Route::post('/eye-contact/list', 'listData');
+        Route::post('/eye-contact/save', 'store');
+        Route::post('/eye-contact/delete', 'destroy');
+        Route::post('/eye-contact/edit', 'edit');
+        Route::post('/eye-contact/update', 'update');
     });
     // super admin route start
     // user management
