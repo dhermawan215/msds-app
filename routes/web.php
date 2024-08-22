@@ -21,6 +21,7 @@ use App\Http\Controllers\Rnd\EyeContactController;
 use App\Http\Controllers\Rnd\GhsController;
 use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
+use App\Http\Controllers\Rnd\PmifController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\SffpController;
@@ -192,6 +193,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/spesific-hazard/delete', 'destroy');
         Route::post('/spesific-hazard/edit', 'edit');
         Route::post('/spesific-hazard/update', 'update');
+    });
+    // protection measures in fire
+    Route::controller(PmifController::class)->group(function () {
+        Route::get('/pmif', 'index')->name('pmif');
+        Route::post('/pmif/list', 'listData');
+        Route::post('/pmif/save', 'store');
+        Route::post('/pmif/delete', 'destroy');
+        Route::post('/pmif/edit', 'edit');
+        Route::post('/pmif/update', 'update');
     });
     // super admin route start
     // user management
