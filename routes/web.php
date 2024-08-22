@@ -25,6 +25,7 @@ use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\SffpController;
 use App\Http\Controllers\Rnd\SkinContactController;
+use App\Http\Controllers\Rnd\SpesificHazardController;
 use App\Http\Controllers\Rnd\StoragePresController;
 use App\Http\Controllers\SampleRequestController;
 use App\Http\Controllers\UnitController;
@@ -182,6 +183,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/sffp/delete', 'destroy');
         Route::post('/sffp/edit', 'edit');
         Route::post('/sffp/update', 'update');
+    });
+    // spesific hazard
+    Route::controller(SpesificHazardController::class)->group(function () {
+        Route::get('/spesific-hazard', 'index')->name('spesific_hazard');
+        Route::post('/spesific-hazard/list', 'listData');
+        Route::post('/spesific-hazard/save', 'store');
+        Route::post('/spesific-hazard/delete', 'destroy');
+        Route::post('/spesific-hazard/edit', 'edit');
+        Route::post('/spesific-hazard/update', 'update');
     });
     // super admin route start
     // user management
