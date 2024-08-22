@@ -23,6 +23,7 @@ use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\SampleSourceController;
+use App\Http\Controllers\Rnd\SffpController;
 use App\Http\Controllers\Rnd\SkinContactController;
 use App\Http\Controllers\Rnd\StoragePresController;
 use App\Http\Controllers\SampleRequestController;
@@ -172,6 +173,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/extinguishing-media/delete', 'destroy');
         Route::post('/extinguishing-media/edit', 'edit');
         Route::post('/extinguishing-media/update', 'update');
+    });
+    // special fire fighting procedures media
+    Route::controller(SffpController::class)->group(function () {
+        Route::get('/sffp', 'index')->name('sffp');
+        Route::post('/sffp/list', 'listData');
+        Route::post('/sffp/save', 'store');
+        Route::post('/sffp/delete', 'destroy');
+        Route::post('/sffp/edit', 'edit');
+        Route::post('/sffp/update', 'update');
     });
     // super admin route start
     // user management
