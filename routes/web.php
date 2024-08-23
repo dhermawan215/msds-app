@@ -23,6 +23,7 @@ use App\Http\Controllers\Rnd\IngestionController;
 use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\PmifController;
 use App\Http\Controllers\Rnd\ProductController;
+use App\Http\Controllers\Rnd\RiskPhrasesController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\SffpController;
 use App\Http\Controllers\Rnd\SkinContactController;
@@ -202,6 +203,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/pmif/delete', 'destroy');
         Route::post('/pmif/edit', 'edit');
         Route::post('/pmif/update', 'update');
+    });
+    //#REGULATORY INFORMATION
+    // risk phrases
+    Route::controller(RiskPhrasesController::class)->group(function () {
+        Route::get('/risk-phrases', 'index')->name('risk_phrases');
+        Route::post('/risk-phrases/list', 'listData');
+        Route::post('/risk-phrases/save', 'store');
+        Route::post('/risk-phrases/delete', 'destroy');
+        Route::post('/risk-phrases/edit', 'edit');
+        Route::post('/risk-phrases/update', 'update');
     });
     // super admin route start
     // user management
