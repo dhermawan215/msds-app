@@ -3,25 +3,25 @@
 namespace App\Http\Controllers\Rnd;
 
 use Illuminate\Http\Request;
-use App\Models\MasterRiskPhrases;
 use App\Traits\ModulePermissions;
 use App\Http\Controllers\Controller;
+use App\Models\MasterSafetyPhrases;
+use App\Repository\SafetyPhrasesRepository;
 use Illuminate\Support\Facades\Auth;
-use App\Repository\RiskPhrasesRepository;
 use Illuminate\Support\Facades\Validator;
 
-class RiskPhrasesController extends Controller
+class SafetyPhrasesController extends Controller
 {
     //controller for module risk phrases - regulatory informatio
     use ModulePermissions;
-    protected $sysModuleName = 'risk_phrases';
+    protected $sysModuleName = 'safety_phrases';
     const valuePermission = ['add', 'edit', 'delete'];
     protected static $url;
-    protected $riskPhraseRepo;
+    protected $safetyPhraseRepo;
 
-    public function __construct(RiskPhrasesRepository $riskPhrasesRepository)
+    public function __construct(SafetyPhrasesRepository $safetyPhrasesRepository)
     {
-        $this->riskPhraseRepo = $riskPhrasesRepository;
+        $this->safetyPhraseRepo = $safetyPhrasesRepository;
     }
 
     public function index()
@@ -31,7 +31,7 @@ class RiskPhrasesController extends Controller
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
-        return \view('pages.msds.risk-phrases.index', ['moduleFn' => $moduleFn]);
+        return \view('pages.msds.safety-phrases.index', ['moduleFn' => $moduleFn]);
     }
 
     /**
@@ -47,7 +47,7 @@ class RiskPhrasesController extends Controller
         $limit = $request['length'] ? $request['length'] : 15;
         $globalSearch = $request['search']['value'];
 
-        $query = MasterRiskPhrases::select('*');
+        $query = MasterSafetyPhrases::select('*');
 
         if ($globalSearch) {
             $query->where('code', 'like', '%' . $globalSearch . '%')
@@ -76,7 +76,7 @@ class RiskPhrasesController extends Controller
             $data['action'] = '';
             if (in_array(static::valuePermission[1], $moduleFn)) {
                 $data['action'] = '<div class="d-flex">
-                <button class="btn btn-sm btn-success btn-edit" title="edit" data-toggle="modal" data-target="#modal-edit-risk-phrases" data-ed="' . base64_encode($value->id) . '"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                <button class="btn btn-sm btn-success btn-edit" title="edit" data-toggle="modal" data-target="#modal-edit-safety-phrases" data-ed="' . base64_encode($value->id) . '"><i class="fa fa-edit" aria-hidden="true"></i></button>
                 </div>';
             }
 
@@ -112,7 +112,7 @@ class RiskPhrasesController extends Controller
             'created_by' => Auth::user()->name,
         ];
         try {
-            $this->riskPhraseRepo->saveRiskPhrases($data);
+            $this->safetyPhraseRepo->saveSafetyPhrases($data);
             return \response()->json(['success' => true, 'message' => 'Data saved!'], 200);
         } catch (\Throwable $th) {
             return \response()->json(['success' => true, 'message' => 'Something went wrong'], 500);
@@ -125,12 +125,12 @@ class RiskPhrasesController extends Controller
     public function edit(Request $request)
     {
         try {
-            $riskPhraseData = $this->riskPhraseRepo->detailRiskPhrases(\base64_decode($request->de));
+            $safetyData = $this->safetyPhraseRepo->detailSafetyPhrases(\base64_decode($request->de));
             $data = [
-                'description' => $riskPhraseData->description,
-                'code' => $riskPhraseData->code,
+                'description' => $safetyData->description,
+                'code' => $safetyData->code,
             ];
-            switch ($riskPhraseData->language) {
+            switch ($safetyData->language) {
                 case 'EN':
                     $data['lang'] = 'Eglish';
                     $data['lang_value'] = 'EN';
@@ -163,7 +163,7 @@ class RiskPhrasesController extends Controller
             return \response()->json($validator->errors(), 403);
         }
         try {
-            $this->riskPhraseRepo->updateRiskPhrases($request);
+            $this->safetyPhraseRepo->updateSafetyPhrases($request);
             return \response()->json(['success' => true, 'message' => 'Update success'], 200);
         } catch (\Throwable $th) {
             return \response()->json(['success' => true, 'message' => 'Something went wrong'], 500);
@@ -175,7 +175,7 @@ class RiskPhrasesController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $this->riskPhraseRepo->deleteRiskPhrases($request->dValue);
+            $this->safetyPhraseRepo->deleteSafetyPhrases($request->dValue);
             return \response()->json(['success' => \true, 'message' => 'Delete success!'], 200);
         } catch (\Throwable $th) {
             return \response()->json(['success' => \true, 'message' => 'Something went wrong'], 500);

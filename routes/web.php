@@ -24,6 +24,7 @@ use App\Http\Controllers\Rnd\InhalationController;
 use App\Http\Controllers\Rnd\PmifController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\RiskPhrasesController;
+use App\Http\Controllers\Rnd\SafetyPhrasesController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\SffpController;
 use App\Http\Controllers\Rnd\SkinContactController;
@@ -213,6 +214,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/risk-phrases/delete', 'destroy');
         Route::post('/risk-phrases/edit', 'edit');
         Route::post('/risk-phrases/update', 'update');
+    });
+    // safety phrases
+    Route::controller(SafetyPhrasesController::class)->group(function () {
+        Route::get('/safety-phrases', 'index')->name('safety_phrases');
+        Route::post('/safety-phrases/list', 'listData');
+        Route::post('/safety-phrases/save', 'store');
+        Route::post('/safety-phrases/delete', 'destroy');
+        Route::post('/safety-phrases/edit', 'edit');
+        Route::post('/safety-phrases/update', 'update');
     });
     // super admin route start
     // user management
