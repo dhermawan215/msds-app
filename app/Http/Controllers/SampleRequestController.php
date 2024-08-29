@@ -17,12 +17,14 @@ use App\Models\SampleRequestCustomer;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SalesSendRequestOfSample;
+use App\Traits\UserLogRecord;
 use Carbon\Carbon;
 
 class SampleRequestController extends Controller
 {
     //controller for user (sales) sample request
     use ModulePermissions;
+    use UserLogRecord;
     protected $sysModuleName = 'sample_request';
     const valuePermission = [
         'add',
@@ -646,11 +648,10 @@ class SampleRequestController extends Controller
         //get sample pic data
         $samplePic = User::whereHas('userGroup', function ($query) {
             $query->where('name', 'SAMPLE_PIC');
-        })->first();
+        })->get();
         //content email
         $content = [
-            'sample_pic_name' => $samplePic['name'],
-            'sample_pic_email' => $samplePic['email'],
+            'sample_pic_name' => 'Sample PIC',
             'sample_id' => $sampleData->sample_ID,
             'sample_subject' => $sampleData->subject,
             'required_date' => $sampleData->required_date,
@@ -661,20 +662,36 @@ class SampleRequestController extends Controller
         //create token expired
         $tokenExpiredAt = Carbon::now()->addMinutes(30);
 
-        $updateSample = $sampleRequest->update([
-            'sample_status' => 0,
-            'sample_pic' => $samplePic['id'],
-            'sample_pic_status' => 1,
-            'token_expired_at' => $tokenExpiredAt
-        ]);
+        try {
+            DB::beginTransaction();
+            //update sample
+            $updateSample = $sampleRequest->update([
+                'sample_status' => 0,
+                //convert array of id from db to array json and save to field sample_pic
+                'sample_pic' => json_encode($samplePic->pluck('id')->toArray()),
+                'sample_pic_status' => 1,
+                'token_expired_at' => $tokenExpiredAt
+            ]);
+            //send notification to sample pic
+            $sendNotif = Notification::send($samplePic, new SalesSendRequestOfSample($content));
+            //create user log
+            $dataUserLogSendRequest = [
+                'user_id' => Auth::user()->id,
+                'email' => Auth::user()->email,
+                'date_time' => Carbon::now()->toDateTimeString(),
+                'ip_address' => $request->ip(),
+                'log_user_agent' => $request->header('user-agent'),
+                'activity' => 'send request sample ' . $sampleData->sample_ID,
+                'status' => 'true'
+            ];
 
-        $recipents = [
-            $samplePic['name'] = $samplePic['email'],
-        ];
-
-        $sendNotif = Notification::route('mail', $recipents)->notify(new SalesSendRequestOfSample($content));
-
-        return response()->json(['success' => true, 'message' => 'Sample has been requested', 'url' => static::$url], 200);
+            $this->logUserActivity($dataUserLogSendRequest);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Sample has been requested', 'url' => static::$url], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Something went wrong, please try again', 'url' => static::$url], 500);
+        }
     }
     /**
      * handle preview of sample

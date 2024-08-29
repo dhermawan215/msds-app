@@ -10,7 +10,7 @@ class SampleRequestProduct extends Model
 {
     use HasFactory;
     protected $table = 'sample_request_products';
-    protected $fillable = ['sample_id', 'product_id', 'qty', 'label_name', 'assign_to'];
+    protected $fillable = ['sample_id', 'product_id', 'qty', 'label_name', 'finished', 'assign_to'];
 
     //relation to product
     public function sampleProduct(): BelongsTo

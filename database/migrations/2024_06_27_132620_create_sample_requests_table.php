@@ -24,7 +24,7 @@ return new class extends Migration
             $table->text('requestor_note')->nullable();
             $table->bigInteger('sample_source_id')->nullable();
             $table->integer('sample_status')->nullable();
-            $table->bigInteger('sample_pic')->nullable();
+            $table->text('sample_pic')->nullable();
             $table->tinyInteger('sample_pic_status')->nullable();
             $table->text('sample_pic_note')->nullable();
             $table->timestamp('sample_pic_approve_at')->nullable();

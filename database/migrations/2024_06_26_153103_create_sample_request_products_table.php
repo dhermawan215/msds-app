@@ -19,6 +19,8 @@ return new class extends Migration
             $table->bigInteger('product_id')->nullable();
             $table->string('qty')->nullable();
             $table->string('label_name')->nullable();
+            $table->tinyInteger('finished')->default(0)->nullable();
+            $table->bigInteger('assign_to')->nullable();
             $table->timestamps();
         });
     }
