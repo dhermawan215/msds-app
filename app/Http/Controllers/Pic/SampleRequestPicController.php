@@ -23,7 +23,9 @@ class SampleRequestPicController extends Controller
     use UserLogRecord;
     protected $sysModuleName = 'pic_sample_request';
     const valuePermission = [
-        'change_status', 'asign', 'detail'
+        'change_status',
+        'assign',
+        'detail',
     ];
     const approvalValueDesc = ['pending', 'process', 'finish'];
     const approvalValue = ['0', '1', '2'];
@@ -198,11 +200,23 @@ class SampleRequestPicController extends Controller
             $data['action'] = '';
             //jika status request dan izin asign ada maka
             if (static::sampleStatusCode[0] == $value->sample_status && in_array(static::valuePermission[1], $moduleFn)) {
-                $data['action'] = '<button class="btn btn-sm btn-primary btn-assign" title="assign sample" data-toggle="modal" data-target="#modal-assign-sample" data-as="' . base64_encode($value->id) . '"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
-                <a href="#" class="btn btn-sm btn-warning btn-product-assign" title="product assign"><i class="fa fa-toggle-off" aria-hidden="true"></i></a>
-                <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                //check if sample request product assign null
+                $sampleUnSign = $this->samplePicRepository->countUnSignSampleProduct($value->id);
+                switch ($sampleUnSign) {
+                    case 'false':
+                        $data['action'] = ' <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        break;
+                    case 0:
+                        $data['action'] = '<button class="btn btn-sm btn-primary btn-assign" title="assign sample" data-toggle="modal" data-target="#modal-assign-sample" data-as="' . base64_encode($value->id) . '"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
+                        <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        break;
+                    default:
+                        $data['action'] = '<a href="' . \route('pic_sample_request.assign', $value->sample_ID) . '" class="btn btn-sm btn-warning btn-product-assign" title="product assign"><i class="fa fa-toggle-off" aria-hidden="true"></i></a>
+                        <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        break;
+                }
             }
-            //jika status confirm atau ready dan izin change status ada
+            //jika status  ready dan izin change status ada
             elseif (static::sampleStatusCode[1] == $value->sample_status && in_array(static::valuePermission[1], $moduleFn)) {
                 $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>
                 <button class="btn btn-sm btn-outline-danger btn-open-tr" data-tr="' . base64_encode($value->id) . '" title="open transaction"><i class="fa fa-envelope-open" aria-hidden="true"></i></button>';
@@ -269,7 +283,7 @@ class SampleRequestPicController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 403);
         }
-
+        //perubahan ini belum ditest
         $userLab = $request->assign;
         $idSample = \base64_decode($request->as);
         $picNote = $request->pic_note;
@@ -378,11 +392,19 @@ class SampleRequestPicController extends Controller
      */
     public function detailSampleProduct($sampleId)
     {
+        $modulePermission = $this->permission($this->sysModuleName);
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[1], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+        return \view('pic.sample-request.assign-sample-product', [
+            'javascriptID' => 'assign-sample-product',
+            'sampleID' => $sampleId,
+            'homeUrl' => static::$url,
+        ]);
     }
     /**
      * datatable for list sample product
      */
-    public function listSampleProduct(Request $request)
-    {
-    }
+    public function listSampleProduct(Request $request) {}
 }

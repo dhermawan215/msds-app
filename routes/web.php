@@ -373,6 +373,7 @@ Route::prefix('pic')->middleware('auth')->group(function () {
         Route::post('/sample-request/open-transaction', 'openTransactionSampleRequest');
         Route::get('/sample-request/change-status/{id}', 'changeStatus')->name('pic_sample_request.change_status');
         Route::post('/sample-request/delivery-information', 'deliveryInformation');
+        Route::get('/sample-request/assign-sample-product/{sampleId}', 'detailSampleProduct')->name('pic_sample_request.assign');
     });
 });
 //Route sample pic end

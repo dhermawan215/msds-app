@@ -114,4 +114,18 @@ class SamplePicRepository implements SamplePicInterface
 
         return $sampleRequestChangeStatus;
     }
+
+    public function countUnSignSampleProduct($sampleId)
+    {
+        $sampleProduct = SampleRequestProduct::where('sample_id', $sampleId);
+        $sampleProductCollection = $sampleProduct->get();
+        if (!$sampleProductCollection->isEmpty()) {
+            $query = $sampleProduct->where(function ($q) {
+                $q->whereNull('assign_to')
+                    ->where('finished', 0);
+            });
+            return $query->count();
+        }
+        return 'false';
+    }
 }

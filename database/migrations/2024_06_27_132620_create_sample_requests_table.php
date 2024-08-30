@@ -28,7 +28,7 @@ return new class extends Migration
             $table->tinyInteger('sample_pic_status')->nullable();
             $table->text('sample_pic_note')->nullable();
             $table->timestamp('sample_pic_approve_at')->nullable();
-            $table->bigInteger('rnd')->nullable();
+            $table->text('rnd')->nullable();
             $table->tinyInteger('rnd_status')->nullable();
             $table->text('rnd_note')->nullable();
             $table->timestamp('rnd_approve_at')->nullable();
