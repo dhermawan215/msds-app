@@ -105,7 +105,7 @@
 </section>
 
 <!-- modal asign sample start-->
-<div class="modal fade" id="modal-assign-sample">
+<!-- <div class="modal fade" id="modal-assign-sample">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -139,10 +139,10 @@
             </div>
         </div>
         <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- modal asign sample end-->
+<!-- </div> -->
+<!-- /.modal-dialog -->
+<!-- </div>  -->
+<!-- modal asign sample end -->
 
 <!-- modal delivery information start-->
 <div class="modal fade" id="modal-delivery-information">

@@ -374,6 +374,11 @@ Route::prefix('pic')->middleware('auth')->group(function () {
         Route::get('/sample-request/change-status/{id}', 'changeStatus')->name('pic_sample_request.change_status');
         Route::post('/sample-request/delivery-information', 'deliveryInformation');
         Route::get('/sample-request/assign-sample-product/{sampleId}', 'detailSampleProduct')->name('pic_sample_request.assign');
+        Route::post('/sample-request/sample-product-information', 'listSampleProduct');
+        Route::post('/sample-request/send-assign-sample-product', 'assignSampleProductToUser');
+        Route::post('/sample-request/info-assign-sample-product', 'infoAssign');
+        Route::post('/sample-request/edit-assign-sample-product', 'editAssign');
+        Route::post('/sample-request/assign-sample-product/update', 'updateAssign');
     });
 });
 //Route sample pic end

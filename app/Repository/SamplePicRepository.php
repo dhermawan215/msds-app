@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\SampleRequest;
 use App\Models\SampleRequestProduct;
 use App\Models\SampleRequestCustomer;
+use App\Models\SampleSource;
 use Illuminate\Support\Facades\Request;
 use App\Repository\Interface\SamplePicInterface;
 
@@ -114,7 +115,9 @@ class SamplePicRepository implements SamplePicInterface
 
         return $sampleRequestChangeStatus;
     }
-
+    /**
+     * get qty sample product when null (before assign)
+     */
     public function countUnSignSampleProduct($sampleId)
     {
         $sampleProduct = SampleRequestProduct::where('sample_id', $sampleId);
@@ -127,5 +130,45 @@ class SamplePicRepository implements SamplePicInterface
             return $query->count();
         }
         return 'false';
+    }
+    /**
+     * get sample id
+     * @param sampleID
+     */
+    public function getSampleId($sampleID)
+    {
+        return SampleRequest::select('id', 'sample_ID')->where('sample_ID', $sampleID)->first();
+    }
+    /**
+     * assign sample product
+     * @param request
+     */
+    public function assignSampleProduct($request)
+    {
+        $sampleProduct = SampleRequestProduct::find(\base64_decode($request->as))
+            ->update([
+                'assign_to' => $request->user
+            ]);
+
+        return $sampleProduct;
+    }
+    /**
+     * get information sample assign to
+     * @param json decode
+     */
+    public function getInformationSampleAssign($id)
+    {
+        $sampleAssignTo = SampleRequestProduct::with('sampleProductUser')
+            ->where('id', $id)->first();
+        return $sampleAssignTo;
+    }
+    /**
+     * get information user assign in sample product
+     */
+    public function getUserInSampleProduct($id)
+    {
+        $userSampleProduct = SampleRequestProduct::with('sampleProductUser:id,name,email')
+            ->where('sample_id', $id)->get();
+        return $userSampleProduct;
     }
 }

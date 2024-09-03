@@ -10,6 +10,7 @@ use App\Traits\ModulePermissions;
 use App\Repository\UserRepository;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\SampleRequestProduct;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\SamplePicAssign;
 use App\Repository\SamplePicRepository;
@@ -207,8 +208,7 @@ class SampleRequestPicController extends Controller
                         $data['action'] = ' <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
                         break;
                     case 0:
-                        $data['action'] = '<button class="btn btn-sm btn-primary btn-assign" title="assign sample" data-toggle="modal" data-target="#modal-assign-sample" data-as="' . base64_encode($value->id) . '"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
-                        <a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        $data['action'] = '<a href="' . \route('pic_sample_request.detail', $value->sample_ID) . '"class="btn btn-sm btn-outline-success btn-detail" title="detail sample"><i class="fa fa-eye" aria-hidden="true"></i></a>';
                         break;
                     default:
                         $data['action'] = '<a href="' . \route('pic_sample_request.assign', $value->sample_ID) . '" class="btn btn-sm btn-warning btn-product-assign" title="product assign"><i class="fa fa-toggle-off" aria-hidden="true"></i></a>
@@ -276,23 +276,25 @@ class SampleRequestPicController extends Controller
      */
     public function assignSample(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'assign' => 'required',
-        ]);
+        $getSampleData = $this->samplePicRepository->getSampleId($request->as);
+        $getUserSampleProduct = $this->samplePicRepository->getUserInSampleProduct($getSampleData->id);
+        // get user data from sample product and convert to unique array
+        $userLab = array_values(array_unique($getUserSampleProduct->pluck('sampleProductUser.id')->toArray()));
+        //get email and name for email receipt
+        $userContentReceipent = $getUserSampleProduct->pluck('sampleProductUser.name', 'sampleProductUser.email')->toArray();
+        //get the unique array when duplicate value of array
+        $userNameDearUnique = array_values(array_unique($getUserSampleProduct->pluck('sampleProductUser.name')->toArray()));
+        //convert to string as: jhon, doe, etc
+        $userNameDear = implode(',', \json_decode(json_encode($userNameDearUnique)));
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 403);
-        }
-        //perubahan ini belum ditest
-        $userLab = $request->assign;
-        $idSample = \base64_decode($request->as);
+        $idSample = $getSampleData->id;
         $picNote = $request->pic_note;
         try {
             //update data assign process
             DB::beginTransaction();
             $updateSample = $this->samplePicRepository->updateSampleWhenAssign(
                 $data = [
-                    'rnd' => $userLab,
+                    'rnd' => \json_encode($userLab),
                     'sample_pic_note' => $picNote
                 ],
                 $idSample
@@ -300,11 +302,9 @@ class SampleRequestPicController extends Controller
             DB::commit();
 
             $sampleContent = $this->samplePicRepository->sampleForContentEmail($idSample);
-            $userContent = $this->userRepository->getUserSampleAssign($userLab);
-            $userContentData = $userContent->pluck('email', 'name')->toArray();
-            $userNamePluck = $userContent->pluck('name')->toArray();
+
             $content = [
-                'rnd_name' => implode(',', \json_decode(json_encode($userNamePluck))),
+                'rnd_name' => $userNameDear,
                 // 'rnd_email' => $userContent->email,
                 'sample_id' => $sampleContent->sample_ID,
                 'sample_subject' => $sampleContent->subject,
@@ -316,13 +316,13 @@ class SampleRequestPicController extends Controller
                 'sample_token' => $sampleContent->token,
             ];
 
-            $recipents = $userContentData;
+            $recipents = $userContentReceipent;
             $sendNotif = Notification::route('mail', $recipents)->notify(new SamplePicAssign($content));
 
-            return \response()->json(['success' => \true, 'message' => 'Assign success']);
+            return \response()->json(['success' => \true, 'message' => 'Assign success', 'url' => static::$url], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return \response()->json(['success' => \false, 'message' => 'Something went wrong!, please try again']);
+            return \response()->json(['success' => \false, 'message' => 'Something went wrong!, please try again'], 500);
         }
     }
     /**
@@ -406,5 +406,142 @@ class SampleRequestPicController extends Controller
     /**
      * datatable for list sample product
      */
-    public function listSampleProduct(Request $request) {}
+    public function listSampleProduct(Request $request)
+    {
+        $draw = $request['draw'];
+        $offset = $request['start'] ? $request['start'] : 0;
+        $limit = $request['length'] ? $request['length'] : 15;
+        $globalSearch = $request['search']['value'];
+        // get sample data
+        $sample = $this->samplePicRepository->getSampleId($request->sampleID);
+        $sampleUnsign = $this->samplePicRepository->countUnSignSampleProduct($sample->id);
+        $query = SampleRequestProduct::select('*')->with('sampleProduct:id,product_code,product_function')
+            ->where('sample_id', $sample->id);
+
+        if ($globalSearch) {
+            // searching product_code inside relation of smapleProduct
+            $query->where(function ($subQuery) use ($globalSearch) {
+                $subQuery->where('qty', 'like', '%' . $globalSearch . '%')
+                    ->orWhere('label_name', 'like', '%' . $globalSearch . '%')
+                    ->orWhereHas('sampleProduct', function ($subQueryHas) use ($globalSearch) {
+                        $subQueryHas->where('product_code', 'like', '%' . $globalSearch . '%');
+                    });
+            });
+        }
+
+        $recordsFiltered = $query->count();
+        $resData = $query->skip($offset)
+            ->take($limit)
+            ->get();
+        $recordsTotal = $resData->count();
+
+        $data = [];
+        $i = $offset + 1;
+        $arr = [];
+
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['product'] = $value->sampleProduct ? $value->sampleProduct->product_code . '-' . $value->sampleProduct->product_function : 'data not found';
+            $data['qty'] = $value->qty;
+            $data['label'] = $value->label_name;
+            $data['action'] = '';
+            if (is_null($value->assign_to)) {
+                $data['action'] = '<button class="btn btn-sm btn-outline-warning btn-assign" data-assg="' . \base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-assign-sample-product" title="assign this product"><i class="fa fa-tags" aria-hidden="true"></i></button>';
+            } else {
+                $data['action'] = '<button class="btn btn-sm btn-outline-info btn-info-assign" data-assg="' . \base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-info-assign-sample-product" title="info assign this product"><i class="fa fa-info" aria-hidden="true"></i></button>
+                <button class="btn btn-sm btn-primary btn-edit-assign" data-assg="' . \base64_encode($value->id) . '" data-toggle="modal" data-target="#modal-edit-assign-sample-product" title="edit assign to"><i class="fa fa-edit"></i></button>';
+            }
+            $arr[] = $data;
+            $i++;
+        }
+
+        return \response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $arr,
+            'sampleUnSign' => $sampleUnsign
+        ]);
+    }
+    /**
+     * method handle assign sample product to user
+     */
+    public function assignSampleProductToUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 403);
+        }
+
+        try {
+            DB::beginTransaction();
+            //assign process
+            $this->samplePicRepository->assignSampleProduct($request);
+            DB::commit();
+            return \response()->json(['success' => true, 'message' => 'success assign'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return \response()->json(['success' => false, 'message' => 'something went wrong'], 500);
+        }
+    }
+    /**
+     * information this sample to
+     */
+    public function infoAssign(Request $request)
+    {
+        try {
+            $data = $this->samplePicRepository->getInformationSampleAssign(\base64_decode($request->av));
+            $responseData = [
+                'user' => $data->sampleProductUser ? $data->sampleProductUser->name : 'empty',
+                'email' => $data->sampleProductUser ? $data->sampleProductUser->email : 'empty',
+            ];
+            return \response()->json(['success' => true, 'message' => 'success', 'data' => $responseData], 200);
+        } catch (\Throwable $th) {
+            return \response()->json(['success' => true, 'message' => 'error', 'data' => null], 200);
+        }
+    }
+    /**
+     * information this sample to
+     */
+    public function editAssign(Request $request)
+    {
+        try {
+            $data = $this->samplePicRepository->getInformationSampleAssign(\base64_decode($request->av));
+            $responseData = [
+                'id' => $data->sampleProductUser ? $data->sampleProductUser->id : null,
+                'text' => $data->sampleProductUser ? $data->sampleProductUser->name : 'empty',
+            ];
+            return \response()->json(['success' => true, 'message' => 'success', 'data' => $responseData], 200);
+        } catch (\Throwable $th) {
+            return \response()->json(['success' => true, 'message' => 'error', 'data' => null], 200);
+        }
+    }
+    /**
+     *if value changed, this method can be handle
+     * update assign sample product to user
+     */
+    public function updateAssign(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 403);
+        }
+
+        try {
+            DB::beginTransaction();
+            //assign process
+            $this->samplePicRepository->assignSampleProduct($request);
+            DB::commit();
+            return \response()->json(['success' => true, 'message' => 'success update assign'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return \response()->json(['success' => false, 'message' => 'something went wrong'], 500);
+        }
+    }
 }

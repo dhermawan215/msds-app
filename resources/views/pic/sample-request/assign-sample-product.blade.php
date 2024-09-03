@@ -43,21 +43,27 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-titile">Sample Request Product Data</h3>
+                            <h3 class="card-titile">Assign Sample Request Product Data</h3>
                         </div>
                         <div class="card-body">
                             <div class="ml-1">
                                 <a href="{{ $homeUrl }}" class="btn btn-sm btn-outline-danger"><i
                                         class="fa fa-arrow-left" aria-hidden="true"></i> Back</a>
+                                <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
+                                    <i class="fa fa-retweet" aria-hidden="true"></i> Refresh
+                                </button>
+                                <button class="btn btn-sm btn-warning" id="btn-send-assign-email" data-toggle="modal"
+                                    data-target="#modal-assign-sample" disabled><i class="fa fa-paper-plane"
+                                        aria-hidden="true"></i> Assign To
+                                    Email</button>
                             </div>
                             <div class="m-1">
-                                Please assign the sample request product bellow:
+                                <b>Sample ID: {{ $sampleID }}</b>, Please assign the sample request product bellow:
                             </div>
                             <div class="m-1">
                                 <table class="table table-bordered" id="tbl-{{ $javascriptID }}" style="width: 100%;">
                                     <thead class="text-center">
                                         <tr>
-                                            <th style="width: 15px;">#</th>
                                             <th style="width: 10px;">No</th>
                                             <th>Product</th>
                                             <th>Qty</th>
@@ -79,35 +85,25 @@
         </div><!--/. container-fluid -->
     </section>
 
-    <!-- modal add product start-->
-    <div class="modal fade" id="modal-edit-{{ $javascriptID }}">
+    <!-- modal add user assign start-->
+    <div class="modal fade" id="modal-{{ $javascriptID }}">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Modal Edit</h4>
+                    <h4 class="modal-title">Modal Assign Sample Product</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="javascript:;" method="post" id="form-edit-{{ $javascriptID }}">
+                    <form action="javascript:;" method="post" id="form-{{ $javascriptID }}">
                         @csrf
                         <div class="form-group row">
-                            <label for="product">Product</label>
-                            <select name="product" id="product-edit" class="form-control"></select>
-                        </div>
-                        <div class="form-group row">
-                            <label for="qty">Qty</label>
-                            <input type="text" name="qty" id="qty-edit" class="form-control"
-                                placeholder="eg: 1bottle @ 500ml"></input>
-                        </div>
-                        <div class="form-group row">
-                            <label for="label-name">Label name</label>
-                            <input type="text" name="label_name" id="label-name-edit" class="form-control"
-                                placeholder="label name">
+                            <label for="user">User</label>
+                            <select name="user" id="user" class="form-control"></select>
                         </div>
                         <div class="form-group row mt-1">
-                            <button type="submit" class="btn btn-success">Update</button>
+                            <button type="submit" class="btn btn-success">Assign</button>
                         </div>
                     </form>
                 </div>
@@ -119,7 +115,100 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
-    <!-- modal add product end-->
+    <!-- modal add user assign end-->
+    <!-- modal add user assign start-->
+    <div class="modal fade" id="modal-edit-{{ $javascriptID }}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Edit Assign Sample Product</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:;" method="post" id="form-edit-{{ $javascriptID }}">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="user">User</label>
+                            <select name="user" id="user-edit" class="form-control"></select>
+                        </div>
+                        <div class="form-group row mt-1">
+                            <button type="submit" class="btn btn-success">Assign</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal add user assign end-->
+    <!-- modal info assign start-->
+    <div class="modal fade" id="modal-info-{{ $javascriptID }}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Info Assign Sample Product</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="user">User</label>
+                        <input type="text" disabled id="user-info" class="form-control">
+                    </div>
+                    <div class="form-group row">
+                        <label for="user">Email</label>
+                        <input type="text" disabled id="email-info" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal info assign end-->
+
+    <!-- modal asign sample start-->
+    <div class="modal fade" id="modal-assign-sample">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Assign Sample</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:;" method="post" id="form-asign-sample">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="name">PIC Note</label>
+                            <input type="text" name="pic_note" id="pic-note" class="form-control"
+                                placeholder="pic note">
+                        </div>
+                        <div class="form-group row mt-1">
+                            <button type="submit" class="btn btn-primary">Assign</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal asign sample end-->
 @endsection
 @push('custom_js')
     <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
@@ -133,5 +222,5 @@
     <script>
         var sampleID = '{{ $sampleID }}';
     </script>
-    <script src="{{ asset('dist/js/sample-request/sample-requests/create-sample-product.min.js?q=') . time() }}"></script>
+    <script src="{{ asset('dist/js/sample-request/pic/sample-product-assign.min.js?q=') . time() }}"></script>
 @endpush
