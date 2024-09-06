@@ -17,7 +17,7 @@ class SampleRequest extends Model
         'sample_ID',
         'subject',
         'requestor',
-        'required_date',
+        'request_date',
         'delivery_date',
         'delivery_by',
         'requestor_note',

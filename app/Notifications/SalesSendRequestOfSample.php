@@ -49,7 +49,7 @@ class SalesSendRequestOfSample extends Notification
             ->line($this->content['sample_requestor'] . ' has submited the sample, with detail as:')
             ->line('Sample ID: ' . $this->content['sample_id'])
             ->line('Subject: ' . $this->content['sample_subject'])
-            ->line('Required date: ' . $this->content['required_date'])
+            ->line('Request date: ' . $this->content['request_date'])
             ->line('Delivery date: ' . $this->content['delivery_date'])
             ->line('For information this sample please login to system.')
             ->action('Show detail', route('sample_request.preview', $this->content['sample_token']))

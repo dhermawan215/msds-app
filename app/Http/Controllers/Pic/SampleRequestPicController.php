@@ -74,7 +74,7 @@ class SampleRequestPicController extends Controller
             'id',
             'sample_ID',
             'subject',
-            'required_date',
+            'request_date',
             'delivery_date',
             'delivery_by',
             'sample_status',
@@ -112,7 +112,7 @@ class SampleRequestPicController extends Controller
             $data['rnum'] = $i;
             $data['id'] = $value->sample_ID;
             $data['subject'] = $value->subject;
-            $data['required'] = $value->required_date;
+            $data['request'] = $value->request_date;
             $data['delivery'] = $value->delivery_date;
             //check status pic
             switch ($value->sample_pic_status) {
@@ -309,7 +309,7 @@ class SampleRequestPicController extends Controller
                 'sample_id' => $sampleContent->sample_ID,
                 'sample_subject' => $sampleContent->subject,
                 'requestor' => $sampleContent->sampleRequestor->name,
-                'required_date' => $sampleContent->required_date,
+                'request_date' => $sampleContent->request_date,
                 'delivery_date' => $sampleContent->delivery_date,
                 'sample_pic' => Auth::user()->name,
                 'sample_pic_note' => $sampleContent->sample_pic_note,

@@ -55,9 +55,9 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col">
-                                        <label for="required-date">Required date</label>
+                                        <label for="required-date">Request date</label>
                                         <input type="date" name="required_date" id="required-date" class="form-control"
-                                            value="{{ $data['sampleRequestData']->required_date }}" readonly>
+                                            value="{{ $data['sampleRequestData']->request_date }}" readonly>
                                     </div>
                                     <div class="col">
                                         <label for="delivery-date">Delivery date</label>

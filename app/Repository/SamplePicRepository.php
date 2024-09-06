@@ -20,7 +20,7 @@ class SamplePicRepository implements SamplePicInterface
      */
     public function detailOfSample($sampleId)
     {
-        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'sample_pic_note', 'rnd_note', 'cs_note', 'token', 'token_expired_at')
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'sample_pic_note', 'rnd_note', 'cs_note', 'token', 'token_expired_at')
             ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
             ->where('sample_ID', $sampleId)->first();
         $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();
@@ -33,7 +33,7 @@ class SamplePicRepository implements SamplePicInterface
      */
     public function sampleForContentEmail($id)
     {
-        $sampleRequestData = SampleRequest::select('sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'sample_pic_note', 'token')
+        $sampleRequestData = SampleRequest::select('sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'sample_pic_note', 'token')
             ->with('sampleRequestor:id,name,email')->where('id', $id)
             ->first();
         return $sampleRequestData;

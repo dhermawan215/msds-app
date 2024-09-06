@@ -80,7 +80,7 @@ class SampleRequestController extends Controller
             'id',
             'sample_ID',
             'subject',
-            'required_date',
+            'request_date',
             'delivery_date',
             'sample_status',
             'delivery_date',
@@ -119,7 +119,7 @@ class SampleRequestController extends Controller
             $data['rnum'] = $i;
             $data['id'] = $value->sample_ID;
             $data['subject'] = $value->subject;
-            $data['required'] = $value->required_date;
+            $data['request'] = $value->request_date;
             $data['delivery'] = $value->delivery_date;
             $data['pic'] = $value->sample_pic;
             //check status pic
@@ -238,6 +238,8 @@ class SampleRequestController extends Controller
             } elseif (static::sampleStatusCode[4] == $value->sample_status) {
                 $data['action'] = '<a href="#" class="btn btn-sm btn-outline-success mt-1" title="Change status"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
                 <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+            } else {
+                $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
             $arr[] = $data;
             $i++;
@@ -294,7 +296,7 @@ class SampleRequestController extends Controller
         $validator = Validator::make($request->all(), [
             'sample_id' => 'unique:sample_requests,sample_ID',
             'subject' => 'required|max:200',
-            'required_date' => 'required',
+            'request_date' => 'required',
             'delivery_date' => 'required',
             'sample_source' => 'required',
         ]);
@@ -311,7 +313,7 @@ class SampleRequestController extends Controller
                 'sample_ID' => $request->sample_id,
                 'subject' => $request->subject,
                 'requestor' => $requestor->id,
-                'required_date' => $request->required_date,
+                'request_date' => $request->request_date,
                 'delivery_date' => $request->delivery_date,
                 'delivery_by' => $request->delivery_by,
                 'requestor_note' => $request->requestor_note,
@@ -339,7 +341,7 @@ class SampleRequestController extends Controller
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
             return \view('forbiden-403');
         }
-        $sample = SampleRequest::select('sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
+        $sample = SampleRequest::select('sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
             ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
             ->where('sample_ID', $id)->first();
         $sampleSource = SampleSource::select('id', 'name')->get();
@@ -358,7 +360,7 @@ class SampleRequestController extends Controller
         $sampleRequest = SampleRequest::where('sample_ID', $request->sample_id);
         $validator = Validator::make($request->all(), [
             'subject' => 'required|max:200',
-            'required_date' => 'required',
+            'request_date' => 'required',
             'delivery_date' => 'required',
             'sample_source' => 'required',
         ]);
@@ -368,7 +370,7 @@ class SampleRequestController extends Controller
         }
         $sampleRequest->update([
             'subject' => $request->subject,
-            'required_date' => $request->required_date,
+            'request_date' => $request->request_date,
             'delivery_date' => $request->delivery_date,
             'delivery_by' => $request->delivery_by,
             'requestor_note' => $request->requestor_note,
@@ -400,7 +402,7 @@ class SampleRequestController extends Controller
             return \view('forbiden-403');
         }
 
-        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id')
             ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
             ->where('sample_ID', $id)->first();
         $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();
@@ -654,7 +656,7 @@ class SampleRequestController extends Controller
             'sample_pic_name' => 'Sample PIC',
             'sample_id' => $sampleData->sample_ID,
             'sample_subject' => $sampleData->subject,
-            'required_date' => $sampleData->required_date,
+            'request_date' => $sampleData->request_date,
             'delivery_date' => $sampleData->delivery_date,
             'sample_requestor' => $sampleData->sampleRequestor->name,
             'sample_token' => $sampleData->token,
@@ -699,7 +701,7 @@ class SampleRequestController extends Controller
      */
     public function preview($token)
     {
-        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'required_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'token', 'token_expired_at')
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'token', 'token_expired_at')
             ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
             ->where('token', $token)->first();
         $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();

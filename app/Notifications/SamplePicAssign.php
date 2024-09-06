@@ -49,7 +49,7 @@ class SamplePicAssign extends Notification
             ->line('Sample ID: ' . $this->content['sample_id'])
             ->line('Subject: ' . $this->content['sample_subject'])
             ->line('Requestor: ' . $this->content['requestor'])
-            ->line('Required date: ' . $this->content['required_date'])
+            ->line('Request date: ' . $this->content['request_date'])
             ->line('Delivery date: ' . $this->content['delivery_date'])
             ->line('Sample PIC note: ' . $this->content['sample_pic_note'])
             ->line('For information this sample please login to system.')

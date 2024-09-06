@@ -25,6 +25,7 @@ use App\Http\Controllers\Rnd\PmifController;
 use App\Http\Controllers\Rnd\ProductController;
 use App\Http\Controllers\Rnd\RiskPhrasesController;
 use App\Http\Controllers\Rnd\SafetyPhrasesController;
+use App\Http\Controllers\Rnd\SampleRequestRndController;
 use App\Http\Controllers\Rnd\SampleSourceController;
 use App\Http\Controllers\Rnd\SffpController;
 use App\Http\Controllers\Rnd\SkinContactController;
@@ -316,6 +317,11 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
         Route::post('/ghs/save', 'store');
         Route::post('/ghs/update', 'update');
         Route::post('/ghs/delete', 'destroy');
+    });
+    //Route sample request
+    Route::controller(SampleRequestRndController::class)->group(function () {
+        Route::get('/sample-request', 'index')->name('rnd_sample_request');
+        Route::post('/sample-request/list', 'list');
     });
 });
 // Route RND END

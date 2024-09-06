@@ -43,7 +43,7 @@ var Index = (function () {
                 { data: "rnum", orderable: false },
                 { data: "id", orderable: false },
                 { data: "subject", orderable: false },
-                { data: "required", orderable: false },
+                { data: "request", orderable: false },
                 { data: "delivery", orderable: false },
                 { data: "delivery_by", orderable: false },
                 { data: "pic", orderable: false },

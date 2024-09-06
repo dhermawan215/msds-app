@@ -56,8 +56,8 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col">
-                                        <label for="required-date">Required date</label>
-                                        <input type="date" name="required_date" id="required-date" class="form-control">
+                                        <label for="request-date">Request date</label>
+                                        <input type="date" name="request_date" id="request-date" class="form-control">
                                     </div>
                                     <div class="col">
                                         <label for="delivery-date">Delivery date</label>
