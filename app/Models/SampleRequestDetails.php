@@ -12,7 +12,7 @@ class SampleRequestDetails extends Model
 
     protected $table = 'sample_request_details';
 
-    protected $fillable = ['sample_id', 'sample_req_product_id', 'product_id', 'batch_type', 'batch_number', 'netto', 'ghs', 'user_request_name', 'manufacture_date', 'expired_date'];
+    protected $fillable = ['sample_id', 'sample_req_product_id', 'product_id', 'batch_type', 'batch_number', 'product_remarks', 'released_by', 'netto', 'ghs', 'user_request_name', 'manufacture_date', 'expired_date'];
     //relation to sample request product
     public function sampleRequestProduct(): BelongsTo
     {

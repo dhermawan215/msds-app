@@ -109,6 +109,8 @@ class SampleRndRepository
             'product_id' => \base64_decode($data['prVal']),
             'batch_type' => $data['batch_type'],
             'batch_number' => $data['batch_number'],
+            'product_remarks' => $data['product_remarks'],
+            'released_by' => $data['released_by'],
             'ghs' => \json_encode($data['ghs']),
             'user_request_name' => $data['requestor'],
             'manufacture_date' => $data['manufacture_date'],

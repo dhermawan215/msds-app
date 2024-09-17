@@ -20,6 +20,8 @@ return new class extends Migration
             $table->bigInteger('product_id')->nullable();
             $table->enum('batc_type', ['PROD', 'LAB'])->nullable();
             $table->string('batch_number')->nullable();
+            $table->string('product_remarks')->nullable();
+            $table->string('released_by')->nullable();
             $table->string('netto')->nullable();
             $table->text('ghs')->nullable();
             $table->string('user_request_name')->nullable();

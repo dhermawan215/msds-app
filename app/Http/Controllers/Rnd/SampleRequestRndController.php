@@ -350,6 +350,7 @@ class SampleRequestRndController extends Controller
             'batch_number' => 'required',
             'qty' => 'required',
             'ghs' => 'required',
+            'released_by' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -364,6 +365,8 @@ class SampleRequestRndController extends Controller
                 'prVal' => $request->prVal,
                 'batch_type' => $request->batch_type,
                 'batch_number' => $request->batch_number,
+                'product_remarks' => $request->product_remarks,
+                'released_by' => $request->released_by,
                 'ghs' => $request->ghs,
                 'requestor' => $getSampleRequestor->sampleRequestor->name,
                 'manufacture_date' => $request->manufacture_date,
