@@ -111,6 +111,7 @@ class SampleRndRepository
             'batch_number' => $data['batch_number'],
             'product_remarks' => $data['product_remarks'],
             'released_by' => $data['released_by'],
+            'netto' => $data['netto'],
             'ghs' => \json_encode($data['ghs']),
             'user_request_name' => $data['requestor'],
             'manufacture_date' => $data['manufacture_date'],

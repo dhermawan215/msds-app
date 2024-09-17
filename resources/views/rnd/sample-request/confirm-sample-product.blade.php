@@ -125,14 +125,14 @@
                         <div class="form-group row">
                             <label for="released-by">Released By</label>
                             <select name="released_by" id="released-by" class="form-control">
-                                <option value="0">-Select Released-</option>
+                                <option value="">-Select Released-</option>
                                 <option value="Research & Development">Research & Development</option>
                                 <option value="Warehouse">Warehouse</option>
                             </select>
                         </div>
                         <div class="form-group row">
-                            <label for="batch-number">Qty</label>
-                            <input type="text" name="qty" id="qty" class="form-control">
+                            <label for="netto">Netto</label>
+                            <input type="text" name="netto" id="netto" class="form-control">
                         </div>
                         <div class="form-group row">
                             <label for="batch-number">Manufacture Date</label>
@@ -151,6 +151,45 @@
                         </div>
                         <div class="form-group row mt-1">
                             <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal asign sample end-->
+    <!-- modal asign sample start-->
+    <div class="modal fade" id="modal-print-label">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Print Label</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:;" method="post" id="form-print-label">
+                        <div class="form-group row">
+                            <label for="batch-number">Copy of label</label>
+                            <input type="number" max="4" name="copy_of_label" id="copy-of-label"
+                                class="form-control">
+                            <p class="text-small">max copy row is 4, 1 row contains 2 labels </p>
+                        </div>
+                        <div class="form-group row">
+                            <label for="retain">Retain</label>
+                            <select name="retain" id="retain" class="form-control">
+                                <option value="true">Retain</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group row mt-1">
+                            <button type="submit" class="btn btn-primary">Print</button>
                         </div>
                     </form>
                 </div>

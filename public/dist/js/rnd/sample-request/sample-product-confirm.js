@@ -54,6 +54,7 @@ var Index = (function () {
             table.ajax.reload();
         });
         handleFinished();
+        handlePrintLabel();
     };
 
     var handleGhs = function () {
@@ -230,6 +231,32 @@ var Index = (function () {
                     },
                 });
             }
+        });
+    };
+
+    var handlePrintLabel = function () {
+        $(document).on("click", ".btn-print", function () {
+            const vsrp = $(this).data("vsrp");
+            const vpr = $(this).data("vpr");
+            const vsr = $(this).data("vsr");
+
+            $("#form-print-label").submit(function (e) {
+                e.preventDefault();
+                const copyLabel = $("#copy-of-label").val();
+                const retain = $("#retain").val();
+                document.location.href =
+                    url +
+                    "/rnd/sample-request/label-print?vsrp=" +
+                    vsrp +
+                    "&vpr=" +
+                    vpr +
+                    "&vsr=" +
+                    vsr +
+                    "&retain=" +
+                    retain +
+                    "&copy=" +
+                    copyLabel;
+            });
         });
     };
 

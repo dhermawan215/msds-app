@@ -31,7 +31,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: -17px;
+            margin-top: -15px;
         }
 
         .label-header img {
@@ -47,6 +47,10 @@
             justify-content: first baseline;
         }
 
+        .label-left-side {
+            width: 50%;
+        }
+
         .label-left-side .label-name-content {
             font-size: 10pt;
         }
@@ -56,7 +60,12 @@
             margin-left: 30px;
             margin-top: 5px;
             display: flex;
-            justify-content: space-between;
+
+            width: 40%;
+        }
+
+        .text-label-info {
+            color: red;
         }
 
         .label-right-side img {
@@ -112,28 +121,42 @@
             text-align: center;
             font-size: 7px;
         }
+
+        @media print {
+            @page {
+                size: A4;
+                /* DIN A4 standard, Europe */
+                margin: 0;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container-side">
+    @for ($label = 1; $label <= $copy; $label++)
+        <div class="container-side">
+
         <div class="container">
             <div class="label-header">
                 <div class="label-logo">
                     <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
                 </div>
                 <div class="label-info">
+                    @if ($retain == 'true')
                     <h4 class="text-label-info">RETAIN!!!</h4>
+                    @else
+                    @endif
                 </div>
             </div>
             <div class="label-content-header">
                 <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
+                    <h3 class="label-name-content">{{ $sampleDetail->released_by }}</h3>
                 </div>
                 <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
+                    @foreach ($ghsPicture as $ghs)
+                    <img src="{{ asset($ghs->path) }}" alt="">
+                    @endforeach
+
                 </div>
             </div>
             <div class="label-content-primary">
@@ -141,31 +164,31 @@
                     <table class="table-data">
                         <tr>
                             <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
+                            <td>: {{ $sampleDetail->detailBelongsToProduct->product_code }}</td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td> (Triazine min. 75%)</td>
+                            <td>( {{ $sampleDetail->product_remarks }} )</td>
                         </tr>
                         <tr>
                             <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
+                            <td>: {{ $sampleDetail->batch_number }}</td>
                         </tr>
                         <tr>
                             <td>To</td>
-                            <td>: Mbak Hanna</td>
+                            <td>: {{ $sampleDetail->user_request_name }}</td>
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
+                            <td>: {{ $sampleDetail->manufacture_date }}</td>
                         </tr>
                         <tr>
                             <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
+                            <td>: {{ $sampleDetail->expired_date }}</td>
                         </tr>
                         <tr>
                             <td>Nett</td>
-                            <td>: 1000 mL</td>
+                            <td>: {{ $sampleDetail->netto }}</td>
                         </tr>
                     </table>
                 </div>
@@ -195,17 +218,21 @@
                     <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
                 </div>
                 <div class="label-info">
+                    @if ($retain == 'true')
                     <h4 class="text-label-info">RETAIN!!!</h4>
+                    @else
+                    @endif
                 </div>
             </div>
             <div class="label-content-header">
                 <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
+                    <h3 class="label-name-content">{{ $sampleDetail->released_by }}</h3>
                 </div>
                 <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
+                    @foreach ($ghsPicture as $ghs)
+                    <img src="{{ asset($ghs->path) }}" alt="">
+                    @endforeach
+
                 </div>
             </div>
             <div class="label-content-primary">
@@ -213,31 +240,31 @@
                     <table class="table-data">
                         <tr>
                             <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
+                            <td>: {{ $sampleDetail->detailBelongsToProduct->product_code }}</td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td> (Triazine min. 75%)</td>
+                            <td>( {{ $sampleDetail->product_remarks }} )</td>
                         </tr>
                         <tr>
                             <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
+                            <td>: {{ $sampleDetail->batch_number }}</td>
                         </tr>
                         <tr>
                             <td>To</td>
-                            <td>: Mbak Hanna</td>
+                            <td>: {{ $sampleDetail->user_request_name }}</td>
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
+                            <td>: {{ $sampleDetail->manufacture_date }}</td>
                         </tr>
                         <tr>
                             <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
+                            <td>: {{ $sampleDetail->expired_date }}</td>
                         </tr>
                         <tr>
                             <td>Nett</td>
-                            <td>: 1000 mL</td>
+                            <td>: {{ $sampleDetail->netto }}</td>
                         </tr>
                     </table>
                 </div>
@@ -259,297 +286,8 @@
             </div>
         </div>
 
-    </div>
-    <div class="container-side">
-        <div class="container">
-            <div class="label-header">
-                <div class="label-logo">
-                    <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
-                </div>
-                <div class="label-info">
-                    <h4 class="text-label-info">RETAIN!!!</h4>
-                </div>
-            </div>
-            <div class="label-content-header">
-                <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
-                </div>
-                <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                </div>
-            </div>
-            <div class="label-content-primary">
-                <div class="table-content-product">
-                    <table class="table-data">
-                        <tr>
-                            <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td> (Triazine min. 75%)</td>
-                        </tr>
-                        <tr>
-                            <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>: Mbak Hanna</td>
-                        </tr>
-                        <tr>
-                            <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
-                        </tr>
-                        <tr>
-                            <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
-                        </tr>
-                        <tr>
-                            <td>Nett</td>
-                            <td>: 1000 mL</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="sds-info">
-                    <p>Read safety data sheet carefully. Do not handle until
-                        until all safety precautions have been read and
-                        understood. Wash hands, forearms, and exposed area
-                        thoroughly after handling. Do not eat, drink, or smoke
-                        when using this product. Avoid release to the
-                        environment. Water eye protection, protective clothing,
-                        protective gloves.</p>
-                </div>
-            </div>
-            <div class="footer">
-                <p class="company-name">PT Zeus Kimiatama Indonesia</p>
-                <p class="address">Jl Jababeka IV Blok V Kav. 74-75 Kel. Pasir Gombong Cikarang Utara Phone:
-                    +62218934922
-                </p>
-            </div>
         </div>
-
-        <div style="margin-left: 20px; margin-top: 20px"></div>
-
-        <div class="container">
-            <div class="label-header">
-                <div class="label-logo">
-                    <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
-                </div>
-                <div class="label-info">
-                    <h4 class="text-label-info">RETAIN!!!</h4>
-                </div>
-            </div>
-            <div class="label-content-header">
-                <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
-                </div>
-                <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                </div>
-            </div>
-            <div class="label-content-primary">
-                <div class="table-content-product">
-                    <table class="table-data">
-                        <tr>
-                            <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td> (Triazine min. 75%)</td>
-                        </tr>
-                        <tr>
-                            <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>: Mbak Hanna</td>
-                        </tr>
-                        <tr>
-                            <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
-                        </tr>
-                        <tr>
-                            <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
-                        </tr>
-                        <tr>
-                            <td>Nett</td>
-                            <td>: 1000 mL</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="sds-info">
-                    <p>Read safety data sheet carefully. Do not handle until
-                        until all safety precautions have been read and
-                        understood. Wash hands, forearms, and exposed area
-                        thoroughly after handling. Do not eat, drink, or smoke
-                        when using this product. Avoid release to the
-                        environment. Water eye protection, protective clothing,
-                        protective gloves.</p>
-                </div>
-            </div>
-            <div class="footer">
-                <p class="company-name">PT Zeus Kimiatama Indonesia</p>
-                <p class="address">Jl Jababeka IV Blok V Kav. 74-75 Kel. Pasir Gombong Cikarang Utara Phone:
-                    +62218934922
-                </p>
-            </div>
-        </div>
-
-    </div>
-    <div class="container-side">
-        <div class="container">
-            <div class="label-header">
-                <div class="label-logo">
-                    <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
-                </div>
-                <div class="label-info">
-                    <h4 class="text-label-info">RETAIN!!!</h4>
-                </div>
-            </div>
-            <div class="label-content-header">
-                <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
-                </div>
-                <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                </div>
-            </div>
-            <div class="label-content-primary">
-                <div class="table-content-product">
-                    <table class="table-data">
-                        <tr>
-                            <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td> (Triazine min. 75%)</td>
-                        </tr>
-                        <tr>
-                            <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>: Mbak Hanna</td>
-                        </tr>
-                        <tr>
-                            <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
-                        </tr>
-                        <tr>
-                            <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
-                        </tr>
-                        <tr>
-                            <td>Nett</td>
-                            <td>: 1000 mL</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="sds-info">
-                    <p>Read safety data sheet carefully. Do not handle until
-                        until all safety precautions have been read and
-                        understood. Wash hands, forearms, and exposed area
-                        thoroughly after handling. Do not eat, drink, or smoke
-                        when using this product. Avoid release to the
-                        environment. Water eye protection, protective clothing,
-                        protective gloves.</p>
-                </div>
-            </div>
-            <div class="footer">
-                <p class="company-name">PT Zeus Kimiatama Indonesia</p>
-                <p class="address">Jl Jababeka IV Blok V Kav. 74-75 Kel. Pasir Gombong Cikarang Utara Phone:
-                    +62218934922
-                </p>
-            </div>
-        </div>
-
-        <div style="margin-left: 20px; margin-top: 20px"></div>
-
-        <div class="container">
-            <div class="label-header">
-                <div class="label-logo">
-                    <img src="{{ asset('assets/logo/zekindo-logo.png') }}" alt="">
-                </div>
-                <div class="label-info">
-                    <h4 class="text-label-info">RETAIN!!!</h4>
-                </div>
-            </div>
-            <div class="label-content-header">
-                <div class="label-left-side">
-                    <h3 class="label-name-content">Research & Development</h3>
-                </div>
-                <div class="label-right-side">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                    <img src="{{ asset('assets/ghs/202408063153-ZaP4V8uEMT.png') }}" alt="">
-                </div>
-            </div>
-            <div class="label-content-primary">
-                <div class="table-content-product">
-                    <table class="table-data">
-                        <tr>
-                            <td>Product Name</td>
-                            <td>: POWERSULFA 2100</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td> (Triazine min. 75%)</td>
-                        </tr>
-                        <tr>
-                            <td>Batch Number</td>
-                            <td>: 01.128.04092024</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>: Mbak Hanna</td>
-                        </tr>
-                        <tr>
-                            <td>Date</td>
-                            <td>: 4th Sept. 2024</td>
-                        </tr>
-                        <tr>
-                            <td>Expired Date</td>
-                            <td>: 4th Sept. 2025</td>
-                        </tr>
-                        <tr>
-                            <td>Nett</td>
-                            <td>: 1000 mL</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="sds-info">
-                    <p>Read safety data sheet carefully. Do not handle until
-                        until all safety precautions have been read and
-                        understood. Wash hands, forearms, and exposed area
-                        thoroughly after handling. Do not eat, drink, or smoke
-                        when using this product. Avoid release to the
-                        environment. Water eye protection, protective clothing,
-                        protective gloves.</p>
-                </div>
-            </div>
-            <div class="footer">
-                <p class="company-name">PT Zeus Kimiatama Indonesia</p>
-                <p class="address">Jl Jababeka IV Blok V Kav. 74-75 Kel. Pasir Gombong Cikarang Utara Phone:
-                    +62218934922
-                </p>
-            </div>
-        </div>
-
-    </div>
-
-
+        @endfor
 </body>
 
 </html>

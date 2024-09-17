@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Rnd;
 
+use App\Models\Ghs;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
 use App\Traits\UserLogRecord;
 use App\Traits\ModulePermissions;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\SampleRequestDetails;
 use App\Models\SampleRequestProduct;
 use Illuminate\Support\Facades\Auth;
 use App\Repository\SampleRndRepository;
@@ -290,7 +292,7 @@ class SampleRequestRndController extends Controller
                     $data['action'] = '<button class="btn btn-sm btn-outline-success text-white btn-finished" data-srp="' . \base64_encode($value->id) . '" title="finish the process"><i class="fa fa-check-circle"></i></button>';
                 } else {
                     $data['action'] = '<button class="btn btn-sm btn-outline-info btn-information" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>
-                    <a href="' . \route('rnd_sample_request.print', ['vSrp' => base64_encode($value->id), 'vPr' => base64_encode($value->product_id), 'vSr' => base64_encode($value->sample_id)]) . '" class="btn btn-sm btn-success btn-print" title="print label product"><i class="fa fa-print" aria-hidden="true"></i></a>';
+                    <button class="btn btn-sm btn-success btn-print" data-vsrp="' . \base64_encode($value->id) . '" data-vpr="' . \base64_encode($value->product_id) . '" data-vsr="' . \base64_encode($value->sample_id) . '" title="Print label" data-toggle="modal" data-target="#modal-print-label"><i class="fa fa-print"></i></button>';
                 }
             } else {
                 $data['action'] = '<button class="btn btn-sm btn-outline-info btn-information" data-srp="' . \base64_encode($value->id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>';
@@ -348,7 +350,7 @@ class SampleRequestRndController extends Controller
         $validator = Validator::make($request->all(), [
             'batch_type' => 'required',
             'batch_number' => 'required',
-            'qty' => 'required',
+            'netto' => 'required',
             'ghs' => 'required',
             'released_by' => 'required',
         ]);
@@ -367,6 +369,7 @@ class SampleRequestRndController extends Controller
                 'batch_number' => $request->batch_number,
                 'product_remarks' => $request->product_remarks,
                 'released_by' => $request->released_by,
+                'netto' => $request->netto,
                 'ghs' => $request->ghs,
                 'requestor' => $getSampleRequestor->sampleRequestor->name,
                 'manufacture_date' => $request->manufacture_date,
@@ -397,6 +400,22 @@ class SampleRequestRndController extends Controller
      */
     public function labelPrint(Request $request)
     {
-        return \view('rnd.sample-request.label-print');
+        $sample_id = $request->query('vsr');
+        $sampleReqproduct_id = $request->query('vsrp');
+        $product_id = $request->query('vpr');
+        $retain = $request->query('retain');
+        $copy = $request->query('copy');
+
+        $sampleReqDetail = SampleRequestDetails::with('detailBelongsToProduct')->where('sample_id', base64_decode($sample_id))
+            ->where('sample_req_product_id', base64_decode($sampleReqproduct_id))
+            ->where('product_id', base64_decode($product_id))
+            ->first();
+        $ghs = json_decode($sampleReqDetail->ghs);
+        $ghsData = Ghs::select('id', 'path')->whereIn('id', $ghs)->get();
+
+        return \view(
+            'rnd.sample-request.label-print',
+            ['copy' => $copy, 'retain' => $retain, 'ghsPicture' => $ghsData, 'sampleDetail' => $sampleReqDetail]
+        );
     }
 }
