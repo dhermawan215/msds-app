@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SampleRequestProduct extends Model
 {
@@ -26,5 +27,10 @@ class SampleRequestProduct extends Model
     public function sampleProductUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assign_to', 'id');
+    }
+    //relation from object model sample request product to sample request details
+    public function sampleReqProductToSampleDetails(): HasOne
+    {
+        return $this->hasOne(SampleRequestDetails::class, 'sample_req_product_id', 'id');
     }
 }

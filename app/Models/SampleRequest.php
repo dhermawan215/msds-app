@@ -58,4 +58,9 @@ class SampleRequest extends Model
     {
         return $this->belongsTo(SampleSource::class, 'sample_source_id', 'id');
     }
+    //relation from object model sample request to object model sample request details
+    public function sampleRequestToSampleDetail(): HasMany
+    {
+        return $this->hasMany(SampleRequestDetails::class, 'sample_id', 'id');
+    }
 }

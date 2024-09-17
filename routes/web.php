@@ -322,6 +322,14 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
     Route::controller(SampleRequestRndController::class)->group(function () {
         Route::get('/sample-request', 'index')->name('rnd_sample_request');
         Route::post('/sample-request/list', 'list');
+        Route::get('/sample-request/detail/{sampleId}', 'detail')->name('rnd_sample_request.detail');
+        Route::get('/sample-request/confirm/{sampleId}', 'detailSampleRequestProduct')->name('rnd_sample_request.change_status');
+        Route::post('/sample-request/confirm/product-list', 'listSampleProduct');
+        Route::post('/sample-request/confirm/ghs-list', 'ghsDropdown');
+        Route::post('/sample-request/batch-number', 'batchNumberLab');
+        Route::post('/sample-request/confirm/create-sample-detail', 'storeSampleReqDetail');
+        Route::post('/sample-request/confirm/finished', 'finished');
+        Route::get('/sample-request/label-print', 'labelPrint')->name('rnd_sample_request.print');
     });
 });
 // Route RND END

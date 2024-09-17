@@ -18,4 +18,9 @@ class Product extends Model
     {
         return $this->hasMany(SampleRequestProduct::class, 'product_id', 'id');
     }
+    //relation from object model product to sample request detail
+    public function productToSampleReqDetails(): HasMany
+    {
+        return $this->hasMany(SampleRequestDetails::class, 'product_id', 'id');
+    }
 }

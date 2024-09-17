@@ -92,7 +92,7 @@ class SampleRequestPicController extends Controller
             $query->where(function ($q) use ($globalSearch) {
                 $q->where('sample_ID', 'like', '%' . $globalSearch . '%')
                     ->orWhere('subject', 'like', '%' . $globalSearch . '%')
-                    ->orWhere('required_date', 'like', '%' . $globalSearch . '%')
+                    ->orWhere('request_date', 'like', '%' . $globalSearch . '%')
                     ->orWhere('delivery_date', 'like', '%' . $globalSearch . '%');
             });
         }
