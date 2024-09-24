@@ -134,4 +134,45 @@ class SampleRndRepository
         $finished = SampleRequestProduct::find(\base64_decode($id));
         $finished->update(['finished' => 1]);
     }
+    /**
+     * get sample request detail for label(print method)
+     * @return eloquent
+     */
+    public function getSampleRequestDetails($sample_id, $sampleReqproduct_id, $product_id)
+    {
+        $sampleReqDetail = SampleRequestDetails::with('detailBelongsToProduct')->where('sample_id', base64_decode($sample_id))
+            ->where('sample_req_product_id', base64_decode($sampleReqproduct_id))
+            ->where('product_id', base64_decode($product_id))
+            ->first();
+        return $sampleReqDetail;
+    }
+    /**
+     * get product ghs for label
+     * @return eloquent
+     */
+    public function getGhsSampleRequestDetails($ghs)
+    {
+        return Ghs::select('id', 'path')->whereIn('id', $ghs)->get();
+    }
+    /**
+     * get information sample request product and sample request detail
+     * @return array
+     */
+    public function getInformation($data)
+    {
+        $sampleProduct = SampleRequestProduct::select('id', 'finished', 'assign_to')
+            ->with('sampleProductUser:id,name')
+            ->where('id', $data['sampleProductId'])
+            ->first();
+
+        $sampleReqDetail = SampleRequestDetails::where('sample_id', $data['sampleId'])
+            ->where('sample_req_product_id', $data['sampleProductId'])
+            ->where('product_id', $data['productId'])
+            ->first();
+
+        return [
+            'product' => $sampleProduct,
+            'detail' => $sampleReqDetail
+        ];
+    }
 }

@@ -55,6 +55,7 @@ var Index = (function () {
         });
         handleFinished();
         handlePrintLabel();
+        handleInformation();
     };
 
     var handleGhs = function () {
@@ -256,6 +257,37 @@ var Index = (function () {
                     retain +
                     "&copy=" +
                     copyLabel;
+            });
+        });
+    };
+
+    var handleInformation = function () {
+        $(document).on("click", ".btn-inf", function () {
+            const svsrp = $(this).data("srp");
+            const svpr = $(this).data("pr");
+            const svsr = $(this).data("sr");
+            $.ajax({
+                type: "POST",
+                url: url + "/rnd/sample-request/confirm/information",
+                data: {
+                    _token: csrf_token,
+                    nodeVsrp: svsrp,
+                    nodeVpr: svpr,
+                    nodeVsr: svsr,
+                },
+                dataType: "json",
+                success: function (response) {
+                    var responseData = response.data;
+                    $("#process-finish").val(responseData.finished);
+                    $("#name-assign-to").val(responseData.assign);
+                    $("#batch-type-data").val(responseData.batch_type);
+                    $("#batch-number-data").val(responseData.batch_number);
+                    $("#product-remark").val(responseData.product_remarks);
+                    $("#released-by-data").val(responseData.released_by);
+                    $("#mfg-date").val(responseData.manufacture_date);
+                    $("#expired-date").val(responseData.expired_date);
+                },
+                error: function (response) {},
             });
         });
     };

@@ -202,6 +202,68 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- modal asign sample end-->
+    <!-- modal sample detail information start -->
+    <div class="modal fade" id="modal-info-sample-detail">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal Information</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="process-finish">Process Finish</label>
+                            <input type="text" id="process-finish" readonly class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="name-assign-to">Assign to</label>
+                            <input type="text" id="name-assign-to" readonly class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="batch-type-data">Batch Type</label>
+                            <input type="text" id="batch-type-data" readonly class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="batch-number-data">Batch Number</label>
+                            <input type="text" id="batch-number-data" readonly class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="product-remark">Product Remark</label>
+                            <input type="text" id="product-remark" readonly class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="released-by">Released By</label>
+                            <input type="text" id="released-by-data" readonly class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="mfg-date">Manufacture Date</label>
+                            <input type="text" id="mfg-date" readonly class="form-control">
+                        </div>
+                        <div class="col">
+                            <label for="expired-date">Expired Date</label>
+                            <input type="text" id="expired-date" readonly class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal sample detail information end -->
 @endsection
 @push('custom_js')
     <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>

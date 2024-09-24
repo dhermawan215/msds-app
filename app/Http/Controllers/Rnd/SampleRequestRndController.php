@@ -291,11 +291,11 @@ class SampleRequestRndController extends Controller
                 } elseif ($countSampleReqDetail != 0 && $value->finished == 0) {
                     $data['action'] = '<button class="btn btn-sm btn-outline-success text-white btn-finished" data-srp="' . \base64_encode($value->id) . '" title="finish the process"><i class="fa fa-check-circle"></i></button>';
                 } else {
-                    $data['action'] = '<button class="btn btn-sm btn-outline-info btn-information" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>
+                    $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>
                     <button class="btn btn-sm btn-success btn-print" data-vsrp="' . \base64_encode($value->id) . '" data-vpr="' . \base64_encode($value->product_id) . '" data-vsr="' . \base64_encode($value->sample_id) . '" title="Print label" data-toggle="modal" data-target="#modal-print-label"><i class="fa fa-print"></i></button>';
                 }
             } else {
-                $data['action'] = '<button class="btn btn-sm btn-outline-info btn-information" data-srp="' . \base64_encode($value->id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>';
+                $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>';
             }
 
             $arr[] = $data;
@@ -406,16 +406,53 @@ class SampleRequestRndController extends Controller
         $retain = $request->query('retain');
         $copy = $request->query('copy');
 
-        $sampleReqDetail = SampleRequestDetails::with('detailBelongsToProduct')->where('sample_id', base64_decode($sample_id))
-            ->where('sample_req_product_id', base64_decode($sampleReqproduct_id))
-            ->where('product_id', base64_decode($product_id))
-            ->first();
-        $ghs = json_decode($sampleReqDetail->ghs);
-        $ghsData = Ghs::select('id', 'path')->whereIn('id', $ghs)->get();
+        try {
+            $sampleReqDetail = $this->sampleRndRepo->getSampleRequestDetails($sample_id, $sampleReqproduct_id, $product_id);
+            $ghs = json_decode($sampleReqDetail->ghs);
+            $ghsData = $this->sampleRndRepo->getGhsSampleRequestDetails($ghs);
 
-        return \view(
-            'rnd.sample-request.label-print',
-            ['copy' => $copy, 'retain' => $retain, 'ghsPicture' => $ghsData, 'sampleDetail' => $sampleReqDetail]
-        );
+            return \view(
+                'rnd.sample-request.label-print',
+                ['copy' => $copy, 'retain' => $retain, 'ghsPicture' => $ghsData, 'sampleDetail' => $sampleReqDetail]
+            );
+        } catch (\Throwable $th) {
+            abort(503);
+        }
+    }
+    /**
+     * method get information sample request product and sample request detail
+     */
+    public function information(Request $request)
+    {
+        $data = [
+            'sampleProductId' => base64_decode($request->nodeVsrp),
+            'sampleId' => base64_decode($request->nodeVsr),
+            'productId' => base64_decode($request->nodeVpr)
+        ];
+
+        try {
+            $data = $this->sampleRndRepo->getInformation($data);
+            $product = $data['product'];
+            $detail = $data['detail'];
+            if ($product->finished == 1) {
+                $finished = 'finished';
+            } else {
+                $finished = 'pending';
+            }
+
+            $response = [
+                'finished' => $finished,
+                'assign' => $product->sampleProductUser ? $product->sampleProductUser->name : 'empty data',
+                'batch_type' => $detail ? $detail->batch_type : 'empty data',
+                'batch_number' => $detail ? $detail->batch_number : 'empty data',
+                'product_remarks' => $detail ? $detail->product_remarks : 'empty data',
+                'released_by' => $detail ? $detail->released_by : 'empty data',
+                'expired_date' => $detail ? $detail->expired_date : 'empty data',
+                'manufacture_date' => $detail ? $detail->manufacture_date : 'empty data',
+            ];
+            return response()->json(['success' => true, 'data' => $response], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => 'please try again'], 500);
+        }
     }
 }

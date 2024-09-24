@@ -329,6 +329,7 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
         Route::post('/sample-request/batch-number', 'batchNumberLab');
         Route::post('/sample-request/confirm/create-sample-detail', 'storeSampleReqDetail');
         Route::post('/sample-request/confirm/finished', 'finished');
+        Route::post('/sample-request/confirm/information', 'information');
         Route::get('/sample-request/label-print', 'labelPrint')->name('rnd_sample_request.print');
     });
 });
