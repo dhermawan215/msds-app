@@ -292,7 +292,8 @@ class SampleRequestRndController extends Controller
                     $data['action'] = '<button class="btn btn-sm btn-outline-success text-white btn-finished" data-srp="' . \base64_encode($value->id) . '" title="finish the process"><i class="fa fa-check-circle"></i></button>';
                 } else {
                     $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>
-                    <button class="btn btn-sm btn-success btn-print" data-vsrp="' . \base64_encode($value->id) . '" data-vpr="' . \base64_encode($value->product_id) . '" data-vsr="' . \base64_encode($value->sample_id) . '" title="Print label" data-toggle="modal" data-target="#modal-print-label"><i class="fa fa-print"></i></button>';
+                    <button class="btn btn-sm btn-success btn-print" data-vsrp="' . \base64_encode($value->id) . '" data-vpr="' . \base64_encode($value->product_id) . '" data-vsr="' . \base64_encode($value->sample_id) . '" title="Print label" data-toggle="modal" data-target="#modal-print-label"><i class="fa fa-print"></i></button>
+                    <button class="btn btn-sm btn-danger btn-delete-label" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="delete data label"><i class="fa fa-trash"></i></button>';
                 }
             } else {
                 $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>';
@@ -453,6 +454,25 @@ class SampleRequestRndController extends Controller
             return response()->json(['success' => true, 'data' => $response], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => 'please try again'], 500);
+        }
+    }
+    /**
+     * method delete ghs label if the label wrong
+     */
+    public function deleteLabelGhs(Request $request)
+    {
+        $data = [
+            'sampleProductId' => base64_decode($request->nVsrp),
+            'sampleId' => base64_decode($request->nVsr),
+            'productId' => base64_decode($request->nVpr)
+        ];
+
+        try {
+            $this->sampleRndRepo->deleteSampleReqDetail($data);
+            return response()->json(['success' => true], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false], 500);
+            //throw $th;
         }
     }
 }

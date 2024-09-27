@@ -175,4 +175,13 @@ class SampleRndRepository
             'detail' => $sampleReqDetail
         ];
     }
+
+    public function deleteSampleReqDetail($data)
+    {
+        $srd = SampleRequestDetails::where('sample_id', $data['sampleId'])
+            ->where('sample_req_product_id', $data['sampleProductId'])
+            ->where('product_id', $data['productId']);
+
+        $srd->delete();
+    }
 }

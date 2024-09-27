@@ -56,6 +56,7 @@ var Index = (function () {
         handleFinished();
         handlePrintLabel();
         handleInformation();
+        handleDeleteGhs();
     };
 
     var handleGhs = function () {
@@ -289,6 +290,37 @@ var Index = (function () {
                 },
                 error: function (response) {},
             });
+        });
+    };
+
+    var handleDeleteGhs = function () {
+        $(document).on("click", ".btn-delete-label", function () {
+            const svsrp = $(this).data("srp");
+            const svpr = $(this).data("pr");
+            const svsr = $(this).data("sr");
+
+            if (confirm("Are you sure delete this?!")) {
+                $.ajax({
+                    type: "POST",
+                    url: url + "/rnd/sample-request/confirm/delete-ghs",
+                    data: {
+                        _token: csrf_token,
+                        nVsrp: svsrp,
+                        nVpr: svpr,
+                        nVsr: svsr,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        toastr.success("delete success!");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (response) {
+                        toastr.error("something went wrong, please try again");
+                    },
+                });
+            }
         });
     };
 
