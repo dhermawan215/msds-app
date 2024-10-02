@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\SampleRequestDetails;
 use App\Models\SampleRequestProduct;
+use App\Models\SampleRequestProductDocument;
 use Illuminate\Support\Facades\Auth;
 use App\Repository\SampleRndRepository;
+use App\Traits\LogoUpload;
 use Illuminate\Support\Facades\Validator;
 
 class SampleRequestRndController extends Controller
@@ -20,6 +22,7 @@ class SampleRequestRndController extends Controller
     //controller for module sample request rnd and wh
     use ModulePermissions;
     use UserLogRecord;
+    use LogoUpload;
     protected $sysModuleName = 'rnd_sample_request';
     const valuePermission = [
         'change_status',
@@ -264,6 +267,8 @@ class SampleRequestRndController extends Controller
             });
         }
 
+        $finishedSampleProduct = $this->sampleRndRepo->getFinishedSampleProduct($sample->id);
+
         $recordsFiltered = $query->count();
         $resData = $query->skip($offset)
             ->take($limit)
@@ -293,7 +298,8 @@ class SampleRequestRndController extends Controller
                 } else {
                     $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>
                     <button class="btn btn-sm btn-success btn-print" data-vsrp="' . \base64_encode($value->id) . '" data-vpr="' . \base64_encode($value->product_id) . '" data-vsr="' . \base64_encode($value->sample_id) . '" title="Print label" data-toggle="modal" data-target="#modal-print-label"><i class="fa fa-print"></i></button>
-                    <button class="btn btn-sm btn-danger btn-delete-label" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="delete data label"><i class="fa fa-trash"></i></button>';
+                    <button class="btn btn-sm btn-danger btn-delete-label" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="delete data label"><i class="fa fa-trash"></i></button>
+                    <button class="btn btn-sm btn-warning btn-upload-msdspds" data-srp="' . \base64_encode($value->id) . '" title="upload msds & pds" data-toggle="modal" data-target="#modal-upload-msdspds"><i class="fa fa-upload" aria-hidden="true"></i></button>';
                 }
             } else {
                 $data['action'] = '<button class="btn btn-sm btn-outline-info btn-inf" data-srp="' . \base64_encode($value->id) . '" data-pr="' . \base64_encode($value->product_id) . '" data-sr="' . \base64_encode($value->sample_id) . '" title="infomation" data-toggle="modal" data-target="#modal-info-sample-detail"><i class="fa fa-info-circle"></i></button>';
@@ -308,6 +314,8 @@ class SampleRequestRndController extends Controller
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data' => $arr,
+            'finished' => $finishedSampleProduct,
+            'rnd_status' => $sample->rnd_status
         ]);
     }
     /**
@@ -473,6 +481,117 @@ class SampleRequestRndController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success' => false], 500);
             //throw $th;
+        }
+    }
+    /**
+     * finish the sample when sample creator clikc submit
+     * (belum)
+     */
+    public function submitSampleRequest(Request $request)
+    {
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    /**
+     * data table for list msds/pds uploaded in sample request product
+     */
+    public function listMsdsPds(Request $request)
+    {
+        $draw = $request['draw'];
+        $offset = $request['start'] ? $request['start'] : 0;
+        $limit = $request['length'] ? $request['length'] : 15;
+        $globalSearch = $request['search']['value'];
+        $query = SampleRequestProductDocument::where('sample_req_product_id', base64_decode($request->srp));
+
+        if ($globalSearch) {
+            $query->where(function ($q) use ($globalSearch) {
+                $q->where('document_category', 'like', '%' . $globalSearch . '%')
+                    ->orWhere('document_name', 'like', '%' . $globalSearch . '%');
+            });
+        }
+
+        $recordsFiltered = $query->count();
+        $resData = $query->skip($offset)
+            ->take($limit)
+            ->get();
+        $recordsTotal = $resData->count();
+
+        $data = [];
+        $i = $offset + 1;
+        $arr = [];
+
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['category'] = $value->document_category;
+            $data['name'] = $value->document_name;
+            $data['path'] = asset($value->document_path);
+            $data['action'] = '
+            <button class="btn btn-sm btn-preview btn-success" data-toggle="modal" data-target="#modal-preview-docoment" title="preview-document"><i class="fa fa-eye" aria-hidden="true"></i></button>
+            <button class="btn btn-sm btn-danger btn-delete-doc" data-dc="' . base64_encode($value->id) . '" title="delete"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+            $arr[] = $data;
+            $i++;
+        }
+
+        return \response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $arr,
+        ]);
+    }
+    /**
+     * method handle store data of file msds/pds
+     */
+    public function storeMsdsPds(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'document_category' => 'required',
+            'file_upload' => 'required|mimes:pdf|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 403);
+        }
+
+        if ($request->hasFile('file_upload')) {
+            $fileLogo = $request->file('file_upload');
+            $path = $this->storeLogo($fileLogo, 'assets/msds-pds');
+        }
+
+        $data = [
+            'sample_product_id' => base64_decode($request->srp),
+            'document_name' => $fileLogo->getClientOriginalName(),
+            'document_path' => $path,
+            'document_category' => $request->document_category
+        ];
+
+        try {
+            $this->sampleRndRepo->storeDataFileMsds($data);
+            return response()->json(['success' => true, 'message' => 'upload success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => 'something went wrong'], 500);
+        }
+    }
+    /**
+     * method delete the document & data of sample request product document(msds/pds)
+     */
+    public function deleteMsdsPds(Request $request)
+    {
+        $documentData = $this->sampleRndRepo->deleteDataFileMsds($request->docVl);
+
+        try {
+            //delete document
+            $path = parse_url($documentData->document_path);
+            $strPathFile = str_replace('\\', '/', $path['path']);
+            $unlink = $this->deleteLogo($strPathFile);
+            //delete from table
+            $documentData->delete();
+            return response()->json(['success' => true, 'message' => 'delete success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => 'something went wrong'], 500);
         }
     }
 }

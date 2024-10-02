@@ -46,17 +46,26 @@ var Index = (function () {
                 { data: "creator", orderable: false },
                 { data: "action", orderable: false },
             ],
-            drawCallback: function (settings) {},
+            drawCallback: function (settings) {
+                const finishedProduct = settings.json.finished;
+                const rndStatus = settings.json.rnd_status;
+                handleEnableSubmit(finishedProduct, rndStatus);
+            },
         });
         // btn refresh on click
         $("#btnRefresh").click(function (e) {
             e.preventDefault();
             table.ajax.reload();
         });
+        $("#btn-refresh-page").click(function (e) {
+            e.preventDefault();
+            window.location.reload();
+        });
         handleFinished();
         handlePrintLabel();
         handleInformation();
         handleDeleteGhs();
+        handleUploadFile();
     };
 
     var handleGhs = function () {
@@ -235,7 +244,7 @@ var Index = (function () {
             }
         });
     };
-
+    //action for print label
     var handlePrintLabel = function () {
         $(document).on("click", ".btn-print", function () {
             const vsrp = $(this).data("vsrp");
@@ -261,7 +270,7 @@ var Index = (function () {
             });
         });
     };
-
+    //action get information for modal sample request product
     var handleInformation = function () {
         $(document).on("click", ".btn-inf", function () {
             const svsrp = $(this).data("srp");
@@ -292,7 +301,7 @@ var Index = (function () {
             });
         });
     };
-
+    //action delete data ghs (label)
     var handleDeleteGhs = function () {
         $(document).on("click", ".btn-delete-label", function () {
             const svsrp = $(this).data("srp");
@@ -308,6 +317,184 @@ var Index = (function () {
                         nVsrp: svsrp,
                         nVpr: svpr,
                         nVsr: svsr,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        toastr.success("delete success!");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (response) {
+                        toastr.error("something went wrong, please try again");
+                    },
+                });
+            }
+        });
+    };
+    //check enable disable button for action submit sample request
+    var handleEnableSubmit = function (finished, rnd_status) {
+        if (finished === 0 && rnd_status === 1) {
+            $("#btn-finish").removeAttr("disabled");
+            handleFinishSampple();
+        } else {
+            $("#btn-finish").attr("disabled", true);
+        }
+    };
+    // action to finished sample request
+    var handleFinishSampple = function () {
+        $("#form-submit-sample").submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            let formData = new FormData(form[0]);
+            formData.append("sampleId", sampleID);
+            $.ajax({
+                url: `${url}/rnd/sample-request/confirm/submit-sample`,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (responses) {
+                    toastr.success(responses.message);
+
+                    setTimeout(() => {
+                        window.location.href = responses.url;
+                    }, 2000);
+                },
+                error: function (response) {
+                    $.each(response.responseJSON, function (key, value) {
+                        toastr.error(value);
+                    });
+                },
+            });
+        });
+    };
+    //handle submit form
+    var handleUploadFile = function () {
+        $(document).on("click", ".btn-upload-msdspds", function () {
+            const dataSrp = $(this).data("srp");
+            handleDataMsds(dataSrp);
+            handleSubmitFormUpload(dataSrp);
+        });
+    };
+    //data table msds / pds
+    var handleDataMsds = function (dataSrp) {
+        var tableMsds;
+        // Check if the table is already initialized
+        if ($.fn.DataTable.isDataTable("#tabel-msds-pds")) {
+            // Destroy the existing DataTable instance
+            $("#tabel-msds-pds").DataTable().clear().destroy();
+        }
+
+        tableMsds = $("#tabel-msds-pds").DataTable({
+            responsive: true,
+            autoWidth: true,
+            pageLength: 15,
+            // dom: "Bfrtip",
+            // buttons: ["pageLength"],
+            searching: true,
+            paging: true,
+            lengthMenu: [
+                [15, 25, 50],
+                [15, 25, 50],
+            ],
+            language: {
+                info: "Show _START_ - _END_ from _TOTAL_ data",
+                infoEmpty: "Show 0 - 0 from 0 data",
+                infoFiltered: "",
+                zeroRecords: "Data not found",
+                loadingRecords: "Loading...",
+                processing: "Processing...",
+            },
+            columnsDefs: [
+                { searchable: false, target: [0, 1] },
+                { orderable: false, target: 0 },
+            ],
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: url + "/rnd/sample-request/msds-pds-list",
+                type: "POST",
+                data: {
+                    _token: csrf_token,
+                    srp: dataSrp,
+                },
+            },
+            columns: [
+                { data: "rnum", orderable: false },
+                { data: "category", orderable: false },
+                { data: "name", orderable: false },
+                { data: "action", orderable: false },
+            ],
+            drawCallback: function (settings) {},
+        });
+        $("#tabel-msds-pds").on("click", "tr", function () {
+            var rowData = tableMsds.row(this).data();
+
+            // Pastikan rowData tidak undefined atau null
+            if (rowData && rowData.name && rowData.path) {
+                showPdfContent(rowData);
+            } else {
+                // Tampilkan pesan error atau lakukan tindakan lain jika data tidak valid
+            }
+        });
+        handleDeleteDoc();
+    };
+    //submit form upload msds
+    var handleSubmitFormUpload = function (dataSrp) {
+        $("#form-upload-msds").submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            let formData = new FormData(form[0]);
+            formData.append("srp", dataSrp);
+            if (confirm("are you sure")) {
+                $.ajax({
+                    url: `${url}/rnd/sample-request/confirm/upload-msds`,
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (responses) {
+                        toastr.success(responses.message);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (response) {
+                        $.each(response.responseJSON, function (key, value) {
+                            toastr.error(value);
+                        });
+                    },
+                });
+            }
+        });
+    };
+    //function to preview pdf document
+    var showPdfContent = function (dataRow) {
+        const documentName = dataRow.name;
+        const documentHref = dataRow.path;
+
+        var pdfElement =
+            "<iframe src=" +
+            documentHref +
+            ' type="application/pdf" width="100%" height="350px"></iframe>';
+
+        $("#document-name").html(documentName);
+        $("#document-download").attr("href", documentHref);
+        $("#pdf-container").html(pdfElement);
+    };
+    //delete document
+    var handleDeleteDoc = function () {
+        $(document).on("click", ".btn-delete-doc", function () {
+            const docValue = $(this).data("dc");
+
+            if (confirm("Are you sure delete the document?!")) {
+                $.ajax({
+                    type: "POST",
+                    url: url + "/rnd/sample-request/confirm/delete-msds",
+                    data: {
+                        _token: csrf_token,
+                        docVl: docValue,
                     },
                     dataType: "json",
                     success: function (response) {

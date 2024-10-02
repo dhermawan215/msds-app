@@ -331,6 +331,10 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
         Route::post('/sample-request/confirm/finished', 'finished');
         Route::post('/sample-request/confirm/information', 'information');
         Route::post('/sample-request/confirm/delete-ghs', 'deleteLabelGhs');
+        Route::post('/sample-request/confirm/submit-sample', 'submitSampleRequest');
+        Route::post('/sample-request/confirm/upload-msds', 'storeMsdsPds');
+        Route::post('/sample-request/confirm/delete-msds', 'deleteMsdsPds');
+        Route::post('/sample-request/msds-pds-list', 'listMsdsPds');
         Route::get('/sample-request/label-print', 'labelPrint')->name('rnd_sample_request.print');
     });
 });

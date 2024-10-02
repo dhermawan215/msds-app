@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SampleRequestProduct extends Model
@@ -32,5 +33,10 @@ class SampleRequestProduct extends Model
     public function sampleReqProductToSampleDetails(): HasOne
     {
         return $this->hasOne(SampleRequestDetails::class, 'sample_req_product_id', 'id');
+    }
+    //realtion to sample request product document
+    public function sampleReqProductToDocument(): HasMany
+    {
+        return $this->hasMany(SampleRequestProductDocument::class, 'sample_req_product_id', 'id');
     }
 }

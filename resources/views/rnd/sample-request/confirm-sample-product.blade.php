@@ -61,6 +61,13 @@
                                 <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">
                                     <i class="fa fa-retweet" aria-hidden="true"></i> Refresh
                                 </button>
+                                <button type="button" class="btn btn-sm btn-success" id="btn-refresh-page">
+                                    <i class="fa fa-retweet" aria-hidden="true"></i> Reload Page
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary" id="btn-finish" data-toggle="modal"
+                                    data-target="#modal-submit" disabled>
+                                    <i class="fa fa-paper-plane" aria-hidden="true"></i> Finish & Submit
+                                </button>
 
                             </div>
                             <div class="m-1">
@@ -264,6 +271,127 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- modal sample detail information end -->
+    <!-- modal submit sample request start -->
+    <div class="modal fade" id="modal-submit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal submit sample</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:;" method="post" id="form-submit-sample">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="rnd-note">R&D Note</label>
+                            <input type="text" name="rnd_note" id="rnd-note" class="form-control">
+                        </div>
+                        <div class="form-group row mt-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal submit sample request end -->
+    <!-- modal upload msds pds start -->
+    <div class="modal fade" id="modal-upload-msdspds">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal upload msds pds</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row p-2">
+                        <form action="javascript:;" method="post" id="form-upload-msds" enctype="multipart/form-data">
+                            @csrf
+                            <p class="text-danger">file must be in pdf format & max size: 2MB</p>
+                            <div class="form-group row">
+                                <div class="col">
+                                    <label for="document-category">Document Category</label>
+                                    <select name="document_category" id="document-category" class="form-control">
+                                        <option value="">-select category-</option>
+                                        <option value="MSDS">MSDS</option>
+                                        <option value="PDS">PDS</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="file-upload">File</label>
+                                    <input type="file" name="file_upload" id="file_upload" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group row mt-1">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>Table MSDS/PDS was uploaded.</p>
+                            <table class="table" id="tabel-msds-pds" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Category</th>
+                                        <th>File name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal upload msds pds end -->
+    <!-- modal preview document start -->
+    <div class="modal fade" id="modal-preview-docoment">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal preview document: <span id="document-name"></span></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="pdf-container">
+
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <p>Unable to display a PDF file? <a href="" id="document-download">Download</a> Instead.</p>
+                    <button type="button" class="btn btn-default" id="force-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal preview document end -->
 @endsection
 @push('custom_js')
     <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>

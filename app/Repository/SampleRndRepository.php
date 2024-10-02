@@ -2,12 +2,15 @@
 
 namespace App\Repository;
 
+use Carbon\Carbon;
 use App\Models\Ghs;
+use Illuminate\Support\Str;
 use App\Models\SampleRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\SampleRequestDetails;
 use App\Models\SampleRequestProduct;
 use App\Models\SampleRequestCustomer;
+use App\Models\SampleRequestProductDocument;
 
 class SampleRndRepository
 {
@@ -33,7 +36,7 @@ class SampleRndRepository
      */
     public function getSampleId($sampleID)
     {
-        return SampleRequest::select('id', 'sample_ID')->where('sample_ID', $sampleID)->first();
+        return SampleRequest::select('id', 'sample_ID', 'rnd_status')->where('sample_ID', $sampleID)->first();
     }
     /**
      * get count from table sample request detail,
@@ -175,7 +178,9 @@ class SampleRndRepository
             'detail' => $sampleReqDetail
         ];
     }
-
+    /**
+     * delete data ghs (sample request details)
+     */
     public function deleteSampleReqDetail($data)
     {
         $srd = SampleRequestDetails::where('sample_id', $data['sampleId'])
@@ -183,5 +188,53 @@ class SampleRndRepository
             ->where('product_id', $data['productId']);
 
         $srd->delete();
+    }
+    /**
+     * get number finished sample request product
+     */
+    public function getFinishedSampleProduct($sample_id)
+    {
+        $sampleProduct = SampleRequestProduct::where('sample_id', $sample_id);
+        $sampleProductCollection = $sampleProduct->get();
+        if (!$sampleProductCollection->isEmpty()) {
+            $query = $sampleProduct->where(function ($q) {
+                $q->where('finished', 0);
+            });
+            return $query->count();
+        }
+        return 'false';
+    }
+
+    public function updateSampleWhenSubmit($sampleId, $rndNote): void
+    {
+        $update = SampleRequest::where('sample_ID', $sampleId)->first();
+        $update->update([
+            'sample_status' => 2,
+            'rnd_status' => 1,
+            'rnd_note' => $rndNote,
+            'rnd_approve_at' => Carbon::now(),
+            'token' => date('Ym') . Str::random(32) . date('ds'),
+            'token_expired_at' => Carbon::now()->addMinutes(30)
+        ]);
+    }
+    /**
+     * save document data to db
+     */
+    public function storeDataFileMsds($data): void
+    {
+        SampleRequestProductDocument::create([
+            'sample_req_product_id' => $data['sample_product_id'],
+            'document_category' => $data['document_category'],
+            'document_name' => $data['document_name'],
+            'document_path' => $data['document_path']
+        ]);
+    }
+    /**
+     * get data sample request product document
+     * @return eloquent
+     */
+    public function deleteDataFileMsds($id)
+    {
+        return SampleRequestProductDocument::find(base64_decode($id));
     }
 }
