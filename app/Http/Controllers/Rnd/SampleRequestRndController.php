@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Rnd;
 
-use App\Models\Ghs;
+use App\Traits\LogoUpload;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
 use App\Traits\UserLogRecord;
@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\SampleRequestDetails;
 use App\Models\SampleRequestProduct;
-use App\Models\SampleRequestProductDocument;
 use Illuminate\Support\Facades\Auth;
 use App\Repository\SampleRndRepository;
-use App\Traits\LogoUpload;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SampleRequestProductDocument;
+use App\Notifications\SendEmailWhenSampleFinish;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
 
 class SampleRequestRndController extends Controller
 {
@@ -490,9 +492,44 @@ class SampleRequestRndController extends Controller
     public function submitSampleRequest(Request $request)
     {
         try {
-            //code...
+            DB::beginTransaction();
+            //update the sample request data
+            $this->sampleRndRepo->updateSampleWhenSubmit($request->sampleId, $request->rnd_note);
+            //create log
+            $userSession = Auth::user();
+            $createLog = [
+                'user_id' => $userSession->id,
+                'email' => $userSession->email,
+                'ip_address' => $request->ip(),
+                'log_user_agent' => $request->header('user-agent'),
+                'activity' => 'finish & submit sample: ' . $request->sampleId,
+                'status' => 'true',
+                'date_time' => Carbon::now(),
+            ];
+            $this->logUserActivity($createLog);
+            //get sample content for email
+            $contentEmail = $this->sampleRndRepo->sampleForContentEmail($request->sampleId);
+            //container the content email 
+            $contentNotification = [
+                'sample_id' => $contentEmail->sample_ID,
+                'sample_subject' => $contentEmail->subject,
+                'sample_pic' => 'Sample PIC',
+                'request_date' => $contentEmail->request_date,
+                'delivery_date' => $contentEmail->delivery_date,
+                'sample_creator_note' => $contentEmail->rnd_note,
+                'sample_creator_time' => $contentEmail->rnd_approve_at,
+                'sample_token' => $contentEmail->token,
+            ];
+            DB::commit();
+            //get user sample pic
+            $userSamplePic = $this->sampleRndRepo->getUserSamplePic();
+            // send notification
+            $sendNotification = Notification::send($userSamplePic, new SendEmailWhenSampleFinish($contentNotification));
+
+            return response()->json(['success' => true, 'message' => 'submit success', 'url' => static::$url], 200);
         } catch (\Throwable $th) {
-            //throw $th;
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'something went wrong!'], 200);
         }
     }
     /**

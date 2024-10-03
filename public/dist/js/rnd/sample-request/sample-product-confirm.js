@@ -354,12 +354,18 @@ var Index = (function () {
                 data: formData,
                 processData: false,
                 contentType: false,
+                beforeSend: function () {
+                    $(".loading-spinner").show();
+                },
                 success: function (responses) {
                     toastr.success(responses.message);
 
                     setTimeout(() => {
                         window.location.href = responses.url;
                     }, 2000);
+                },
+                complete: function () {
+                    $(".loading-spinner").hide();
                 },
                 error: function (response) {
                     $.each(response.responseJSON, function (key, value) {

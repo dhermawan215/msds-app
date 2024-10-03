@@ -44,7 +44,13 @@
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-
+    <!-- spinner -->
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only text-primary">Loading...</span>
+        </div>
+    </div>
+    <!-- spinner -->
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">

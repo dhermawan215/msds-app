@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use Carbon\Carbon;
 use App\Models\Ghs;
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\SampleRequest;
 use Illuminate\Support\Facades\DB;
@@ -204,13 +205,15 @@ class SampleRndRepository
         }
         return 'false';
     }
-
+    /**
+     * update sample if sample createor finish the process
+     */
     public function updateSampleWhenSubmit($sampleId, $rndNote): void
     {
         $update = SampleRequest::where('sample_ID', $sampleId)->first();
         $update->update([
             'sample_status' => 2,
-            'rnd_status' => 1,
+            'rnd_status' => 2,
             'rnd_note' => $rndNote,
             'rnd_approve_at' => Carbon::now(),
             'token' => date('Ym') . Str::random(32) . date('ds'),
@@ -236,5 +239,21 @@ class SampleRndRepository
     public function deleteDataFileMsds($id)
     {
         return SampleRequestProductDocument::find(base64_decode($id));
+    }
+
+    public function getUserSamplePic()
+    {
+        $samplePic = User::whereHas('userGroup', function ($query) {
+            $query->where('name', 'SAMPLE_PIC');
+        })->get();
+        return $samplePic;
+    }
+
+    public function sampleForContentEmail($sampleId)
+    {
+        $data = SampleRequest::select('sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'rnd_note', 'rnd_approve_at', 'token')
+            ->where('sample_ID', $sampleId)
+            ->first();
+        return $data;
     }
 }

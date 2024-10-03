@@ -35,6 +35,12 @@ class AuthenticatedController extends Controller
         }
 
         $userData = User::select('id', 'email', 'is_active')->where('email', $request->email)->first();
+        if (!$userData) {
+            $data['status'] = 'false';
+            $userLogIfFails = self::logUserAuth($data);
+            return \response()->json(['data' => 'Please check your email or password'], 401);
+        }
+
         if ($userData->is_active == 0) {
             $data['status'] = 'false';
             $userLogIfFails = self::logUserAuth($data);
