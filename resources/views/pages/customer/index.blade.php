@@ -28,6 +28,18 @@
                             <h3 class="card-titile">Sales - Customer Dashboard</h3>
                         </div>
                         <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-row">
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <label for=""><i class="fa fa-filter" aria-hidden="true"></i>Filter Customer
+                                            Data</label>
+                                        <select name="customer_filter" id="customer-filter" class="form-control">
+                                            <option selected value="0">I am</option>
+                                            <option value="1">All</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="m-1">
                                 <div class="mb-2">
                                     <button type="button" class="btn btn-sm btn-secondary" id="btnRefresh">

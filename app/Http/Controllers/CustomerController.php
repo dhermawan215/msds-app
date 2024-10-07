@@ -50,7 +50,9 @@ class CustomerController extends Controller
         $user = Auth::user();
 
         $query = Customer::select('id', 'customer_code', 'customer_name');
-        $query->where('user_id', $user->id);
+        if (0 == $request->customer_filter) {
+            $query->where('user_id', $user->id);
+        }
 
         if ($globalSearch) {
             $query->where(function ($q) use ($globalSearch) {

@@ -34,8 +34,9 @@ var Index = (function () {
             ajax: {
                 url: url + "/customer/list",
                 type: "POST",
-                data: {
-                    _token: csrf_token,
+                data: function (d) {
+                    d._token = csrf_token;
+                    d.customer_filter = $("#customer-filter").val();
                 },
             },
             columns: [
@@ -70,6 +71,11 @@ var Index = (function () {
         } else {
             $("#btn-add").addClass("disabled");
         }
+        //change data customer when filter changed
+        $("#customer-filter").change(function (e) {
+            e.preventDefault();
+            table.ajax.reload();
+        });
     };
     //push data to variable aSelected
     var handleAddDeleteAselected = function (value, parentElement) {
