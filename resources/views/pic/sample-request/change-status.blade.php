@@ -136,4 +136,5 @@
     </section>
 @endsection
 @push('custom_js')
+    <script src="{{ asset('dist/js/sample-request/pic/change-status.min.js?q=') . time() }}"></script>
 @endpush

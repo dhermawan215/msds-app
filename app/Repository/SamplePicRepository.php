@@ -9,6 +9,7 @@ use App\Models\SampleRequest;
 use App\Models\SampleRequestProduct;
 use App\Models\SampleRequestCustomer;
 use App\Models\SampleSource;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use App\Repository\Interface\SamplePicInterface;
 
@@ -170,5 +171,31 @@ class SamplePicRepository implements SamplePicInterface
         $userSampleProduct = SampleRequestProduct::with('sampleProductUser:id,name,email')
             ->where('sample_id', $id)->get();
         return $userSampleProduct;
+    }
+    /**
+     * get user customer service
+     */
+    public function getUserCustomerService()
+    {
+        $user = User::whereHas('userGroup', function ($query) {
+            $query->where('name', 'CUSTOMER_SERVICE');
+        })->get();
+
+        return $user;
+    }
+    /**
+     * update sample request when sample pic change status to pickup
+     */
+    public function updateSampleRequestWhenChangeStatus($data): void
+    {
+        $sampleRequest = SampleRequest::where('sample_ID', $data['sample_ID'])->first();
+        $sampleRequest->update([
+            'sample_status' => $data['sample_status'],
+            'sample_pic_note' => $data['sample_pic_note'],
+            'cs' => $data['cs'],
+            'cs_status' => $data['cs_status'],
+            'token' => date('Ym') . Str::random(32) . date('ds'),
+            'token_expired_at' => Carbon::now()->addMinutes(30)
+        ]);
     }
 }

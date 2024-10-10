@@ -11,6 +11,8 @@ use App\Repository\UserRepository;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\SampleRequestProduct;
+use App\Notifications\NotificationForCustomerService;
+use App\Notifications\NotificationForSalesWhenPickup;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\SamplePicAssign;
 use App\Repository\SamplePicRepository;
@@ -377,15 +379,26 @@ class SampleRequestPicController extends Controller
     {
         //get data sample data before check delivery mode
         $sampleData = $this->samplePicRepository->sampleForChangeStatus($request->sample_ID);
-        //belum selesai
         //jika sample delivery mode expedition
+        //create log
+        $user = Auth::user();
+        $data = [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'date_time' => Carbon::now()->toDateTimeString(),
+            'ip_address' => $request->ip(),
+            'log_user_agent' => $request->header('user-agent'),
+            'activity' => $user->name . ' change sample status to pickup, ID: ' . $request->sample_ID,
+            'status' => 'true',
+        ];
+        $this->logUserActivity($data);
         if ($sampleData->delivery_by == '1') {
-            # code...
+            $response = $this->sendExpedition($request, $user);
         } else {
+            $response = $this->sendPickup($request, $user);
         }
 
-
-        return \response()->json(['success' => true, 'message' => 'Success!'], 200);
+        return response()->json(['success' => $response['success'], 'message' => $response['message'], 'url' => $response['url'] ? $response['url'] : null], $response['http']);
     }
     /**
      * method view detail sample product and use to assign
@@ -542,6 +555,118 @@ class SampleRequestPicController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return \response()->json(['success' => false, 'message' => 'something went wrong'], 500);
+        }
+    }
+    /**
+     * method if expedition
+     * @param $request as object data request
+     * @param $user as user data from auth
+     * @return array
+     */
+    private function sendExpedition($request, $user)
+    {
+        //get user customer service
+        $csUser = $this->samplePicRepository->getUserCustomerService();
+        //prepare data sample request
+        $arraySampleRequest = [
+            'sample_ID' => $request->sample_ID,
+            'cs' => $csUser[0]->id,
+            'cs_status' => 1,
+            'sample_pic_note' => $request->sample_pic_note,
+            'sample_status' => $request->sample_status,
+        ];
+
+        try {
+            //update sample request
+            $this->samplePicRepository->updateSampleRequestWhenChangeStatus($arraySampleRequest);
+            //get sample id
+            $sample = $this->samplePicRepository->getSampleId($request->sample_ID);
+            // get content email
+            $conteEmail = $this->samplePicRepository->sampleForContentEmail($sample->id);
+            //contain the email content data
+            $content = [
+                'sample_subject' => $conteEmail->subject,
+                'sample_pic' => $user->name,
+                'customer_service' => $csUser[0]->name,
+                'sample_id' => $conteEmail->sample_ID,
+                'requestor' => $conteEmail->sampleRequestor->name,
+                'request_date' => $conteEmail->request_date,
+                'delivery_date' => $conteEmail->delivery_date,
+                'sample_pic_note' => $conteEmail->sample_pic_note,
+                'sample_token' => $conteEmail->token,
+            ];
+            //send email notification
+            Notification::send($csUser, new NotificationForCustomerService($content));
+            return [
+                'success' => true,
+                'message' => 'success',
+                'http' => 200,
+                'url' => static::$url,
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [
+                'success' => false,
+                'message' => 'Error, please try again',
+                'http' => 500,
+                'url' => null,
+            ];
+        }
+    }
+    /**
+     * method if pikcup/by sales
+     * @param $request as object data request
+     * @param $user as user data from auth
+     * @return array
+     */
+    private function sendPickup($request, $user)
+    {
+        //prepare data sample request
+        $arraySampleRequest = [
+            'sample_ID' => $request->sample_ID,
+            'cs' => null,
+            'cs_status' => 0,
+            'sample_pic_note' => $request->sample_pic_note,
+            'sample_status' => $request->sample_status,
+        ];
+
+        try {
+            //update sample request
+            $this->samplePicRepository->updateSampleRequestWhenChangeStatus($arraySampleRequest);
+            //get sample id
+            $sample = $this->samplePicRepository->getSampleId($request->sample_ID);
+            // get content email
+            $conteEmail = $this->samplePicRepository->sampleForContentEmail($sample->id);
+            //contain the email content data
+            $content = [
+                'sample_subject' => $conteEmail->subject,
+                'sample_pic' => $user->name,
+                'sample_id' => $conteEmail->sample_ID,
+                'requestor' => $conteEmail->sampleRequestor->name,
+                'request_date' => $conteEmail->request_date,
+                'delivery_date' => $conteEmail->delivery_date,
+                'sample_pic_note' => $conteEmail->sample_pic_note,
+                'sample_token' => $conteEmail->token,
+            ];
+            // recipents address
+            $recipent = [
+                $conteEmail->sampleRequestor->email => $conteEmail->sampleRequestor->name
+            ];
+            //send notification
+            Notification::route('mail', $recipent)->notify(new NotificationForSalesWhenPickup($content));
+            return [
+                'success' => true,
+                'message' => 'success',
+                'http' => 200,
+                'url' => static::$url,
+            ];
+        } catch (\Throwable $th) {
+            return [
+                'success' => false,
+                'message' => 'Error, please try again',
+                'http' => 500,
+                'url' => null,
+            ];
         }
     }
 }

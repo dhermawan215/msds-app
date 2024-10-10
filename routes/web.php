@@ -399,6 +399,7 @@ Route::prefix('pic')->middleware('auth')->group(function () {
         Route::post('/sample-request/info-assign-sample-product', 'infoAssign');
         Route::post('/sample-request/edit-assign-sample-product', 'editAssign');
         Route::post('/sample-request/assign-sample-product/update', 'updateAssign');
+        Route::post('/sample-request/changed-status', 'updateChangeStatus');
     });
 });
 //Route sample pic end
