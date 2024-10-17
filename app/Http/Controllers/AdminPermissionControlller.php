@@ -93,6 +93,9 @@ class AdminPermissionControlller extends Controller
     public function add($id)
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
 
         if (!$modulePermission->is_akses || !in_array('add', $moduleFn)) {

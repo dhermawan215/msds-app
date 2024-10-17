@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminUserGroupController;
 use App\Http\Controllers\AdminUserManagement;
 use App\Http\Controllers\AuthenticatedController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Cs\SampleRequestCsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentalHazardController;
@@ -403,3 +404,12 @@ Route::prefix('pic')->middleware('auth')->group(function () {
     });
 });
 //Route sample pic end
+//Route sample cs start
+Route::prefix('cs')->middleware('auth')->group(function () {
+    Route::controller(SampleRequestCsController::class)->group(function () {
+        Route::get('/sample-request', 'index')->name('cs_sample_request');
+        Route::post('/sample-request/list', 'list');
+        Route::post('/sample-request/delivery-information', 'information');
+    });
+});
+//Route sample cs end

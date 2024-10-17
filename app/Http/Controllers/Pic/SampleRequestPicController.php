@@ -255,6 +255,9 @@ class SampleRequestPicController extends Controller
     public function detail($sampleId)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[2], $moduleFn)) {
             return \view('forbiden-403');
@@ -354,6 +357,9 @@ class SampleRequestPicController extends Controller
     public function changeStatus($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
             return \view('forbiden-403');
@@ -389,15 +395,15 @@ class SampleRequestPicController extends Controller
             'ip_address' => $request->ip(),
             'log_user_agent' => $request->header('user-agent'),
             'activity' => $user->name . ' change sample status to pickup, ID: ' . $request->sample_ID,
-            'status' => 'true',
         ];
-        $this->logUserActivity($data);
+
         if ($sampleData->delivery_by == '1') {
             $response = $this->sendExpedition($request, $user);
         } else {
             $response = $this->sendPickup($request, $user);
         }
-
+        $data['status'] = $response['success'];
+        $this->logUserActivity($data);
         return response()->json(['success' => $response['success'], 'message' => $response['message'], 'url' => $response['url'] ? $response['url'] : null], $response['http']);
     }
     /**
@@ -406,6 +412,9 @@ class SampleRequestPicController extends Controller
     public function detailSampleProduct($sampleId)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[1], $moduleFn)) {
             return \view('forbiden-403');

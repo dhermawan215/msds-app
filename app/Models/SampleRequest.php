@@ -63,4 +63,9 @@ class SampleRequest extends Model
     {
         return $this->hasMany(SampleRequestDetails::class, 'sample_id', 'id');
     }
+    //relation to sample request delivery
+    public function sampleRequestToDelivery(): HasOne
+    {
+        return $this->hasOne(SampleDelivery::class, 'sample_id', 'id');
+    }
 }

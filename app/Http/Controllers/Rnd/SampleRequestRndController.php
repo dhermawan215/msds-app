@@ -220,6 +220,9 @@ class SampleRequestRndController extends Controller
     public function detail($sampleId)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[2], $moduleFn)) {
             return \view('forbiden-403');
@@ -233,6 +236,9 @@ class SampleRequestRndController extends Controller
     public function detailSampleRequestProduct($sampleId)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[1], $moduleFn)) {
             return \view('forbiden-403');
@@ -411,6 +417,15 @@ class SampleRequestRndController extends Controller
      */
     public function labelPrint(Request $request)
     {
+        $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[3], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
         $sample_id = $request->query('vsr');
         $sampleReqproduct_id = $request->query('vsrp');
         $product_id = $request->query('vpr');

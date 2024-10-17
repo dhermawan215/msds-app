@@ -138,6 +138,9 @@ class StoragePresController extends Controller
     public function edit($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[1], $moduleFn)) {
             return \view('forbiden-403');

@@ -259,6 +259,9 @@ class SampleRequestController extends Controller
     public function createSample()
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
             return \view('forbiden-403');
@@ -337,6 +340,9 @@ class SampleRequestController extends Controller
     public function editSample($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[0], $moduleFn)) {
             return \view('forbiden-403');
@@ -397,6 +403,9 @@ class SampleRequestController extends Controller
     public function detailSample($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[3], $moduleFn)) {
             return \view('forbiden-403');
@@ -430,6 +439,9 @@ class SampleRequestController extends Controller
     public function createDetailCustomer($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[4], $moduleFn)) {
             return \view('forbiden-403');
@@ -489,6 +501,9 @@ class SampleRequestController extends Controller
     public function createDetailProduct($id)
     {
         $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array(static::valuePermission[7], $moduleFn)) {
             return \view('forbiden-403');

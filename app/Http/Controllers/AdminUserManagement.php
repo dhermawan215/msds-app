@@ -138,6 +138,9 @@ class AdminUserManagement extends Controller
     public function editUserData($id)
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses && !\in_array('edit', $moduleFn)) {
             return \view('forbiden-403');
