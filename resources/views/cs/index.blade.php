@@ -138,14 +138,27 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="">Delivery name</label>
-                        <input type="text" id="delivery-name" readonly class="form-control">
-                    </div>
-                    <div class="form-group row">
-                        <label for="name">Receipt</label>
-                        <input type="text" id="receipt" readonly class="form-control">
-                    </div>
+                    <form action="javascript:;" method="post" id="form-add-receipt">
+                        @csrf
+                        <div class="form-group row">
+                            <label for="">Delivery name</label>
+                            <input type="text" id="delivery-name" name="delivery_name" class="form-control"
+                                placeholder="e.g.: JNE, JNT, POS INDONESIA, DHL">
+                        </div>
+                        <div class="form-group row">
+                            <label for="name">Receipt</label>
+                            <input type="text" id="receipt" name="receipt" class="form-control"
+                                placeholder="e.g.: RX2323H2323">
+                        </div>
+                        <div class="form-group row">
+                            <label for="name">CS Note</label>
+                            <input type="text" id="cs-note" name="cs_note" class="form-control"
+                                placeholder="Notes">
+                        </div>
+                        <div class="form-group row">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

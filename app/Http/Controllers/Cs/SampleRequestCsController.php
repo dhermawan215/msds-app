@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Cs;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
+use App\Traits\CustomEncrypt;
 use App\Traits\UserLogRecord;
 use App\Traits\ModulePermissions;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Repository\SampleCsRepository;
-use App\Traits\CustomEncrypt;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Validator;
+use App\Notifications\SendToUserWhenCsDone;
+use Illuminate\Support\Facades\Notification;
 
 class SampleRequestCsController extends Controller
 {
@@ -192,7 +196,7 @@ class SampleRequestCsController extends Controller
             if ($value->sample_status == 3 && $value->delivery_by == 1 && in_array(static::valuePermission[0], $moduleFn)) {
                 if (is_null($value['sampleRequestToDelivery'])) {
                     $data['action'] = '<a href="#" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
-                    <button class="btn btn-warning text-white btn-add-receipt" title="add receipt delivery" data-toggle="modal" data-target="#modal-add-receipt"><i class="fa fa-truck" aria-hidden="true"></i></button>
+                    <button class="btn btn-warning text-white btn-add-receipt" title="add receipt delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-add-receipt"><i class="fa fa-truck" aria-hidden="true"></i></button>
                     <button class="btn btn-primary btn-info-delivery" title="info delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-info-delivery"><i class="fa fa-info-circle" aria-hidden="true"></i></button>';
                 } else {
                     $data['action'] = '<a href="#" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
@@ -227,5 +231,91 @@ class SampleRequestCsController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'something went wrong'], 500);
         }
+    }
+    /**
+     * store the receipt of delivery and update status cs in sample request
+     */
+    public function storeReceipt(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'delivery_name' => 'required',
+            'receipt' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 403);
+        }
+        //decode di value
+        $sample = $this->decryptData($request->di);
+        $user = Auth::user();
+        try {
+            //save record delivery information
+            $data = [
+                'sample' => $sample,
+                'delivery_name' => $request->delivery_name,
+                'receipt' => $request->receipt,
+            ];
+            $deliveryInformation = $this->sampleCsRepo->storeDelivery($data);
+            //update data sample request(update cs status)
+            $dataSample = [
+                'sample' => $sample,
+                'cs_note' => $request->cs_note,
+            ];
+            $this->sampleCsRepo->updateCsStatus($dataSample);
+            //send email notification to user
+            $notification = $this->sendEmailNotification($sample, $deliveryInformation);
+            //create log
+            $this->logUserActivity([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'date_time' => Carbon::now()->toDateTimeString(),
+                'ip_address' => $request->ip(),
+                'log_user_agent' => $request->header('user-agent'),
+                'activity' => $user->name . ' add receipt delivery, ID: ' . $notification,
+                'status' => 'true',
+            ]);
+            return response()->json(['success' => true, 'message' => 'success add receipt & send notification to sales'], 200);
+        } catch (\Throwable $th) {
+
+            $this->logUserActivity([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'date_time' => Carbon::now()->toDateTimeString(),
+                'ip_address' => $request->ip(),
+                'log_user_agent' => $request->header('user-agent'),
+                'activity' => $user->name . ' add receipt delivery',
+                'status' => 'false',
+            ]);
+            return response()->json(['success' => false, 'message' => 'error, please try again'], 500);
+        }
+    }
+    /**
+     * sent notificattion to requestor
+     * @return sampleI_D
+     */
+    private function sendEmailNotification($sample_id, $deliveryInformation = null)
+    {
+        //get content email
+        $contentEmail = $this->sampleCsRepo->contentEmail($sample_id);
+        //contain the data to array
+        $contentData = [
+            'sender' => Auth::user()->name,
+            'sample_subject' => $contentEmail->subject,
+            'sample_id' => $contentEmail->sample_ID,
+            'request_date' => $contentEmail->request_date,
+            'delivery_date' => $contentEmail->delivery_date,
+            'cs_note' => $contentEmail->cs_note,
+            'deliverier' => $deliveryInformation->delivery_name,
+            'receipt' => $deliveryInformation->receipt,
+            'requestor' => $contentEmail->sampleRequestor->name
+        ];
+        // recipient address
+        $recipient = [
+            $contentEmail->sampleRequestor->email => $contentEmail->sampleRequestor->name
+        ];
+        //sent to email
+        Notification::route('mail', $recipient)->notify(new SendToUserWhenCsDone($contentData));
+
+        return $contentEmail->sample_ID;
     }
 }

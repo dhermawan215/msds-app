@@ -410,6 +410,7 @@ Route::prefix('cs')->middleware('auth')->group(function () {
         Route::get('/sample-request', 'index')->name('cs_sample_request');
         Route::post('/sample-request/list', 'list');
         Route::post('/sample-request/delivery-information', 'information');
+        Route::post('/sample-request/receipt', 'storeReceipt');
     });
 });
 //Route sample cs end

@@ -67,6 +67,7 @@ var Index = (function () {
             e.preventDefault();
             table.ajax.reload();
         });
+        handleAddReceipt();
     };
 
     // button click delivery information
@@ -91,6 +92,38 @@ var Index = (function () {
                 error: function (response) {
                     toastr.error("error, please try again");
                 },
+            });
+        });
+    };
+    // handle action add receipt button
+    var handleAddReceipt = function () {
+        $(document).on("click", ".btn-add-receipt", function (e) {
+            e.preventDefault();
+            const diValue = $(this).data("di");
+
+            $("#form-add-receipt").submit(function (e) {
+                e.preventDefault();
+                const form = $(this);
+                let formData = new FormData(form[0]);
+                formData.append("di", diValue);
+                $.ajax({
+                    url: url + "/cs/sample-request/receipt",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (responses) {
+                        toastr.success(responses.message);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2500);
+                    },
+                    error: function (response) {
+                        $.each(response.responseJSON, function (key, value) {
+                            toastr.error(value);
+                        });
+                    },
+                });
             });
         });
     };
