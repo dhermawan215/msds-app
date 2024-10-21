@@ -195,15 +195,15 @@ class SampleRequestCsController extends Controller
             $data['action'] = '';
             if ($value->sample_status == 3 && $value->delivery_by == 1 && in_array(static::valuePermission[0], $moduleFn)) {
                 if (is_null($value['sampleRequestToDelivery'])) {
-                    $data['action'] = '<a href="#" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
+                    $data['action'] = '<a href="' . route('cs_sample_request.detail', $value->sample_ID) . '" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
                     <button class="btn btn-warning text-white btn-add-receipt" title="add receipt delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-add-receipt"><i class="fa fa-truck" aria-hidden="true"></i></button>
                     <button class="btn btn-primary btn-info-delivery" title="info delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-info-delivery"><i class="fa fa-info-circle" aria-hidden="true"></i></button>';
                 } else {
-                    $data['action'] = '<a href="#" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
+                    $data['action'] = '<a href="' . route('cs_sample_request.detail', $value->sample_ID) . '" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
                     <button class="btn btn-primary btn-info-delivery" title="info delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-info-delivery"><i class="fa fa-info-circle" aria-hidden="true"></i></button>';
                 }
             } else {
-                $data['action'] = '<a href="#" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
+                $data['action'] = '<a href="' . route('cs_sample_request.detail', $value->sample_ID) . '" class="btn btn-outline-success btn-detail" title="detail"><i class="fa fa-eye"></i></a>
                 <button class="btn btn-primary btn-info-delivery" title="info delivery" data-di="' . $this->encryptData($value->id) . '" data-toggle="modal" data-target="#modal-info-delivery"><i class="fa fa-info-circle" aria-hidden="true"></i></button>';
             }
 
@@ -317,5 +317,21 @@ class SampleRequestCsController extends Controller
         Notification::route('mail', $recipient)->notify(new SendToUserWhenCsDone($contentData));
 
         return $contentEmail->sample_ID;
+    }
+    /**
+     * detail sample
+     */
+    public function detail($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[1], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+        $data = $this->sampleCsRepo->detailOfSample($id);
+        return view('cs.detail-sample', $data);
     }
 }

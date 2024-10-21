@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
-use App\Models\SampleDelivery;
-use App\Models\SampleRequest;
 use Carbon\Carbon;
+use App\Models\SampleRequest;
+use App\Models\SampleDelivery;
+use App\Models\SampleRequestProduct;
+use App\Models\SampleRequestCustomer;
 
 class SampleCsRepository
 {
@@ -64,5 +66,19 @@ class SampleCsRepository
     public function contentEmail($id)
     {
         return SampleRequest::select('sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'cs_note')->with('sampleRequestor:id,name,email')->where('id', $id)->first();
+    }
+    /**
+     * get data sample request, sample request product and customer to be shown in detail page
+     * @return compact
+     */
+    public function detailOfSample($sampleId)
+    {
+        $sampleRequestData = SampleRequest::select('id', 'sample_ID', 'subject', 'requestor', 'request_date', 'delivery_date', 'delivery_by', 'requestor_note', 'sample_source_id', 'sample_pic_note', 'rnd_note', 'cs_note')
+            ->with(['sampleRequestor:id,name', 'sampleSource:id,name'])
+            ->where('sample_ID', $sampleId)->first();
+        $sampleRequestCustomer = SampleRequestCustomer::with('sampleCustomer')->where('sample_id', $sampleRequestData->id)->first();
+        $sampleRequestProduct = SampleRequestProduct::with('sampleProduct')->where('sample_id', $sampleRequestData->id)->get();
+
+        return compact('sampleRequestData', 'sampleRequestCustomer', 'sampleRequestProduct');
     }
 }
