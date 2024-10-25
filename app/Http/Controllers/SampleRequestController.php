@@ -17,6 +17,8 @@ use App\Models\SampleRequestCustomer;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SalesSendRequestOfSample;
+use App\Repository\SampleRequestSalesRepository;
+use App\Traits\CustomEncrypt;
 use App\Traits\UserLogRecord;
 use Carbon\Carbon;
 
@@ -25,6 +27,7 @@ class SampleRequestController extends Controller
     //controller for user (sales) sample request
     use ModulePermissions;
     use UserLogRecord;
+    use CustomEncrypt;
     protected $sysModuleName = 'sample_request';
     const valuePermission = [
         'add',
@@ -48,12 +51,14 @@ class SampleRequestController extends Controller
     private static $url;
     protected $customerService;
     protected $productService;
+    protected $sampleReqSalesRepo;
 
-    public function __construct()
+    public function __construct(SampleRequestSalesRepository $sampleRequestSalesRepository)
     {
         static::$url = route('sample_request');
         $this->customerService = new CustomerService;
         $this->productService = new ProductService;
+        $this->sampleReqSalesRepo = $sampleRequestSalesRepository;
     }
     public function index()
     {
@@ -89,6 +94,10 @@ class SampleRequestController extends Controller
             'cs_status'
         );
         $query->where('requestor', $user->id);
+        //filter status sample
+        if ($request->sample_status != '7') {
+            $query->where('sample_status', $request->sample_status);
+        }
 
         if ($globalSearch) {
             $query->where(function ($q) use ($globalSearch) {
@@ -206,7 +215,8 @@ class SampleRequestController extends Controller
                 if (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[3], $moduleFn) && in_array(static::valuePermission[7], $moduleFn)) {
                     $data['action'] = '<a href="' . route('sample_request.edit', $value->sample_ID) . '" class="btn btn-sm btn-primary" title="Edit sample"><i class="fas fa-edit" aria-hidden="true"></i></a>
                     <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                    <a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>';
+                    <a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>
+                    <a href="' . route('sample_request.customer_detail_edit', $value->sample_ID) . '" class="btn btn-sm btn-info btn-edit-customer mt-1" title="Edit customer data"><i class="fas fa-edit" aria-hidden="true"></i></a>';
                 }
                 //jika edit, detail true
                 elseif (in_array(static::valuePermission[1], $moduleFn) && in_array(static::valuePermission[3], $moduleFn)) {
@@ -235,8 +245,25 @@ class SampleRequestController extends Controller
                 elseif (in_array(static::valuePermission[3], $moduleFn)) {
                     $data['action'] = '<a href="' . route('sample_request.product_add', $value->sample_ID) . '" class="btn btn-sm btn-warning mt-1" title="Product Detail"><i class="fa fa-tags" aria-hidden="true"></i></a>';
                 }
-            } elseif (static::sampleStatusCode[4] == $value->sample_status) {
-                $data['action'] = '<a href="#" class="btn btn-sm btn-outline-success mt-1" title="Change status"><i class="fa fa-toggle-on" aria-hidden="true"></i></a>
+                //if edit customer true
+                elseif (in_array(static::valuePermission[5], $moduleFn)) {
+                    $data['action'] = ' <a href="' . route('sample_request.customer_detail_edit', $value->sample_ID) . '" class="btn btn-sm btn-info btn-edit-customer mt-1" title="Edit customer data"><i class="fas fa-edit" aria-hidden="true"></i></a>';
+                }
+            }
+            //if status pickup, sales can be download msds/pds and change status to accepted by customer
+            elseif (static::sampleStatusCode[3] == $value->sample_status) {
+                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-pickup btn-review mt-1" title="Change Status"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                <a href="#" class="btn btn-info btn-sm btn-download-msds" title="Download msds/pds"><i class="fa fa-download" aria-hidden="true"></i></a>
+                <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+            }
+            //if status accepted by customer sales can change status to review
+            elseif (static::sampleStatusCode[4] == $value->sample_status) {
+                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-accepted mt-1" title="Change status"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+            }
+            //if status reviewed, status must be fill the customer note
+            elseif (static::sampleStatusCode[5] == $value->sample_status) {
+                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-review mt-1" title="Fill customer review"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
                 <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             } else {
                 $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
@@ -731,5 +758,60 @@ class SampleRequestController extends Controller
             'sampleCustomer' => $sampleRequestCustomer,
             'sampleProducts' => $sampleRequestProduct
         ]);
+    }
+    /**
+     * edit data sample customer
+     */
+    public function editSampleCustomer($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[5], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
+        return view('pages.sample-request.edit-sample-customer', ['sample' => $id, 'urlBack' => static::$url, 'javascriptID' => 'customer-edit']);
+    }
+    /**
+     * get information of sample request customer
+     */
+    public function infoSampleCustomer(Request $request)
+    {
+        try {
+            $dataCustomer = $this->sampleReqSalesRepo->sampleCustomerInfo($request->vsampleID);
+            // dd($dataCustomer);
+            $responseData = [
+                'iV' => $this->encryptData($dataCustomer->id),
+                'c' => $dataCustomer ? $dataCustomer->customer_id : null,
+                'customer_name' => $dataCustomer->sampleCustomer ? $dataCustomer->sampleCustomer->customer_name : null,
+                'customer_pic' => $dataCustomer ? $dataCustomer->customer_pic : null,
+                'delivery_address' => $dataCustomer ? $dataCustomer->delivery_address : null,
+            ];
+            return response()->json(['success' => true, 'data' => $responseData], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false], 500);
+        }
+    }
+    /**
+     * update information of sample request customer
+     */
+    public function updateSampleCustomer(Request $request)
+    {
+        $id = $this->decryptData($request->sval);
+        try {
+            $data = [
+                'id' => $id,
+                'customer_id' => $request->c,
+                'customer_pic' => $request->customer_pic,
+                'delivery_address' => $request->delivery_address
+            ];
+            $this->sampleReqSalesRepo->updateSc($data);
+            return response()->json(['success' => true, 'message' => 'update success', 'url' => static::$url], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => true, 'message' => 'error, please try again'], 500);
+        }
     }
 }

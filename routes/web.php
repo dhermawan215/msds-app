@@ -291,6 +291,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/sample-request/product-detail/update', 'updateProductDetail');
         Route::post('/sample-request/send-request', 'sendRequest');
         Route::get('/sample-request/preview/{token}', 'preview')->name('sample_request.preview');
+        Route::get('/sample-request/edit-customer/{id}', 'editSampleCustomer')->name('sample_request.customer_detail_edit');
+        Route::post('/sample-request/edit-customer/info', 'infoSampleCustomer');
+        Route::post('/sample-request/edit-customer/update', 'updateSampleCustomer');
     });
     //# sales sample request route end
     //sample request end

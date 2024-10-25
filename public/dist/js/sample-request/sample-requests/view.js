@@ -34,8 +34,9 @@ var Index = (function () {
             ajax: {
                 url: url + "/sample-request/list",
                 type: "POST",
-                data: {
-                    _token: csrf_token,
+                data: function (d) {
+                    d._token = csrf_token;
+                    d.sample_status = $("#status-sample").val();
                 },
             },
             columns: [
@@ -76,6 +77,10 @@ var Index = (function () {
         } else {
             $("#btn-add").addClass("disabled");
         }
+        $("#status-sample").change(function (e) {
+            e.preventDefault();
+            table.ajax.reload();
+        });
     };
     //push data to variable aSelected
     var handleAddDeleteAselected = function (value, parentElement) {
