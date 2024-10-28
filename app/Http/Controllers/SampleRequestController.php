@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\SampleSource;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
+use App\Traits\CustomEncrypt;
+use App\Traits\UserLogRecord;
 use App\Services\ProductService;
 use App\Services\CustomerService;
 use App\Traits\ModulePermissions;
@@ -15,12 +18,10 @@ use App\Models\SampleRequestProduct;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SampleRequestCustomer;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SampleRequestProductDocument;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SalesSendRequestOfSample;
 use App\Repository\SampleRequestSalesRepository;
-use App\Traits\CustomEncrypt;
-use App\Traits\UserLogRecord;
-use Carbon\Carbon;
 
 class SampleRequestController extends Controller
 {
@@ -253,7 +254,7 @@ class SampleRequestController extends Controller
             //if status pickup, sales can be download msds/pds and change status to accepted by customer
             elseif (static::sampleStatusCode[3] == $value->sample_status) {
                 $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-pickup btn-review mt-1" title="Change Status"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
-                <a href="#" class="btn btn-info btn-sm btn-download-msds" title="Download msds/pds"><i class="fa fa-download" aria-hidden="true"></i></a>
+                <a href="' . route('sample_request.download_msds', $value->sample_ID) . '" class="btn btn-info btn-sm btn-download-msds" title="Download msds/pds"><i class="fa fa-download" aria-hidden="true"></i></a>
                 <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
             //if status accepted by customer sales can change status to review
@@ -782,11 +783,10 @@ class SampleRequestController extends Controller
     {
         try {
             $dataCustomer = $this->sampleReqSalesRepo->sampleCustomerInfo($request->vsampleID);
-            // dd($dataCustomer);
             $responseData = [
                 'iV' => $this->encryptData($dataCustomer->id),
                 'c' => $dataCustomer ? $dataCustomer->customer_id : null,
-                'customer_name' => $dataCustomer->sampleCustomer ? $dataCustomer->sampleCustomer->customer_name : null,
+                'customer_name' => $dataCustomer ? $dataCustomer->sampleCustomer->customer_name : null,
                 'customer_pic' => $dataCustomer ? $dataCustomer->customer_pic : null,
                 'delivery_address' => $dataCustomer ? $dataCustomer->delivery_address : null,
             ];
@@ -813,5 +813,105 @@ class SampleRequestController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success' => true, 'message' => 'error, please try again'], 500);
         }
+    }
+    /**
+     * download attachment (msds/pds)
+     */
+    public function downloadMsds($id)
+    {
+        $modulePermission = $this->permission($this->sysModuleName);
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
+        $moduleFn = \json_decode($modulePermission->fungsi, true);
+        if (!$modulePermission->is_akses || !in_array(static::valuePermission[3], $moduleFn)) {
+            return \view('forbiden-403');
+        }
+
+        return view('pages.sample-request.sample-product-view', [
+            'javascriptID' => 'sample-msds',
+            'sampleID' => $id,
+        ]);
+    }
+    /**
+     * list sample product
+     */
+    public function listProductForMsdsDownload(Request $request)
+    {
+        $draw = $request['draw'];
+        $offset = $request['start'] ? $request['start'] : 0;
+        $limit = $request['length'] ? $request['length'] : 15;
+        // get sample data
+        $sample = $this->getSampleRequest($request->sampleID);
+
+        $query = SampleRequestProduct::select('*')->with('sampleProduct:id,product_code,product_function');
+        $query->where('sample_id', $sample->id);
+
+        $recordsFiltered = $query->count();
+        $resData = $query->skip($offset)
+            ->take($limit)
+            ->get();
+        $recordsTotal = $resData->count();
+
+        $data = [];
+        $i = $offset + 1;
+        $arr = [];
+
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['product'] = $value->sampleProduct ? $value->sampleProduct->product_code . '-' . $value->sampleProduct->product_function : 'data not found';
+            $data['qty'] = $value->qty;
+            $data['label'] = $value->label_name;
+            $data['action'] = '
+            <button class="btn btn-sm btn-info btn-info-msds-pds" data-info="' . $this->encryptData($value->id) . '" title="information msds/pds documents" data-toggle="modal" data-target="#modal-info-msds-pds"><i class="fa fa-info-circle" aria-hidden="true"></i></button>
+            ';
+
+            $arr[] = $data;
+            $i++;
+        }
+
+        return \response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $arr,
+        ]);
+    }
+    /**
+     * 
+     */
+    public function listDocMsdsPds(Request $request)
+    {
+        $draw = $request['draw'];
+        $offset = $request['start'] ? $request['start'] : 0;
+        $limit = $request['length'] ? $request['length'] : 15;
+        $globalSearch = $request['search']['value'];
+        $query = SampleRequestProductDocument::where('sample_req_product_id', $this->decryptData($request->vx));
+
+        $recordsFiltered = $query->count();
+        $resData = $query->skip($offset)
+            ->take($limit)
+            ->get();
+        $recordsTotal = $resData->count();
+
+        $data = [];
+        $i = $offset + 1;
+        $arr = [];
+
+        foreach ($resData as $key => $value) {
+            $data['rnum'] = $i;
+            $data['category'] = $value->document_category;
+            $data['name'] = $value->document_name;
+            $data['action'] = '<a class="btn btn-sm btn-primary" href="' . asset($value->document_path) . '" download><i class="fa fa-download" aria-hidden="true"></i> Download</a>';
+            $arr[] = $data;
+            $i++;
+        }
+
+        return \response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $arr,
+        ]);
     }
 }
