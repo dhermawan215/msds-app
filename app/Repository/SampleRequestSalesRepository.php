@@ -26,11 +26,11 @@ class SampleRequestSalesRepository
      */
     public function sampleCustomerInfo($sample_ID)
     {
-        $sampleCustomer = SampleRequestCustomer::with('sampleCustomer')->whereHas('sampleRequestCustomer', function ($query) use ($sample_ID) {
+        $query =  SampleRequestCustomer::with('sampleCustomer')->whereHas('sampleRequestCustomer', function ($query) use ($sample_ID) {
             $query->where('sample_ID', $sample_ID);
         })->first();
 
-        return $sampleCustomer;
+        return $query;
     }
     /**
      * update sample request customer
@@ -42,6 +42,27 @@ class SampleRequestSalesRepository
             'customer_id' => $data['customer_id'],
             'customer_pic' => $data['customer_pic'],
             'delivery_address' => $data['delivery_address']
+        ]);
+    }
+    /**
+     * update sample request status when process change status
+     */
+    public function updateWhenChangeStatus($data): void
+    {
+        $query = SampleRequest::find($data['id']);
+        $query->update([
+            'sample_status' => $data['status_sample'],
+        ]);
+    }
+    /**
+     * add customer note when change status to reviewed
+     */
+    public function addCustomerNote($data): void
+    {
+        $query = SampleRequestCustomer::where('sample_id', $data['id'])->first();
+
+        $query->update([
+            'customer_note' => $data['customer_note']
         ]);
     }
 }

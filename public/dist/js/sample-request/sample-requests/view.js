@@ -46,6 +46,7 @@ var Index = (function () {
                 { data: "subject", orderable: false },
                 { data: "request", orderable: false },
                 { data: "delivery", orderable: false },
+                { data: "method", orderable: false },
                 { data: "pic", orderable: false },
                 { data: "creator", orderable: false },
                 { data: "cs", orderable: false },
@@ -80,6 +81,16 @@ var Index = (function () {
         $("#status-sample").change(function (e) {
             e.preventDefault();
             table.ajax.reload();
+        });
+        //initialize function when data table loaded
+        //and if button change status clicked get val and parsing it
+        $(document).on("click", ".btn-ch-pickup", function () {
+            const srval = $(this).data("vx");
+            handleChangeStatusPickup(srval);
+        });
+        $(document).on("click", ".btn-ch-accepted", function () {
+            const vxval = $(this).data("vx");
+            handleSubmitFormReview(vxval);
         });
     };
     //push data to variable aSelected
@@ -155,6 +166,62 @@ var Index = (function () {
                         },
                     });
                 }
+            });
+        });
+    };
+    //change status pickup to accepted by customer
+    var handleChangeStatusPickup = function (srval) {
+        $("#checkbox-pickup-accepted").on("change", function () {
+            if ($(this).is(":checked")) {
+                const cbxval = $(this).data("cbx");
+                $.ajax({
+                    type: "POST",
+                    url: url + "/sample-request/change-status",
+                    data: {
+                        _token: csrf_token,
+                        vx: srval,
+                        cbx: cbxval,
+                    },
+                    dataType: "json",
+                    success: function (responses) {
+                        toastr.success(responses.message);
+                        setTimeout(() => {
+                            window.location.href = responses.url;
+                        }, 3500);
+                    },
+                    error: function (response) {
+                        $.each(response.responseJSON, function (key, value) {
+                            toastr.error(value);
+                        });
+                    },
+                });
+            }
+        });
+    };
+    //submit change status reviewed
+    var handleSubmitFormReview = function (vxval) {
+        $("#form-reviewd-sales").submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            let formData = new FormData(form[0]);
+            formData.append("vx", vxval);
+            $.ajax({
+                url: `${url}/sample-request/change-status`,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (responses) {
+                    toastr.success(responses.message);
+                    setTimeout(() => {
+                        window.location.href = responses.url;
+                    }, 3500);
+                },
+                error: function (response) {
+                    $.each(response.responseJSON, function (key, value) {
+                        toastr.error(value);
+                    });
+                },
             });
         });
     };

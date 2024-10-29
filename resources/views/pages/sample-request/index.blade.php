@@ -69,6 +69,7 @@
                                             <th>Subject</th>
                                             <th>Request</th>
                                             <th>Delivery</th>
+                                            <th>Method</th>
                                             <th style="width: 10px;">Sample PIC</th>
                                             <th style="width: 10px;">Sample Creator</th>
                                             <th style="width: 10px;">CS</th>
@@ -98,6 +99,71 @@
             <!-- /.row -->
         </div><!--/. container-fluid -->
     </section>
+    <!-- modal change status to accepted by customer start-->
+    <div class="modal fade" id="modal-pickup-accepted" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal change status to accepted by customer</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group form-check">
+                        <input class="form-check-input" type="checkbox" value="true" data-cbx='4'
+                            id="checkbox-pickup-accepted">
+                        <label class="form-check-label" for="checkbox-pickup-accepted">
+                            Accepted by customer
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal change status to accepted by customer  end-->
+    <!-- modal change status to reviewed start-->
+    <div class="modal fade" id="modal-accepted-review" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modal change status to reviewed</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="javascript:;" method="post" id="form-reviewd-sales">
+                        @csrf
+                        <div class="form-group form-check">
+                            <input class="form-check-input" name="cbx" type="checkbox" value="5"
+                                data-cbx='5' id="checkbox-reviewed" required>
+                            <label class="form-check-label" for="exampleCheck1">Reviewed</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Customer note</label>
+                            <input type="text" name="customer_note" id="customer-note" class="form-control"
+                                placeholder="customer note">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- modal change status to reviewed  end-->
 @endsection
 @push('custom_js')
     <script src="{{ asset('frontend/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>

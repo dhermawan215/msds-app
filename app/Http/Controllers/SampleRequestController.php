@@ -88,6 +88,7 @@ class SampleRequestController extends Controller
             'subject',
             'request_date',
             'delivery_date',
+            'delivery_by',
             'sample_status',
             'delivery_date',
             'sample_pic_status',
@@ -204,7 +205,14 @@ class SampleRequestController extends Controller
                     $sampleStatus = 'Pending';
                     break;
             }
-
+            if ($value->delivery_by == 0) {
+                $deliveryBy = static::deliveryBy[0];
+            } elseif ($value->delivery_by == 1) {
+                $deliveryBy = static::deliveryBy[1];
+            } else {
+                $deliveryBy = static::deliveryBy[2];
+            }
+            $data['method'] = $deliveryBy;
             $data['pic'] = '<i class="' . $samplePic . '"></i>';
             $data['creator'] = '<i class="' . $sampleRnd . '"></i>';
             $data['cs'] = '<i class="' . $sampleCs . '"></i>';
@@ -253,19 +261,18 @@ class SampleRequestController extends Controller
             }
             //if status pickup, sales can be download msds/pds and change status to accepted by customer
             elseif (static::sampleStatusCode[3] == $value->sample_status) {
-                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-pickup btn-review mt-1" title="Change Status"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-pickup mt-1" data-vx="' . $this->encryptData($value->id) . '" title="Change Status" data-toggle="modal" data-target="#modal-pickup-accepted"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
                 <a href="' . route('sample_request.download_msds', $value->sample_ID) . '" class="btn btn-info btn-sm btn-download-msds" title="Download msds/pds"><i class="fa fa-download" aria-hidden="true"></i></a>
                 <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
-            //if status accepted by customer sales can change status to review
+            //if status accepted by customer sales can change status to review and fill the customer note
             elseif (static::sampleStatusCode[4] == $value->sample_status) {
-                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-accepted mt-1" title="Change status"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-ch-accepted mt-1" data-vx="' . $this->encryptData($value->id) . '" title="Change status" data-toggle="modal" data-target="#modal-accepted-review"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
                 <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
-            //if status reviewed, status must be fill the customer note
+            //if status reviewed, 
             elseif (static::sampleStatusCode[5] == $value->sample_status) {
-                $data['action'] = '<button class="btn btn-sm btn-outline-success btn-review mt-1" title="Fill customer review"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
-                <a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+                $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             } else {
                 $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
@@ -878,7 +885,7 @@ class SampleRequestController extends Controller
         ]);
     }
     /**
-     * 
+     * list data msds/pds per sample product
      */
     public function listDocMsdsPds(Request $request)
     {
@@ -913,5 +920,30 @@ class SampleRequestController extends Controller
             'recordsFiltered' => $recordsFiltered,
             'data' => $arr,
         ]);
+    }
+    /**
+     * change status of sample request
+     */
+    public function changeStatus(Request $request)
+    {
+        //check if customer note exist
+        $data = [];
+        if (isset($request->customer_note)) {
+            $data['customer_note'] = $request->customer_note;
+        }
+
+        $data['id'] = $this->decryptData($request->vx);
+        $data['status_sample'] = $request->cbx;
+
+        //update the data 
+        try {
+            $this->sampleReqSalesRepo->updateWhenChangeStatus($data);
+            if (isset($request->customer_note)) {
+                $this->sampleReqSalesRepo->addCustomerNote($data);
+            }
+            return response()->json(['success' => true, 'message' => 'change status success!', 'url' => static::$url], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => true, 'message' => 'error!'], 500);
+        }
     }
 }

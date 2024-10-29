@@ -297,6 +297,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/sample-request/download-msds/{id}', 'downloadMsds')->name('sample_request.download_msds');
         Route::post('/sample-request/download-msds/list', 'listProductForMsdsDownload');
         Route::post('/sample-request/download-msds/list-doc', 'listDocMsdsPds');
+        Route::post('/sample-request/change-status', 'changeStatus');
     });
     //# sales sample request route end
     //sample request end
