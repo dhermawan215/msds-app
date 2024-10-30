@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedController::class, 'logout']);
     // dashboard route
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/chart', [DashboardController::class, 'statisticSampleRequest']);
     // user setting route
     Route::get('/user-setting', [UserSettingController::class, 'profile'])->name('user_setting');
     Route::post('/user-setting/update', [UserSettingController::class, 'update'])->name('user_setting.update');
