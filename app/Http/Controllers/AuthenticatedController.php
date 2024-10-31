@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserLog;
-use Carbon\Carbon;
+use App\Models\UserVerification;
+use App\Notifications\SendEmailVerification;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticatedController extends Controller
@@ -110,5 +114,63 @@ class AuthenticatedController extends Controller
         $url = \url('/login');
 
         return \response()->json(['success' => \true, 'data' => $url], 200);
+    }
+    /**
+     * request activate account
+     */
+    public function activateAccount(Request $request)
+    {
+        //user session
+        $user = Auth::user();
+        //create token activation
+        $tokenString1 = Str::random(12);
+        $tokenString2 = Str::random(18);
+        $realToken = date('Ymdh') . $tokenString1 . date('is') . $tokenString2 . date('s');
+
+        try {
+            //save request data to database
+            $query = UserVerification::create([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'token_verification' => $realToken,
+                'token_expired_at' => Carbon::now()->addMinute(30),
+            ]);
+            //contain the information of verification account
+            $content = [
+                'user' => $user->name,
+                'token' => $query->token_verification,
+            ];
+            //send notification
+            Notification::route('mail', [$user->email => $user->name])->notify(new SendEmailVerification($content));
+
+            return redirect()->route('dashboard')->with('activation', 'Email verification successful to send');
+        } catch (\Throwable $th) {
+            return redirect()->route('dashboard')->with('activation', 'Error, please try again!');
+        }
+    }
+
+    public function activation($token)
+    {
+        $query = UserVerification::where('token_verification', $token)->first();
+
+        //check possibility unvalid token
+        if (is_null($query)) {
+            return view('errors.succes-verification', ['message' => 'we could not find your request.', 'title' => 'Opps!']);
+        }
+        //check possibility token expired
+        if (Carbon::parse($query->token_expired_at) < Carbon::now()) {
+            return view('errors.succes-verification', ['message' => 'token expired.', 'title' => 'Opps!']);
+        }
+        //update account data
+        try {
+            $queryUser = User::find($query->user_id);
+
+            $proccess = $queryUser->update([
+                'email_verified_at' => Carbon::now(),
+            ]);
+            return view('errors.succes-verification', ['message' => 'Your account was verified.', 'title' => 'Success!']);
+        } catch (\Throwable $th) {
+            return view('errors.succes-verification', ['message' => 'We could not process your request.', 'title' => 'Error!']);
+        }
     }
 }

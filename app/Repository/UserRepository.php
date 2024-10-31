@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\User;
+use App\Models\UserVerification;
 use Illuminate\Support\Facades\Request;
 
 class UserRepository
@@ -48,5 +49,13 @@ class UserRepository
     {
         $user = User::select('id', 'name', 'email')->whereIn('id', $id)->get();
         return $user;
+    }
+    /**
+     * get data how many user are request verified email
+     */
+    public function getHowManyVerified($email)
+    {
+        $query = UserVerification::where('email', $email)->orderBy('created_at', 'DESC')->first();
+        return $query;
     }
 }

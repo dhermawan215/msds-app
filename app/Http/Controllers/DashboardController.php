@@ -6,11 +6,19 @@ use Carbon\Carbon;
 use App\Models\SysUserGroup;
 use Illuminate\Http\Request;
 use App\Models\SampleRequest;
+use App\Repository\UserRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    protected $userRepo;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepo = $userRepository;
+    }
+
     public function index(Request $request)
     {
 
@@ -19,13 +27,34 @@ class DashboardController extends Controller
         //user information
         $user = Auth::user();
         $userGroup = $this->getUserGroup($user->sys_group_id);
+        $alert = null;
+        /**
+         * check if email verified null and user was requested but the time is over than 15 minutes
+         * so, show the alert resend
+         * if the user firtsly request, show the alert send email verification
+         * */
+        $userRequestVerified = $this->userRepo->getHowManyVerified($user->email);
+
+        if (is_null($user->email_verified_at) && is_null($userRequestVerified)) {
+            //show alert first time to user how to activate their email
+            $alert = 'first-time';
+        }
+
+        if (is_null($user->email_verified_at) && isset($userRequestVerified)) {
+            if (Carbon::parse($userRequestVerified->token_expired_at) < Carbon::now()) {
+                $alert = 'reminder-activated';
+            } else {
+                $alert = 'email-succesfully-sent';
+            }
+        }
         return view('dashboard', [
             'date' => $dateView,
             'user_name' => $user->name,
             'user_email' => $user->email,
             'email_verified' => is_null($user->email_verified_at) ? 'Not Verified' : 'Verified',
             'ip' => $request->ip(),
-            'user_group' => $userGroup->name
+            'user_group' => $userGroup->name,
+            'alert' => $alert,
         ]);
     }
 
@@ -33,7 +62,9 @@ class DashboardController extends Controller
     {
         return SysUserGroup::find($id);
     }
-
+    /**
+     * statistic for sample request line chart in dashboard
+     */
     public function statisticSampleRequest()
     {
         $sampleRequests = SampleRequest::select(

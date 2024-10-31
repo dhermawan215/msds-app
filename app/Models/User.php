@@ -23,7 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'sys_group_id',
-        'is_active'
+        'is_active',
+        'email_verified_at'
     ];
 
     /**
@@ -44,6 +45,27 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Determine if the user has verified their email address.
+     *
+     * @return bool
+     */
+    public function hasVerifiedEmail()
+    {
+        return ! is_null($this->email_verified_at);
+    }
+    /**
+     * Mark the given user's email as verified.
+     *
+     * @return bool
+     */
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
 
     public function userGroup()
     {

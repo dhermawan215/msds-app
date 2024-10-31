@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Dashboard</h1>
+                    <h2 class="">Dashboard</h2>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -38,7 +38,56 @@
             </div>
             <hr>
             <!-- Welcome user end -->
+            <div class="row">
+                <!-- alert show start-->
+                <div class="col-12">
+                    @if ($alert == 'first-time')
+                        <div class="alert border border-success alert-dismissible fade show" role="alert">
+                            <h4 class="alert-heading">Activate your account</h4>
+                            <p>if you do not activate your email, you have a limited experience when accessing the app.</p>
+                            <hr>
+                            <p class="mb-0">
+                            <form action="{{ route('account_request_verification') }}" method="post">
+                                @csrf
+                                <button class="btn btn-sm btn-success">Send email verification</button>
+                            </form>
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif ($alert == 'reminder-activated')
+                        <div class="alert border border-danger alert-dismissible fade show" role="alert">
+                            <h4 class="alert-heading">Activate your account</h4>
+                            <p>Please check your email to activate your account, or click resend to get new email
+                                verification.</p>
+                            <hr>
+                            <p class="mb-0">
+                            <form action="{{ route('account_request_verification') }}" method="post">
+                                @csrf
+                                <button class="btn btn-sm btn-danger">Resend email verification</button>
+                            </form>
+                            </p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif ($alert == 'email-succesfully-sent')
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <h4 class="alert-heading">Email verification has been sent</h4>
+                            <p>Please check your email, to activate your account</p>
+                            <hr>
 
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @else
+                    @endif
+
+                </div>
+                <!-- alert show end-->
+            </div>
             <!-- Info boxes -->
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-4">
@@ -196,6 +245,13 @@
             chartSampleRequest();
             // Set interval to reload data every 60 seconds
             setInterval(chartSampleRequest, 60000);
+            //check session verification email alert
+            @if (session('message'))
+                mustbeVerifiedAlert();
+            @endif
+            @if (session('activation_success'))
+                activationAlert();
+            @endif
         });
 
         function updateClock() {
@@ -285,6 +341,32 @@
                     console.error('Error:', error);
                 }
             });
+        }
+
+        function mustbeVerifiedAlert() {
+
+            Swal.fire({
+                title: "You must have verified your account before accessing it!",
+                showClass: {
+                    popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                    `
+                },
+                hideClass: {
+                    popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                    `
+                }
+            });
+        }
+
+        function activationAlert() {
+            const messageAlert = "{{ session('activation') }}";
+            Swal.fire(messageAlert);
         }
     </script>
 @endpush

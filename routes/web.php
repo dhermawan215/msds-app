@@ -1,42 +1,41 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\AdminModul;
-use App\Http\Controllers\AdminPermissionControlller;
-use App\Http\Controllers\AdminUserGroupController;
-use App\Http\Controllers\AdminUserManagement;
-use App\Http\Controllers\AuthenticatedController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\Cs\SampleRequestCsController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EnvironmentalHazardController;
-use App\Http\Controllers\GeneralPresController;
-use App\Http\Controllers\HealthHazardController;
-use App\Http\Controllers\PhysicalHazardController;
-use App\Http\Controllers\Pic\SampleRequestPicController;
-use App\Http\Controllers\PreventionPresController;
-use App\Http\Controllers\ResponsePresController;
-use App\Http\Controllers\Rnd\ExtinguishingMediaController;
-use App\Http\Controllers\Rnd\EyeContactController;
-use App\Http\Controllers\Rnd\GhsController;
-use App\Http\Controllers\Rnd\IngestionController;
-use App\Http\Controllers\Rnd\InhalationController;
-use App\Http\Controllers\Rnd\PmifController;
-use App\Http\Controllers\Rnd\ProductController;
-use App\Http\Controllers\Rnd\RiskPhrasesController;
-use App\Http\Controllers\Rnd\SafetyPhrasesController;
-use App\Http\Controllers\Rnd\SampleRequestRndController;
-use App\Http\Controllers\Rnd\SampleSourceController;
-use App\Http\Controllers\Rnd\SffpController;
-use App\Http\Controllers\Rnd\SkinContactController;
-use App\Http\Controllers\Rnd\SpesificHazardController;
-use App\Http\Controllers\Rnd\StoragePresController;
-use App\Http\Controllers\SampleRequestController;
-use App\Http\Controllers\UnitController;
-use App\Http\Controllers\UserSettingController;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Rnd\GhsController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Rnd\PmifController;
+use App\Http\Controllers\Rnd\SffpController;
+use App\Http\Controllers\AdminUserManagement;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GeneralPresController;
+use App\Http\Controllers\Rnd\ProductController;
+use App\Http\Controllers\UserSettingController;
+use App\Http\Controllers\HealthHazardController;
+use App\Http\Controllers\ResponsePresController;
+use App\Http\Controllers\AuthenticatedController;
+use App\Http\Controllers\Rnd\IngestionController;
+use App\Http\Controllers\SampleRequestController;
+use App\Http\Controllers\AdminUserGroupController;
+use App\Http\Controllers\PhysicalHazardController;
+use App\Http\Controllers\PreventionPresController;
+use App\Http\Controllers\Rnd\EyeContactController;
+use App\Http\Controllers\Rnd\InhalationController;
+use App\Http\Controllers\Rnd\RiskPhrasesController;
+use App\Http\Controllers\Rnd\SkinContactController;
+use App\Http\Controllers\Rnd\StoragePresController;
+use App\Http\Controllers\AdminPermissionControlller;
+use App\Http\Controllers\Rnd\SampleSourceController;
+use App\Http\Controllers\Rnd\SafetyPhrasesController;
+use App\Http\Controllers\Cs\SampleRequestCsController;
+use App\Http\Controllers\Rnd\SpesificHazardController;
+use App\Http\Controllers\Admin\AdminCustomerController;
+use App\Http\Controllers\EnvironmentalHazardController;
+use App\Http\Controllers\Pic\SampleRequestPicController;
+use App\Http\Controllers\Rnd\SampleRequestRndController;
+use App\Http\Controllers\Rnd\ExtinguishingMediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,7 +60,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedController::class, 'logout']);
     // dashboard route
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/account/request-email-verification', [AuthenticatedController::class, 'activateAccount'])->name('account_request_verification');
+    Route::get('/account/activation/{token}', [AuthenticatedController::class, 'activation'])->name('activation');
     Route::post('/dashboard/chart', [DashboardController::class, 'statisticSampleRequest']);
+});
+
+Route::middleware(['auth', 'mustbeVerified'])->group(function () {
+
     // user setting route
     Route::get('/user-setting', [UserSettingController::class, 'profile'])->name('user_setting');
     Route::post('/user-setting/update', [UserSettingController::class, 'update'])->name('user_setting.update');
@@ -305,7 +310,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Route RND START
-Route::prefix('rnd')->middleware('auth')->group(function () {
+Route::prefix('rnd')->middleware(['auth', 'mustbeVerified'])->group(function () {
     Route::get('/product', [ProductController::class, 'index'])->name('product');
     Route::post('/product/list', [ProductController::class, 'listData']);
     Route::post('/product/save', [ProductController::class, 'store']);
@@ -349,7 +354,7 @@ Route::prefix('rnd')->middleware('auth')->group(function () {
 });
 // Route RND END
 // Route super admin START
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'mustbeVerified'])->group(function () {
     Route::get('/user-group', [AdminUserGroupController::class, 'index'])->name('user_group');
     Route::post('/user-group/list', [AdminUserGroupController::class, 'listData']);
     Route::post('/user-group/save', [AdminUserGroupController::class, 'store']);
@@ -392,7 +397,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 // Route super admin END
 
 //Route sample pic start
-Route::prefix('pic')->middleware('auth')->group(function () {
+Route::prefix('pic')->middleware(['auth', 'mustbeVerified'])->group(function () {
     Route::controller(SampleRequestPicController::class)->group(function () {
         Route::get('/sample-request', 'index')->name('pic_sample_request');
         Route::post('/sample-request/list', 'list');
@@ -413,7 +418,7 @@ Route::prefix('pic')->middleware('auth')->group(function () {
 });
 //Route sample pic end
 //Route sample cs start
-Route::prefix('cs')->middleware('auth')->group(function () {
+Route::prefix('cs')->middleware(['auth', 'mustbeVerified'])->group(function () {
     Route::controller(SampleRequestCsController::class)->group(function () {
         Route::get('/sample-request', 'index')->name('cs_sample_request');
         Route::post('/sample-request/list', 'list');
