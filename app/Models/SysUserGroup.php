@@ -11,7 +11,7 @@ class SysUserGroup extends Model
 
     protected $table = 'sys_user_groups';
 
-    protected $fillable = ['name', 'created_by'];
+    protected $fillable = ['name', 'id_group', 'created_by'];
 
     public function groupUsers()
     {

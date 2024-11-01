@@ -9,7 +9,7 @@ class MasterSkinContact extends Model
 {
     use HasFactory;
 
-    protected $table = 'master_ingestions';
+    protected $table = 'master_skin_contacts';
 
     protected $fillable = ['description', 'language', 'notes', 'created_by'];
 }

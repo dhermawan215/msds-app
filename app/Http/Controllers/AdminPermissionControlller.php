@@ -24,7 +24,7 @@ class AdminPermissionControlller extends Controller
          * check permission this module(security update)
          */
         $modulePermission = $this->modulePermission();
-        if (!isset($modulePermission->is_akses)) {
+        if (!isset($modulePermission->is_akses) || $modulePermission->is_akses == 0) {
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
@@ -93,6 +93,9 @@ class AdminPermissionControlller extends Controller
     public function add($id)
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
 
         if (!$modulePermission->is_akses || !in_array('add', $moduleFn)) {
@@ -106,10 +109,13 @@ class AdminPermissionControlller extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'groupValue' => 'required',
             'is_akses' => 'required',
             'fungsi' => 'required',
         ], [
-            'fungsi.required' => 'field function is required'
+            'fungsi.required' => 'field function is required',
+            'groupValue.required' => 'field user group is required',
+            'is_akses.required' => 'field access permission is required'
         ]);
 
         if ($validator->fails()) {

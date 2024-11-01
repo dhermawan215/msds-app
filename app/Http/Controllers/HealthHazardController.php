@@ -30,7 +30,7 @@ class HealthHazardController extends Controller
          * check permission this module(security update)
          */
         $modulePermission = $this->modulePermission();
-        if (!isset($modulePermission->is_akses)) {
+        if (!isset($modulePermission->is_akses) || $modulePermission->is_akses == 0) {
             return \view('forbiden-403');
         }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
@@ -101,6 +101,9 @@ class HealthHazardController extends Controller
     public function add()
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array('add', $moduleFn)) {
             return \view('forbiden-403');
@@ -135,6 +138,9 @@ class HealthHazardController extends Controller
     public function detail($id)
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array('detail', $moduleFn)) {
             return \view('forbiden-403');
@@ -148,6 +154,9 @@ class HealthHazardController extends Controller
     public function edit($id)
     {
         $modulePermission = $this->modulePermission();
+        if (!isset($modulePermission)) {
+            return \view('forbiden-403');
+        }
         $moduleFn = \json_decode($modulePermission->fungsi, true);
         if (!$modulePermission->is_akses || !in_array('edit', $moduleFn)) {
             return \view('forbiden-403');
