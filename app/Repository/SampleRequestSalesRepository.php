@@ -65,4 +65,17 @@ class SampleRequestSalesRepository
             'customer_note' => $data['customer_note']
         ]);
     }
+    /**
+     * update sample when cancel request true
+     */
+    public function updateSampleWhenCancel($data): void
+    {
+        $query = SampleRequest::find($data['id']);
+        $query->update([
+            'sample_status' => $data['status_sample'],
+            'sample_pic_status' => null,
+            'rnd_status' => null,
+            'cs_status' => null,
+        ]);
+    }
 }

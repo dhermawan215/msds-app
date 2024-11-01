@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\SampleRequestCustomer;
 use Illuminate\Support\Facades\Validator;
 use App\Models\SampleRequestProductDocument;
+use App\Notifications\SalesCancelTheSample;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SalesSendRequestOfSample;
 use App\Repository\SampleRequestSalesRepository;
@@ -273,6 +274,11 @@ class SampleRequestController extends Controller
             //if status reviewed, 
             elseif (static::sampleStatusCode[5] == $value->sample_status) {
                 $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
+            }
+            //if status reuqested, sales possible to cancel the sample
+            elseif (static::sampleStatusCode[0] == $value->sample_status) {
+                $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                <button class="btn btn-sm btn-danger btn-change-to-cancel" data-vx="' . $this->encryptData($value->id) . '" data-sample="' . $value->sample_ID . '" title="Cancel the sample request"><i class="fa fa-times" aria-hidden="true"></i></button>';
             } else {
                 $data['action'] = '<a href="' . route('sample_request.detail', $value->sample_ID) . '" class="btn btn-sm btn-success" title="Detail of sample"><i class="fas fa-eye" aria-hidden="true"></i></a>';
             }
@@ -944,6 +950,48 @@ class SampleRequestController extends Controller
             return response()->json(['success' => true, 'message' => 'change status success!', 'url' => static::$url], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => true, 'message' => 'error!'], 500);
+        }
+    }
+    /**
+     * cancel the sample request
+     */
+    public function cancelSampleRequest(Request $request)
+    {
+        //contain the data update sample
+        $data = [
+            'id' => $this->decryptData($request->vx),
+            'status_sample' => $request->status
+        ];
+        $user = Auth::user();
+        try {
+            //update status sample
+            $this->sampleReqSalesRepo->updateSampleWhenCancel($data);
+            //create log user activity
+            $log = [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip_address' => $request->ip(),
+                'log_user_agent' => $request->header('user-agent'),
+                'activity' => $user->name . ' cancel sample ' . $request->sValue,
+                'status' => 'true',
+                'date_time' => Carbon::now()->toDateTimeString(),
+            ];
+            $this->logUserActivity($log);
+            //get sample pic
+            $samplePic = User::whereHas('userGroup', function ($query) {
+                $query->where('name', 'SAMPLE_PIC');
+            })->get();
+            //contain the data for notification
+            $content = [
+                'sample_ID' => $request->sValue,
+                'sales' => $user->name,
+            ];
+            //send notification to sample pic
+            Notification::send($samplePic, new SalesCancelTheSample($content));
+
+            return response()->json(['success' => true, 'message' => 'success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => true, 'message' => 'error'], 500);
         }
     }
 }

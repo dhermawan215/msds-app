@@ -92,6 +92,8 @@ var Index = (function () {
             const vxval = $(this).data("vx");
             handleSubmitFormReview(vxval);
         });
+        //initialize function after render datatable
+        handleCancelSample();
     };
     //push data to variable aSelected
     var handleAddDeleteAselected = function (value, parentElement) {
@@ -222,6 +224,52 @@ var Index = (function () {
                         toastr.error(value);
                     });
                 },
+            });
+        });
+    };
+    //cancle the sample request
+    var handleCancelSample = function () {
+        $(document).on("click", ".btn-change-to-cancel", function () {
+            const vxValue = $(this).data("vx");
+            const sample = $(this).data("sample");
+            Swal.fire({
+                title: "Are you sure cancel the sample?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: url + "/sample-request/cancel-sample",
+                        data: {
+                            _token: csrf_token,
+                            vx: vxValue,
+                            status: 6,
+                            sValue: sample,
+                        },
+                        success: function (response) {
+                            if (response.success == true) {
+                                Swal.fire(
+                                    "Cancel success",
+                                    "The sample request has been canceled",
+                                    "success"
+                                );
+                                table.ajax.reload();
+                            }
+                        },
+                        error: function (response) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Internal Server Error",
+                            });
+                        },
+                    });
+                }
             });
         });
     };

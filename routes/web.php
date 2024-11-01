@@ -308,6 +308,7 @@ Route::middleware(['auth', 'mustbeVerified'])->group(function () {
         Route::post('/sample-request/download-msds/list', 'listProductForMsdsDownload');
         Route::post('/sample-request/download-msds/list-doc', 'listDocMsdsPds');
         Route::post('/sample-request/change-status', 'changeStatus');
+        Route::post('/sample-request/cancel-sample', 'cancelSampleRequest');
     });
     //# sales sample request route end
     //sample request end
