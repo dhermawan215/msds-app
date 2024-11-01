@@ -38,7 +38,7 @@
 
         <!-- Main Footer -->
         <footer class="main-footer">
-            <strong>Copyright &copy; MSDS APP - Zekindo IT.</strong>
+            <strong>Copyright &copy; Lab Service System - Zekindo IT.</strong>
             All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
                 <b>Version</b> 1.0.1
