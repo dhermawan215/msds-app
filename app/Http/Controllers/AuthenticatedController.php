@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserLog;
-use App\Models\UserVerification;
-use App\Notifications\SendEmailVerification;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\UserVerification;
+use App\Models\UserForgotPassword;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Hash;
+use App\Notifications\SendForgotPassword;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\SendEmailVerification;
+use Illuminate\Support\Facades\Notification;
 
 class AuthenticatedController extends Controller
 {
@@ -148,7 +151,10 @@ class AuthenticatedController extends Controller
             return redirect()->route('dashboard')->with('activation', 'Error, please try again!');
         }
     }
-
+    /**
+     * activation account proccess
+     * @param $token
+     */
     public function activation($token)
     {
         $query = UserVerification::where('token_verification', $token)->first();
@@ -171,6 +177,85 @@ class AuthenticatedController extends Controller
             return view('errors.succes-verification', ['message' => 'Your account was verified.', 'title' => 'Success!']);
         } catch (\Throwable $th) {
             return view('errors.succes-verification', ['message' => 'We could not process your request.', 'title' => 'Error!']);
+        }
+    }
+    /**
+     * view forgot password
+     */
+    public function forgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+    /**
+     * process request then sending email to user
+     */
+    public function processForgotPassword(Request $request)
+    {
+        $email = $request->email;
+        $tokenString1 = Str::random(22);
+        $tokenString2 = Str::random(28);
+        $realToken = date('Ymdh') . $tokenString1 . date('is') . $tokenString2 . date('s');
+
+        try {
+            //create the user request forgot password
+            $query = UserForgotPassword::create([
+                'email' => $email,
+                'token_change_password' => $realToken,
+                'token_expired_at' => Carbon::now()->addMinute(10),
+            ]);
+            $content = [
+                'user' => $email,
+                'token' => $realToken
+            ];
+            //send notification
+            Notification::route('mail', [$email => $email])->notify(new SendForgotPassword($content));
+            return redirect()->route('forgot_password')->with('forgot_password', 'we are sending an email to you; Please check your email to process the reset password');
+        } catch (\Throwable $th) {
+            return redirect()->route('forgot_password')->with('forgot_password', 'Error, please try again!');
+            //throw $th;
+            dd($th);
+        }
+    }
+    /**
+     * change password
+     * @param $token
+     */
+    public function changePassword($token)
+    {
+        $query = UserForgotPassword::where('token_change_password', $token)->first();
+
+        if (is_null($query)) {
+            return view('errors.succes-verification', ['message' => 'we could not find your request.', 'title' => 'Opps!']);
+        }
+        //check possibility token expired
+        if (Carbon::parse($query->token_expired_at) < Carbon::now()) {
+            return view('errors.succes-verification', ['message' => 'token expired.', 'title' => 'Opps!']);
+        }
+
+        return view('auth.forgot-change-password', ['token' => $query->token_change_password, 'email' => $query->email]);
+    }
+    /**
+     * process change password
+     */
+    public function processChangePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'new_password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/',
+            'confirm_password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/|regex:/[@$!%*#?&]/|same:new_password'
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 403);
+        }
+
+        try {
+            $query = User::where('email', $request->email)->first();
+            $query->update([
+                'password' => Hash::make($request->new_password)
+            ]);
+            return response()->json(['success' => true, 'message' => 'success change password', 'url' => route('login')], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => true, 'message' => 'error, please try again'], 500);
         }
     }
 }

@@ -17,6 +17,10 @@
     <link rel="stylesheet" href="{{ asset('frontend/css/adminlte.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('frontend/plugins/toastr/toastr.css') }}">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/icon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/icon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/icon/favicon-16x16.png') }}">
 </head>
 
 <body class="hold-transition">
@@ -82,14 +86,14 @@
                                     <!-- /.col -->
                                 </div>
                             </form>
-                            {{-- <div class="row">
+                            <div class="row">
                                 <div class="col-12">
                                     <div
                                         class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">
-                                        <a href="#">Forgot password</a>
+                                        <a href="{{ route('forgot_password') }}" class="text-white">Forgot password?</a>
                                     </div>
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -50,6 +50,10 @@ use App\Http\Controllers\Rnd\ExtinguishingMediaController;
 // auth route
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
+    Route::get('/forgot-password', [AuthenticatedController::class, 'forgotPassword'])->name('forgot_password');
+    Route::post('/forgot-password/proccess', [AuthenticatedController::class, 'processForgotPassword'])->name('forgot_password.process');
+    Route::get('/forgot-password/change-password/{token}', [AuthenticatedController::class, 'changePassword'])->name('forgot_password.change_password');
+    Route::post('/forgot-password/change-password/process', [AuthenticatedController::class, 'processChangePassword'])->name('forgot_password.change_password_process');
     Route::post('/login', [AuthenticatedController::class, 'authenticated']);
 });
 

@@ -1,6 +1,8 @@
 <aside id="sidebar-theme" class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
+        <img src="{{ asset('assets/icon/favicon-32x32.png') }}" alt="Lab Service System Logo"
+            class="brand-image img-circle" style="opacity: .8">
         <span class="brand-text font-weight-bold">Lab Service System</span>
     </a>
 
